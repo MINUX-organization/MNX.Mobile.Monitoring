@@ -1,0 +1,45 @@
+[versions]
+androidGradlePlugin = "8.2.2"
+kotlin = "1.9.22"
+kotlinxCoroutines = "1.7.3"
+ksp = "1.9.22-1.0.17"
+androidxCore = "1.12.0"
+androidxAppCompat = "1.6.1"
+androidMaterial = "1.11.0"
+androidxConstraintLayout = "2.1.4"
+androidxFragment = "1.6.2"
+androidxNavigation = "2.7.7"
+androidxNavigationSafeArgs = "2.7.7"
+androidxTestJUnit = "1.1.5"
+androidxTestEspressoCore = "3.5.1"
+jUnit = "4.13.2"
+hilt = "2.50"
+timber = "5.0.1"
+
+[libraries]
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidxAppCompat" }
+android-material = { group = "com.google.android.material", name = "material", version.ref = "androidMaterial" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "androidxConstraintLayout" }
+androidx-fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "androidxFragment" }
+androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "androidxNavigation" }
+androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "androidxNavigation" }
+androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestJUnit" }
+androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidxTestEspressoCore" }
+junit = { group = "junit", name = "junit", version.ref = "jUnit" }
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
+timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
+
+[bundles]
+android-ui = ["androidx-core-ktx", "androidx-appcompat", "android-material", "androidx-constraintlayout", "androidx-fragment-ktx"]
+android-navigation-ui = ["androidx-navigation-fragment-ktx", "androidx-navigation-ui-ktx"]
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
+android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin", version.ref = "androidxNavigationSafeArgs" }
