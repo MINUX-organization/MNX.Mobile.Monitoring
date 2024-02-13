@@ -13,5 +13,9 @@ gradlePlugin {
             id = "minux.monitoring.android.application"
             implementationClass = "AndroidApplicationConventionPlugin"
         }
+        register("androidLibrary") {
+            id = "minux.monitoring.android.library"
+            implementationClass = "AndroidLibraryConventionPlugin"
+        }
     }
 }
