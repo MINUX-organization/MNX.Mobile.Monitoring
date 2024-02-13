@@ -58,3 +58,4 @@ navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin", version.ref 
 # Convention plugins
 minux-monitoring-android-application = { id = "minux.monitoring.android.application", version = "unspecified" }
 minux-monitoring-android-library = { id = "minux.monitoring.android.library", version = "unspecified" }
+minux-monitoring-android-hilt = { id = "minux.monitoring.android.hilt", version = "unspecified" }

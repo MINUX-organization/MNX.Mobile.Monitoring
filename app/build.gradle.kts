@@ -1,8 +1,7 @@
 plugins {
     alias(libs.plugins.minux.monitoring.android.application)
-    id("com.google.devtools.ksp")
-    id("com.google.dagger.hilt.android")
-    id ("androidx.navigation.safeargs.kotlin")
+    alias(libs.plugins.minux.monitoring.android.hilt)
+    id("androidx.navigation.safeargs.kotlin")
 }
 
 android {
@@ -33,9 +32,6 @@ android {
 
 dependencies {
     implementation(project(":core:data"))
-
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
 
     implementation(libs.bundles.android.ui)
     implementation(libs.bundles.android.navigation.ui)
