@@ -21,5 +21,9 @@ gradlePlugin {
             id = "minux.monitoring.android.hilt"
             implementationClass = "AndroidHiltConventionPlugin"
         }
+        register("androidFeature") {
+            id = "minux.monitoring.android.feature"
+            implementationClass = "AndroidFeatureConventionPlugin"
+        }
     }
 }
