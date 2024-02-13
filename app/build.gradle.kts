@@ -1,6 +1,5 @@
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.minux.monitoring.android.application)
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
     id ("androidx.navigation.safeargs.kotlin")
@@ -8,12 +7,9 @@ plugins {
 
 android {
     namespace = "com.minux.monitoring"
-    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.minux.monitoring"
-        minSdk = 23
-        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -28,15 +24,6 @@ android {
                 "proguard-rules.pro"
             )
         }
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
     }
 
     buildFeatures {
