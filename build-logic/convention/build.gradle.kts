@@ -17,6 +17,10 @@ gradlePlugin {
             id = "minux.monitoring.android.library"
             implementationClass = "AndroidLibraryConventionPlugin"
         }
+        register("androidLibraryCompose") {
+            id = "minux.monitoring.android.library.compose"
+            implementationClass = "AndroidLibraryComposeConventionPlugin"
+        }
         register("androidHilt") {
             id = "minux.monitoring.android.hilt"
             implementationClass = "AndroidHiltConventionPlugin"

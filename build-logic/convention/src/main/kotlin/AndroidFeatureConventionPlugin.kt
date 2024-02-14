@@ -12,8 +12,8 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
             }
 
             dependencies {
-                "implementation"(libs.findLibrary("androidx.navigation.fragment.ktx").get())
-                "implementation"(libs.findLibrary("androidx.navigation.ui.ktx").get())
+                add("implementation", libs.findBundle("android.ui").get())
+                add("implementation", libs.findBundle("android.navigation.ui").get())
             }
         }
     }
