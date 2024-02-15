@@ -31,6 +31,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":feature:sign"))
+
     implementation(project(":core:data"))
 
     implementation(libs.bundles.android.ui)
