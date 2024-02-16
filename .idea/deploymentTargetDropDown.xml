@@ -2,6 +2,9 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="MNXButtonPreview">
+        <State />
+      </entry>
       <entry key="MNXTextFieldPreview">
         <State />
       </entry>
