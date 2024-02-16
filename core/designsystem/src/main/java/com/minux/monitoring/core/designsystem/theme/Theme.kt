@@ -3,11 +3,15 @@ package com.minux.monitoring.core.designsystem.theme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = Turquoise,
+    onPrimary = Color.White,
+    primaryContainer = DarkBlue30,
+    onPrimaryContainer = HalfTransparentWhite,
+    background = DarkBlue10,
+    onBackground = Color.White
 )
 
 @Composable
