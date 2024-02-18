@@ -2,15 +2,14 @@ package com.minux.monitoring.core.designsystem.component
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,18 +25,16 @@ import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
 @Composable
 fun MNXRoundedCard(
     modifier: Modifier = Modifier,
-    content: @Composable ColumnScope.() -> Unit
+    content: @Composable () -> Unit
 ) {
-    Card(
+    Surface(
         modifier = modifier,
         shape = RoundedCornerShape(4.dp),
         border = BorderStroke(
             width = 1.5.dp,
             color = MaterialTheme.colorScheme.primary
         ),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        ),
+        color = MaterialTheme.colorScheme.primaryContainer,
         content = content
     )
 }
@@ -45,11 +42,11 @@ fun MNXRoundedCard(
 @Composable
 fun MNXCard(
     modifier: Modifier = Modifier,
-    content: @Composable ColumnScope.() -> Unit
+    content: @Composable () -> Unit
 ) {
     val shape = RectangleShape
 
-    Card(
+    Surface(
         modifier = modifier
             .border(
                 width = 1.dp,
@@ -58,9 +55,7 @@ fun MNXCard(
             )
             .padding(6.dp),
         shape = shape,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        ),
+        color = MaterialTheme.colorScheme.primaryContainer,
         content = content
     )
 }
@@ -69,25 +64,35 @@ fun MNXCard(
 @Composable
 fun MNXCardPreview() {
     MNXTheme {
-        Column(modifier = Modifier.padding(10.dp)) {
-            MNXCard {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+        Column(
+            modifier = Modifier.padding(10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            MNXRoundedCard(modifier = Modifier.fillMaxWidth()) {
+                Box(contentAlignment = Alignment.Center) {
                     Text(
                         modifier = Modifier.padding(8.dp),
-                        text = "Test",
+                        text = "Text",
                         fontSize = 20.sp,
                         fontFamily = grillSansMtFamily,
                         fontWeight = FontWeight.Normal
                     )
-                    Spacer(
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
+                }
+            }
+
+            MNXCard(modifier = Modifier.padding(top = 10.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         modifier = Modifier.padding(8.dp),
-                        text = "Test data",
+                        text = "Text",
+                        fontSize = 20.sp,
+                        fontFamily = grillSansMtFamily,
+                        fontWeight = FontWeight.Normal
+                    )
+
+                    Text(
+                        modifier = Modifier.padding(8.dp),
+                        text = "Text",
                         fontSize = 20.sp,
                         fontFamily = grillSansMtFamily,
                         fontWeight = FontWeight.Normal
