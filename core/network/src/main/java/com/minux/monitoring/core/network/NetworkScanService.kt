@@ -1,10 +1,9 @@
-package com.minux.monitoring.core.data.source.network
+package com.minux.monitoring.core.network
 
 import android.content.Context
 import android.net.ConnectivityManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import timber.log.Timber
 import java.io.IOException
 import java.net.Inet4Address
 import java.net.InetSocketAddress
@@ -79,7 +78,7 @@ class NetworkScanService(private val context: Context) {
             }
         } catch (e: IOException) {
             // Исключение означает, что порт закрыт или хост недоступен
-            Timber.d("Port $port doesn't available on $ip ip")
+
             return false
         }
     }
