@@ -5,6 +5,7 @@ import com.microsoft.signalr.HubConnectionState
 import com.minux.monitoring.core.network.api.Receive
 import com.minux.monitoring.core.network.api.Send
 import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 
@@ -12,7 +13,7 @@ class MNXApiClient(private val hubConnection: HubConnection) {
     init {
         val methods = MNXApiService::class.java.methods
         methods.forEach { method ->
-            when {
+             when {
                 method.isAnnotationPresent(Receive::class.java) -> {
                     val hubMethodName = method.getAnnotation(Receive::class.java)?.value
                     val callbackFlow = if (hubMethodName.isNullOrEmpty()) {
@@ -25,30 +26,31 @@ class MNXApiClient(private val hubConnection: HubConnection) {
 
                 method.isAnnotationPresent(Send::class.java) -> {
                     val hubMethodName = method.getAnnotation(Send::class.java)?.value
-                    if (hubMethodName.isNullOrEmpty()) {
+                    val callbackFlow = if (hubMethodName.isNullOrEmpty()) {
                         onSend(method.name)
                     } else {
                         onSend(hubMethodName)
                     }
+                    method.invoke(callbackFlow)
                 }
             }
         }
     }
 
-    private fun onReceive(hubMethodName: String) = callbackFlow {
+    private fun onReceive(hubMethodName: String) = callbackFlow<Result<String>> {
         val compositeDisposable = CompositeDisposable()
 
         val subscription = hubConnection.on(
             hubMethodName,
             {
-                trySend(it)
+                trySend(Result.success(it))
             },
             String::class.java
         )
 
         val connection = hubConnection.start()
         val disposable = connection.doOnError {
-            hubConnection.remove(hubMethodName)
+            trySend(Result.failure(it))
         }.subscribe()
 
         compositeDisposable.add(disposable)
@@ -60,20 +62,40 @@ class MNXApiClient(private val hubConnection: HubConnection) {
         }
     }
 
-    private fun onSend(hubMethodName: String, vararg data: Any) = callbackFlow<Unit> {
+    private fun onSend(hubMethodName: String, vararg data: Any) = callbackFlow<Result<Unit>> {
         val compositeDisposable = CompositeDisposable()
 
         when (hubConnection.connectionState!!) {
             HubConnectionState.CONNECTED -> {
-                hubConnection.invoke(hubMethodName, data)
+                val invokeDisposable = tryInvoke(
+                    onComplete = {
+                        trySend(Result.success(Unit))
+                    },
+                    onError = {
+                        trySend(Result.failure(it))
+                    },
+                    hubMethodName = hubMethodName,
+                    data = data
+                )
+                compositeDisposable.add(invokeDisposable)
             }
 
             HubConnectionState.DISCONNECTED -> {
                 val connection = hubConnection.start()
                 val disposable = connection.doOnComplete {
-                    hubConnection.invoke(hubMethodName, data)
+                    val invokeDisposable = tryInvoke(
+                        onComplete = {
+                            trySend(Result.success(Unit))
+                        },
+                        onError = {
+                            trySend(Result.failure(it))
+                        },
+                        hubMethodName = hubMethodName,
+                        data = data
+                    )
+                    compositeDisposable.add(invokeDisposable)
                 }.doOnError {
-                    hubConnection.remove(hubMethodName)
+                    trySend(Result.failure(it))
                 }.subscribe()
 
                 compositeDisposable.add(disposable)
@@ -86,5 +108,18 @@ class MNXApiClient(private val hubConnection: HubConnection) {
             hubConnection.stop()
             compositeDisposable.dispose()
         }
+    }
+
+    private fun tryInvoke(
+        onComplete: () -> Unit,
+        onError: (Throwable) -> Unit,
+        hubMethodName: String,
+        vararg data: Any,
+    ): Disposable {
+        return hubConnection
+            .invoke(hubMethodName, data)
+            .doOnComplete(onComplete)
+            .doOnError(onError)
+            .subscribe()
     }
 }

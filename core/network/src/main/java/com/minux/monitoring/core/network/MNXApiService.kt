@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface MNXApiService {
     @Receive("GetCryptoCoins")
-    fun getAllCryptoCoins(): Flow<String>
+    fun getAllCryptoCoins(): Flow<Result<String>>
 
     @Send("SendUserLogin")
-    fun sendUserLogin(data: String)
+    fun sendUserLogin(data: String): Flow<Result<Unit>>
 }
