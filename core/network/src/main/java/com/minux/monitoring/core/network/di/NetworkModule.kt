@@ -3,7 +3,8 @@ package com.minux.monitoring.core.network.di
 import com.microsoft.signalr.HubConnection
 import com.microsoft.signalr.HubConnectionBuilder
 import com.microsoft.signalr.TransportEnum
-import com.minux.monitoring.core.network.MNXApiClient
+import com.minux.monitoring.core.network.MNXApiService
+import com.minux.monitoring.core.network.api.defineApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,7 +26,7 @@ internal object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideMNXApiClient(hubConnection: HubConnection): MNXApiClient {
-        return MNXApiClient(hubConnection = hubConnection)
+    fun provideMNXApiService(hubConnection: HubConnection): MNXApiService {
+        return hubConnection.defineApi(MNXApiService::class.java)
     }
 }
