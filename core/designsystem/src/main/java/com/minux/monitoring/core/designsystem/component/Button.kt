@@ -82,7 +82,7 @@ fun MNXButton(
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 fun MNXButtonPreview() {
     MNXTheme {
