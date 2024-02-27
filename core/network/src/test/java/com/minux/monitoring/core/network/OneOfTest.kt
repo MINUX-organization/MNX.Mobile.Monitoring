@@ -1,6 +1,6 @@
 package com.minux.monitoring.core.network
 
-import com.minux.monitoring.core.network.model.monitoring.RigStateChangeResponse
+import com.minux.monitoring.core.network.model.monitoring.RigStateChangeDto
 import com.minux.monitoring.core.network.model.monitoring.RigStateOneOf
 import org.junit.Test
 import org.junit.Assert.*
@@ -11,7 +11,7 @@ class OneOfTest {
 
     @Test
     fun `type must match the contents of the newData field`() {
-        val testRigStateChangeResponse = RigStateChangeResponse(
+        val testRigStateChangeDto = RigStateChangeDto(
             rigId = "some id",
             type = "GpuState",
             newData = arrayOf("Active", "InActive")
@@ -20,15 +20,15 @@ class OneOfTest {
         val expected: KClass<*>
         val actual: KClass<*>
 
-        when (testRigStateChangeResponse.type) {
+        when (testRigStateChangeDto.type) {
             RigStateOneOf.Name.toString() -> {
                 expected = String::class
-                actual = (testRigStateChangeResponse.newData as String)::class
+                actual = (testRigStateChangeDto.newData as String)::class
             }
 
             RigStateOneOf.GpuState.toString() -> {
                 expected = Array<String>::class
-                actual = (testRigStateChangeResponse.newData as Array<*>)::class
+                actual = (testRigStateChangeDto.newData as Array<*>)::class
             }
 
             else -> {

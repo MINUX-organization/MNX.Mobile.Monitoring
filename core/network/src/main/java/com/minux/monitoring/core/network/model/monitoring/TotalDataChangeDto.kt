@@ -1,7 +1,6 @@
 package com.minux.monitoring.core.network.model.monitoring
 
-data class RigStateChangeResponse(
-    val rigId: String,
+data class TotalDataChangeDto(
     val type: String,
     val newData: Any
 )

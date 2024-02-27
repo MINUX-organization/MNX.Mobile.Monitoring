@@ -1,6 +1,6 @@
 package com.minux.monitoring.core.network.model.monitoring
 
-import com.minux.monitoring.core.network.model.FlightSheetInfo
+import com.minux.monitoring.core.network.model.FlightSheetDto
 
 sealed class RigStateOneOf<T>(val typeData: T) {
     data object Name : RigStateOneOf<String>(String())
@@ -21,5 +21,5 @@ sealed class RigStateOneOf<T>(val typeData: T) {
 
     data object IntelCount : RigStateOneOf<Int>(0)
 
-    data object FlightSheet : RigStateOneOf<Array<FlightSheetInfo>>(emptyArray())
+    data object FlightSheet : RigStateOneOf<Array<FlightSheetDto>>(emptyArray())
 }

@@ -1,8 +1,8 @@
 package com.minux.monitoring.core.network.model
 
-data class CoinStatistics(
+data class CoinStatisticsDto(
     val coin: String,
     val algorithm: String,
-    val hashRate: ValueUnit,
-    val shares: Shares
+    val hashRate: ValueUnitDto,
+    val shares: SharesDto
 )

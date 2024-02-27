@@ -2,50 +2,50 @@ package com.minux.monitoring.core.network.async
 
 import com.minux.monitoring.core.network.MNXAsyncApiClient
 import com.minux.monitoring.core.network.MNXAsyncApiService
-import com.minux.monitoring.core.network.model.monitoring.HashRateResponse
-import com.minux.monitoring.core.network.model.monitoring.SendCoinRequest
-import com.minux.monitoring.core.network.model.monitoring.TotalDataChangeResponse
-import com.minux.monitoring.core.network.model.monitoring.RigStateChangeResponse
-import com.minux.monitoring.core.network.model.monitoring.RigsDynamicDataResponse
-import com.minux.monitoring.core.network.model.monitoring.RigsInformationResponse
-import com.minux.monitoring.core.network.model.monitoring.RigsStateResponse
+import com.minux.monitoring.core.network.model.monitoring.HashRateDto
+import com.minux.monitoring.core.network.model.monitoring.SendCoinDto
+import com.minux.monitoring.core.network.model.monitoring.TotalDataChangeDto
+import com.minux.monitoring.core.network.model.monitoring.RigStateChangeDto
+import com.minux.monitoring.core.network.model.monitoring.RigsDynamicDataDto
+import com.minux.monitoring.core.network.model.monitoring.RigsInformationDto
+import com.minux.monitoring.core.network.model.monitoring.RigsStateDto
 import kotlinx.coroutines.flow.Flow
 
 internal class MNXAsyncApiServiceImpl : MNXAsyncApiService {
     private val monitoringConnection = MNXAsyncApiClient.getApiClient("monitoring")
 
-    override fun sendCoin(sendCoinRequest: SendCoinRequest): Flow<Result<Unit>> {
+    override fun sendCoin(sendCoinDto: SendCoinDto): Flow<Result<Unit>> {
         return monitoringConnection.onSend(
             method = "SendCoin",
-            data = sendCoinRequest.chosenCoin
+            data = sendCoinDto.chosenCoin
         )
     }
 
-    override fun receiveCurrentHashRate(): Flow<Result<HashRateResponse>> {
+    override fun receiveCurrentHashRate(): Flow<Result<HashRateDto>> {
         return monitoringConnection.onReceive(method = "ReceivedCurrentHashRate")
     }
 
-    override fun receiveHashRateForPeriod(): Flow<Result<Array<HashRateResponse>>> {
+    override fun receiveHashRateForPeriod(): Flow<Result<Array<HashRateDto>>> {
         return monitoringConnection.onReceive(method = "ReceivedHashRateForAPeriod")
     }
 
-    override fun receiveRigsInformation(): Flow<Result<Array<RigsInformationResponse>>> {
+    override fun receiveRigsInformation(): Flow<Result<Array<RigsInformationDto>>> {
         return monitoringConnection.onReceive(method = "ReceivedWorkersInformation")
     }
 
-    override fun receiveRigsState(): Flow<Result<Array<RigsStateResponse>>> {
+    override fun receiveRigsState(): Flow<Result<Array<RigsStateDto>>> {
         return monitoringConnection.onReceive(method = "ReceivedWorkersState")
     }
 
-    override fun receiveRigsDynamicData(): Flow<Result<Array<RigsDynamicDataResponse>>> {
+    override fun receiveRigsDynamicData(): Flow<Result<Array<RigsDynamicDataDto>>> {
         return monitoringConnection.onReceive(method = "ReceivedWorkersDynamicData")
     }
 
-    override fun receiveRigStateChange(): Flow<Result<RigStateChangeResponse>> {
+    override fun receiveRigStateChange(): Flow<Result<RigStateChangeDto>> {
         return monitoringConnection.onReceive(method = "ReceivedWorkerStateChangeMessage")
     }
 
-    override fun receiveTotalData(): Flow<Result<TotalDataChangeResponse>> {
+    override fun receiveTotalData(): Flow<Result<TotalDataChangeDto>> {
         return monitoringConnection.onReceive(method = "ReceivedWorkerStateChangeMessage")
     }
 }

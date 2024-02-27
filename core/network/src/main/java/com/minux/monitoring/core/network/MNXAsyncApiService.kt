@@ -1,28 +1,28 @@
 package com.minux.monitoring.core.network
 
-import com.minux.monitoring.core.network.model.monitoring.HashRateResponse
-import com.minux.monitoring.core.network.model.monitoring.SendCoinRequest
-import com.minux.monitoring.core.network.model.monitoring.TotalDataChangeResponse
-import com.minux.monitoring.core.network.model.monitoring.RigStateChangeResponse
-import com.minux.monitoring.core.network.model.monitoring.RigsDynamicDataResponse
-import com.minux.monitoring.core.network.model.monitoring.RigsInformationResponse
-import com.minux.monitoring.core.network.model.monitoring.RigsStateResponse
+import com.minux.monitoring.core.network.model.monitoring.HashRateDto
+import com.minux.monitoring.core.network.model.monitoring.SendCoinDto
+import com.minux.monitoring.core.network.model.monitoring.TotalDataChangeDto
+import com.minux.monitoring.core.network.model.monitoring.RigStateChangeDto
+import com.minux.monitoring.core.network.model.monitoring.RigsDynamicDataDto
+import com.minux.monitoring.core.network.model.monitoring.RigsInformationDto
+import com.minux.monitoring.core.network.model.monitoring.RigsStateDto
 import kotlinx.coroutines.flow.Flow
 
 interface MNXAsyncApiService {
-    fun sendCoin(sendCoinRequest: SendCoinRequest): Flow<Result<Unit>>
+    fun sendCoin(sendCoinDto: SendCoinDto): Flow<Result<Unit>>
 
-    fun receiveCurrentHashRate(): Flow<Result<HashRateResponse>>
+    fun receiveCurrentHashRate(): Flow<Result<HashRateDto>>
 
-    fun receiveHashRateForPeriod(): Flow<Result<Array<HashRateResponse>>>
+    fun receiveHashRateForPeriod(): Flow<Result<Array<HashRateDto>>>
 
-    fun receiveRigsInformation(): Flow<Result<Array<RigsInformationResponse>>>
+    fun receiveRigsInformation(): Flow<Result<Array<RigsInformationDto>>>
 
-    fun receiveRigsState(): Flow<Result<Array<RigsStateResponse>>>
+    fun receiveRigsState(): Flow<Result<Array<RigsStateDto>>>
 
-    fun receiveRigsDynamicData(): Flow<Result<Array<RigsDynamicDataResponse>>>
+    fun receiveRigsDynamicData(): Flow<Result<Array<RigsDynamicDataDto>>>
 
-    fun receiveRigStateChange(): Flow<Result<RigStateChangeResponse>>
+    fun receiveRigStateChange(): Flow<Result<RigStateChangeDto>>
 
-    fun receiveTotalData(): Flow<Result<TotalDataChangeResponse>>
+    fun receiveTotalData(): Flow<Result<TotalDataChangeDto>>
 }

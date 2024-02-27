@@ -1,5 +1,5 @@
 package com.minux.monitoring.core.network.model.monitoring
 
-data class SendCoinRequest(
+data class SendCoinDto(
     val chosenCoin: String
 )

@@ -1,8 +1,8 @@
 package com.minux.monitoring.core.network.model.monitoring
 
-import com.minux.monitoring.core.network.model.FlightSheetInfo
+import com.minux.monitoring.core.network.model.FlightSheetDto
 
-data class RigsInformationResponse(
+data class RigsInformationDto(
     val id: String,
     val index: Int,
     val name: String,
@@ -11,5 +11,5 @@ data class RigsInformationResponse(
     val nvidiaCount: Int,
     val amdCount: Int,
     val intelCount: Int,
-    val flightSheetInfo: List<FlightSheetInfo>
+    val flightSheetInfo: List<FlightSheetDto>
 )
