@@ -1,6 +1,7 @@
 package com.minux.monitoring.core.network
 
 import com.minux.monitoring.core.network.model.devices.DevicesDynamicDataDto
+import com.minux.monitoring.core.network.model.devices.DevicesInformationDto
 import com.minux.monitoring.core.network.model.monitoring.HashRateDto
 import com.minux.monitoring.core.network.model.monitoring.SendCoinDto
 import com.minux.monitoring.core.network.model.monitoring.TotalDataChangeDto
@@ -27,6 +28,8 @@ interface MNXAsyncApiService {
     fun receiveRigStateChange(): Flow<Result<RigStateChangeDto>>
 
     fun receiveTotalData(): Flow<Result<TotalDataChangeDto>>
+
+    fun receiveDevicesInformation(): Flow<Result<DevicesInformationDto>>
 
     fun receiveDevicesDynamicData(): Flow<Result<DevicesDynamicDataDto>>
 

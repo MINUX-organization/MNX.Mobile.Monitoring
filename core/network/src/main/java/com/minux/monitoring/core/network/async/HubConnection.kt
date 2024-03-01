@@ -4,7 +4,9 @@ import com.microsoft.signalr.HubConnection
 import com.microsoft.signalr.HubConnectionState
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.callbackFlow
 
 internal inline fun <reified T> HubConnection.onReceive(method: String) = callbackFlow<Result<T>> {
@@ -26,7 +28,7 @@ internal inline fun <reified T> HubConnection.onReceive(method: String) = callba
         subscription.unsubscribe()
         compositeDisposable.dispose()
     }
-}
+}.buffer(capacity = Channel.CONFLATED)
 
 internal fun <T> HubConnection.onSend(method: String, data: T) = callbackFlow<Result<Unit>> {
     val compositeDisposable = CompositeDisposable()
@@ -67,4 +69,4 @@ internal fun <T> HubConnection.onSend(method: String, data: T) = callbackFlow<Re
         stop()
         compositeDisposable.dispose()
     }
-}
+}.buffer(capacity = Channel.CONFLATED)
