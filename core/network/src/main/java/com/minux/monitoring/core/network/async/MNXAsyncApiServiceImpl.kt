@@ -2,6 +2,7 @@ package com.minux.monitoring.core.network.async
 
 import com.minux.monitoring.core.network.MNXAsyncApiClient
 import com.minux.monitoring.core.network.MNXAsyncApiService
+import com.minux.monitoring.core.network.model.devices.DevicesDynamicDataDto
 import com.minux.monitoring.core.network.model.monitoring.HashRateDto
 import com.minux.monitoring.core.network.model.monitoring.SendCoinDto
 import com.minux.monitoring.core.network.model.monitoring.TotalDataChangeDto
@@ -9,10 +10,13 @@ import com.minux.monitoring.core.network.model.monitoring.RigStateChangeDto
 import com.minux.monitoring.core.network.model.monitoring.RigsDynamicDataDto
 import com.minux.monitoring.core.network.model.monitoring.RigsInformationDto
 import com.minux.monitoring.core.network.model.monitoring.RigsStateDto
+import com.minux.monitoring.core.network.model.rigs.DetailRigsInformationDto
 import kotlinx.coroutines.flow.Flow
 
 internal class MNXAsyncApiServiceImpl : MNXAsyncApiService {
     private val monitoringConnection = MNXAsyncApiClient.getApiClient("monitoring")
+    private val devicesConnection = MNXAsyncApiClient.getApiClient("devices")
+    private val rigsConnection = MNXAsyncApiClient.getApiClient("rigs")
 
     override fun sendCoin(sendCoinDto: SendCoinDto): Flow<Result<Unit>> {
         return monitoringConnection.onSend(
@@ -47,5 +51,13 @@ internal class MNXAsyncApiServiceImpl : MNXAsyncApiService {
 
     override fun receiveTotalData(): Flow<Result<TotalDataChangeDto>> {
         return monitoringConnection.onReceive(method = "ReceivedWorkerStateChangeMessage")
+    }
+
+    override fun receiveDevicesDynamicData(): Flow<Result<DevicesDynamicDataDto>> {
+        return devicesConnection.onReceive(method = "ReceivedDevicesDynamicData")
+    }
+
+    override fun receiveDetailRigsInformation(): Flow<Result<DetailRigsInformationDto>> {
+        return rigsConnection.onReceive(method = "ReceivedDetailRigsInformation")
     }
 }

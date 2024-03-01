@@ -1,5 +1,6 @@
 package com.minux.monitoring.core.network
 
+import com.minux.monitoring.core.network.model.devices.DevicesDynamicDataDto
 import com.minux.monitoring.core.network.model.monitoring.HashRateDto
 import com.minux.monitoring.core.network.model.monitoring.SendCoinDto
 import com.minux.monitoring.core.network.model.monitoring.TotalDataChangeDto
@@ -7,6 +8,7 @@ import com.minux.monitoring.core.network.model.monitoring.RigStateChangeDto
 import com.minux.monitoring.core.network.model.monitoring.RigsDynamicDataDto
 import com.minux.monitoring.core.network.model.monitoring.RigsInformationDto
 import com.minux.monitoring.core.network.model.monitoring.RigsStateDto
+import com.minux.monitoring.core.network.model.rigs.DetailRigsInformationDto
 import kotlinx.coroutines.flow.Flow
 
 interface MNXAsyncApiService {
@@ -25,4 +27,8 @@ interface MNXAsyncApiService {
     fun receiveRigStateChange(): Flow<Result<RigStateChangeDto>>
 
     fun receiveTotalData(): Flow<Result<TotalDataChangeDto>>
+
+    fun receiveDevicesDynamicData(): Flow<Result<DevicesDynamicDataDto>>
+
+    fun receiveDetailRigsInformation(): Flow<Result<DetailRigsInformationDto>>
 }

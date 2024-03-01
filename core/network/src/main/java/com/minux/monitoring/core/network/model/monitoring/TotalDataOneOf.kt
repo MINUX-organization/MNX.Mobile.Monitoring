@@ -1,6 +1,6 @@
 package com.minux.monitoring.core.network.model.monitoring
 
-import com.minux.monitoring.core.network.model.CoinStatisticsDto
+import com.minux.monitoring.core.network.model.CoinStatisticsDetailDto
 import com.minux.monitoring.core.network.model.CpusCountDto
 import com.minux.monitoring.core.network.model.GpusCountDto
 import com.minux.monitoring.core.network.model.SharesDto
@@ -17,5 +17,6 @@ sealed class TotalDataOneOf<T>(val typeData: T) {
         GpusCountDto(0, 0, 0, 0)
     )
     data object TotalCpusCount : TotalDataOneOf<CpusCountDto>(CpusCountDto(0, 0, 0))
-    data object TotalCoinsList : TotalDataOneOf<Array<CoinStatisticsDto>>(emptyArray())
+
+    data object TotalCoinsList : TotalDataOneOf<Array<CoinStatisticsDetailDto>>(emptyArray())
 }
