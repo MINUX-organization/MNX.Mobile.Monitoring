@@ -33,6 +33,7 @@ fun MNXTextField(
     onValueChange: (String) -> Unit = {},
     readOnly: Boolean = false,
     hintText: String = "",
+    visualTransformation: VisualTransformation = VisualTransformation.None,
     suffix: @Composable () -> Unit = {},
     suffixPadding: Dp = 10.dp
 ) {
@@ -59,6 +60,7 @@ fun MNXTextField(
         value = value,
         readOnly = readOnly,
         onValueChange = onValueChange,
+        visualTransformation = visualTransformation,
         interactionSource = interactionSource,
         textStyle = textStyle,
         decorationBox = { innerTextField ->
@@ -67,7 +69,7 @@ fun MNXTextField(
                 innerTextField = innerTextField,
                 enabled = true,
                 singleLine = true,
-                visualTransformation = VisualTransformation.None,
+                visualTransformation = visualTransformation,
                 interactionSource = interactionSource,
                 shape = shape,
                 colors = TextFieldDefaults.colors(

@@ -101,6 +101,6 @@ val MNXTypography = Typography(
     )
 )
 
-internal val grillSansMtFamily = FontFamily(
+val grillSansMtFamily = FontFamily(
     Font(R.font.gill_sans_mt_regular, FontWeight.Normal)
 )
