@@ -23,7 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.minux.monitoring.core.designsystem.R
+import com.minux.monitoring.core.designsystem.icon.MNXIcons
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
 import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
 
@@ -69,7 +69,7 @@ fun MNXDropDownMenu(
                         .graphicsLayer {
                             this.scaleY = scaleY.value
                         },
-                    painter = painterResource(id = R.drawable.ic_drop_down),
+                    painter = painterResource(id = MNXIcons.DropDown),
                     tint = MaterialTheme.colorScheme.primary,
                     contentDescription = null
                 )
