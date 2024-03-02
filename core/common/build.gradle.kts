@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "com.minux.monitoring.core.navigation"
+    namespace = "com.minux.monitoring.core.common"
 
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

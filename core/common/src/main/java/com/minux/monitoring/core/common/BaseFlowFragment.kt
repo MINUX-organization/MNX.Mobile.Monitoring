@@ -1,4 +1,4 @@
-package com.minux.monitoring.core.navigation
+package com.minux.monitoring.core.common
 
 import android.os.Bundle
 import android.view.View
