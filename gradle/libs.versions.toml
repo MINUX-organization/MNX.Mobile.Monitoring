@@ -6,7 +6,7 @@ projectTargetSdk = "34"
 projectCompileSdk = "34"
 projectVersionCode = "1"
 
-androidGradlePlugin = "8.2.2"
+androidGradlePlugin = "8.3.0"
 kotlin = "1.9.22"
 kotlinxCoroutines = "1.7.3"
 ksp = "1.9.22-1.0.17"
