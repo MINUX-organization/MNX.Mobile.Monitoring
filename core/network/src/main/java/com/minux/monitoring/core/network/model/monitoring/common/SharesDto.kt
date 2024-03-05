@@ -1,4 +1,4 @@
-package com.minux.monitoring.core.network.model
+package com.minux.monitoring.core.network.model.monitoring.common
 
 data class SharesDto(
     val accepted: Int,

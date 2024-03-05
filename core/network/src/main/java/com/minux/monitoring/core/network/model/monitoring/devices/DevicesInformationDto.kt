@@ -1,6 +1,6 @@
-package com.minux.monitoring.core.network.model.devices
+package com.minux.monitoring.core.network.model.monitoring.devices
 
-import com.minux.monitoring.core.network.model.ValueUnitDto
+import com.minux.monitoring.core.network.model.monitoring.common.ValueUnitDto
 
 data class DevicesInformationDto(
     val id: String,

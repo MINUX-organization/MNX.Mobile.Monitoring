@@ -1,10 +1,10 @@
 package com.minux.monitoring.core.network.model.monitoring
 
-import com.minux.monitoring.core.network.model.CoinStatisticsDetailDto
-import com.minux.monitoring.core.network.model.CpusCountDto
-import com.minux.monitoring.core.network.model.GpusCountDto
-import com.minux.monitoring.core.network.model.SharesDto
-import com.minux.monitoring.core.network.model.ValueUnitDto
+import com.minux.monitoring.core.network.model.monitoring.common.CoinStatisticsDetailDto
+import com.minux.monitoring.core.network.model.monitoring.common.CpusCountDto
+import com.minux.monitoring.core.network.model.monitoring.common.GpusCountDto
+import com.minux.monitoring.core.network.model.monitoring.common.SharesDto
+import com.minux.monitoring.core.network.model.monitoring.common.ValueUnitDto
 
 sealed class TotalDataOneOf<T>(val typeData: T) {
     data object TotalShares : TotalDataOneOf<SharesDto>(SharesDto(0, 0))

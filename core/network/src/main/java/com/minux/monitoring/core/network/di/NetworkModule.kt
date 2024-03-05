@@ -3,8 +3,8 @@ package com.minux.monitoring.core.network.di
 import android.content.Context
 import com.minux.monitoring.core.network.MNXApiService
 import com.minux.monitoring.core.network.MNXAsyncApiService
-import com.minux.monitoring.core.network.async.MNXAsyncApiServiceImpl
 import com.minux.monitoring.core.network.service.NetworkScanService
+import com.minux.monitoring.core.network.signalr.MNXAsyncApiServiceImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,13 +19,13 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 internal object NetworkModule {
-    private const val baseUrl = "https://something.com/api/"
+    private const val BASE_URL = "https://something.com/api/"
 
     @Provides
     @Singleton
     fun provideMNXApiService(okHttpClient: OkHttpClient): MNXApiService {
         val retrofit = Retrofit.Builder()
-            .baseUrl(baseUrl)
+            .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(okHttpClient)
             .build()

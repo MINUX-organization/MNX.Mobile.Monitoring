@@ -1,7 +1,7 @@
-package com.minux.monitoring.core.network.model.devices
+package com.minux.monitoring.core.network.model.monitoring.devices
 
-import com.minux.monitoring.core.network.model.CoinStatisticsDto
-import com.minux.monitoring.core.network.model.ValueUnitDto
+import com.minux.monitoring.core.network.model.monitoring.common.CoinStatisticsDto
+import com.minux.monitoring.core.network.model.monitoring.common.ValueUnitDto
 
 data class DevicesDynamicDataDto(
     val id: String,

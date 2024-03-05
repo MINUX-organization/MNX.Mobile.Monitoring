@@ -1,6 +1,6 @@
 package com.minux.monitoring.core.network.model.monitoring
 
-import com.minux.monitoring.core.network.model.FlightSheetDto
+import com.minux.monitoring.core.network.model.monitoring.common.FlightSheetDto
 
 sealed class RigStateOneOf<T>(val typeData: T) {
     data object Name : RigStateOneOf<String>(String())

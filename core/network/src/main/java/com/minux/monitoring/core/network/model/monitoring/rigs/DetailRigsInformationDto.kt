@@ -1,7 +1,7 @@
-package com.minux.monitoring.core.network.model.rigs
+package com.minux.monitoring.core.network.model.monitoring.rigs
 
-import com.minux.monitoring.core.network.model.GpusCountDto
-import com.minux.monitoring.core.network.model.ValueUnitDto
+import com.minux.monitoring.core.network.model.monitoring.common.GpusCountDto
+import com.minux.monitoring.core.network.model.monitoring.common.ValueUnitDto
 
 data class DetailRigsInformationDto(
     val id: String,
