@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-fun Modifier.optionalBorder(
+fun Modifier.selectiveBorder(
     width: Dp? = null,
     color: Color? = null,
     sides: List<BorderSide> = listOf(
@@ -26,40 +26,40 @@ fun Modifier.optionalBorder(
         drawContent()
 
         sides.forEach { side ->
-            val widthPx = (width ?: side.sideWidth).toPx()
+            val sideWidth = (width ?: side.sideWidth).toPx()
             val sideColor = color ?: side.sideColor
 
             when (side) {
                 is BorderSide.Start -> {
                     drawLine(
                         color = sideColor,
-                        start = Offset(widthPx / 2, 0f),
-                        end = Offset(widthPx / 2, size.height),
-                        strokeWidth = widthPx
+                        start = Offset(sideWidth / 2, 0f),
+                        end = Offset(sideWidth / 2, size.height),
+                        strokeWidth = sideWidth
                     )
                 }
                 is BorderSide.Top -> {
                     drawLine(
                         color = sideColor,
-                        start = Offset(0f, widthPx / 2),
-                        end = Offset(size.width, widthPx / 2),
-                        strokeWidth = widthPx
+                        start = Offset(0f, sideWidth / 2),
+                        end = Offset(size.width, sideWidth / 2),
+                        strokeWidth = sideWidth
                     )
                 }
                 is BorderSide.End -> {
                     drawLine(
                         color = sideColor,
-                        start = Offset(size.width - (widthPx / 2), 0f),
-                        end = Offset(size.width - (widthPx / 2), size.height),
-                        strokeWidth = widthPx
+                        start = Offset(size.width - (sideWidth / 2), 0f),
+                        end = Offset(size.width - (sideWidth / 2), size.height),
+                        strokeWidth = sideWidth
                     )
                 }
                 is BorderSide.Bottom -> {
                     drawLine(
                         color = sideColor,
-                        start = Offset(0f, size.height - (widthPx / 2)),
-                        end = Offset(size.width, size.height - (widthPx / 2)),
-                        strokeWidth = widthPx
+                        start = Offset(0f, size.height - (sideWidth / 2)),
+                        end = Offset(size.width, size.height - (sideWidth / 2)),
+                        strokeWidth = sideWidth
                     )
                 }
             }

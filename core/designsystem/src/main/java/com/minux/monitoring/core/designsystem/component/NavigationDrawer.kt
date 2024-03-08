@@ -43,7 +43,7 @@ import com.minux.monitoring.core.designsystem.theme.BorderSide
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
 import com.minux.monitoring.core.designsystem.theme.TurquoiseRadialGradient
 import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
-import com.minux.monitoring.core.designsystem.theme.optionalBorder
+import com.minux.monitoring.core.designsystem.theme.selectiveBorder
 import com.minux.monitoring.core.designsystem.theme.OrangeVerticalGradient
 import kotlinx.coroutines.launch
 
@@ -74,7 +74,7 @@ fun MNXDrawerHeader(
             .paint(
                 painter = painterResource(id = MNXIcons.MinuxHeader)
             )
-            .optionalBorder(
+            .selectiveBorder(
                 width = 1.dp,
                 color = MaterialTheme.colorScheme.primary,
                 sides = listOf(BorderSide.Start())
@@ -115,7 +115,7 @@ fun MNXNavigationDrawerItem(
     val itemBackgroundModifier = if (selected) {
         modifier
             .background(brush = OrangeVerticalGradient)
-            .optionalBorder(
+            .selectiveBorder(
                 width = 1.dp,
                 sides = borderSides,
                 color = MaterialTheme.colorScheme.onSecondaryContainer
@@ -123,7 +123,7 @@ fun MNXNavigationDrawerItem(
     } else {
         modifier
             .background(color = Color.Transparent)
-            .optionalBorder(
+            .selectiveBorder(
                 width = 1.dp,
                 sides = borderSides,
                 color = MaterialTheme.colorScheme.primary
@@ -252,7 +252,7 @@ fun MNXNavigationDrawerPreview() {
                             Spacer(
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .optionalBorder(
+                                    .selectiveBorder(
                                         width = 1.dp,
                                         color = MaterialTheme.colorScheme.primary,
                                         sides = listOf(BorderSide.Start())
