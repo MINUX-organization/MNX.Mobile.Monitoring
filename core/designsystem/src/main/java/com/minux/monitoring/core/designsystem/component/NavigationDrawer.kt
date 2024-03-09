@@ -40,11 +40,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.minux.monitoring.core.designsystem.icon.MNXIcons
 import com.minux.monitoring.core.designsystem.theme.BorderSide
+import com.minux.monitoring.core.designsystem.theme.BorderSides
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
+import com.minux.monitoring.core.designsystem.theme.OrangeVerticalGradient
 import com.minux.monitoring.core.designsystem.theme.TurquoiseRadialGradient
 import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
 import com.minux.monitoring.core.designsystem.theme.selectiveBorder
-import com.minux.monitoring.core.designsystem.theme.OrangeVerticalGradient
 import kotlinx.coroutines.launch
 
 @Composable
@@ -77,7 +78,9 @@ fun MNXDrawerHeader(
             .selectiveBorder(
                 width = 1.dp,
                 color = MaterialTheme.colorScheme.primary,
-                sides = listOf(BorderSide.Start())
+                sides = BorderSides(
+                    start = BorderSide.Start()
+                )
             )
             .padding(paddingValues = contentPadding),
         verticalArrangement = verticalArrangement,
@@ -91,27 +94,9 @@ fun MNXNavigationDrawerItem(
     modifier: Modifier = Modifier,
     text: String,
     selected: Boolean,
-    showTopBorderSide: Boolean = false,
-    showBottomBorderSide: Boolean = false,
+    borderSides: BorderSides,
     onClick: () -> Unit
 ) {
-    val borderSides = listOf(
-        BorderSide.Start(),
-        BorderSide.End()
-    ).toMutableList()
-
-    if (showTopBorderSide) {
-        borderSides.add(
-            BorderSide.Top()
-        )
-    }
-
-    if (showBottomBorderSide) {
-        borderSides.add(
-            BorderSide.Bottom()
-        )
-    }
-
     val itemBackgroundModifier = if (selected) {
         modifier
             .background(brush = OrangeVerticalGradient)
@@ -142,7 +127,6 @@ fun MNXNavigationDrawerItem(
                 fontWeight = FontWeight.Normal
             )
         },
-        shape = RectangleShape,
         colors = NavigationDrawerItemDefaults.colors(
             selectedTextColor = MaterialTheme.colorScheme.onSecondaryContainer,
             unselectedTextColor = MaterialTheme.colorScheme.onPrimary,
@@ -156,7 +140,7 @@ fun MNXNavigationDrawerItem(
 
 @Preview
 @Composable
-fun MNXNavigationDrawerPreview() {
+private fun MNXNavigationDrawerPreview() {
     MNXTheme {
         val drawerState = rememberDrawerState(
             initialValue = DrawerValue.Open
@@ -213,23 +197,29 @@ fun MNXNavigationDrawerPreview() {
                             }
 
                             items.forEachIndexed { index, item ->
-                                var showTopBorder = false
-                                var showBottomBorder = false
+                                var borderSides = BorderSides(
+                                    start = BorderSide.Start(),
+                                    end = BorderSide.End()
+                                )
 
                                 when {
                                     index - selectedIndex.intValue <= -1 -> {
-                                        showTopBorder = true
-                                        showBottomBorder = false
+                                        borderSides = borderSides.copy(
+                                            top = BorderSide.Top()
+                                        )
                                     }
 
                                     index == selectedIndex.intValue -> {
-                                        showTopBorder = true
-                                        showBottomBorder = true
+                                        borderSides = borderSides.copy(
+                                            top = BorderSide.Top(),
+                                            bottom = BorderSide.Bottom()
+                                        )
                                     }
 
                                     index - selectedIndex.intValue >= 1 -> {
-                                        showTopBorder = false
-                                        showBottomBorder = true
+                                        borderSides = borderSides.copy(
+                                            bottom = BorderSide.Bottom()
+                                        )
                                     }
                                 }
 
@@ -237,8 +227,7 @@ fun MNXNavigationDrawerPreview() {
                                     modifier = Modifier.fillMaxWidth(),
                                     text = item,
                                     selected = selectedItem.value == item,
-                                    showTopBorderSide = showTopBorder,
-                                    showBottomBorderSide = showBottomBorder,
+                                    borderSides = borderSides,
                                     onClick = {
                                         coroutineScope.launch {
                                             selectedItem.value = item
@@ -255,7 +244,7 @@ fun MNXNavigationDrawerPreview() {
                                     .selectiveBorder(
                                         width = 1.dp,
                                         color = MaterialTheme.colorScheme.primary,
-                                        sides = listOf(BorderSide.Start())
+                                        sides = BorderSides(start = BorderSide.Start())
                                     )
                             )
                         }

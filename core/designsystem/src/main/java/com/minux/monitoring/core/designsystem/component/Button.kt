@@ -84,7 +84,7 @@ fun MNXButton(
 
 @Preview
 @Composable
-fun MNXButtonPreview() {
+private fun MNXButtonPreview() {
     MNXTheme {
         Column(
             modifier = Modifier.padding(10.dp),

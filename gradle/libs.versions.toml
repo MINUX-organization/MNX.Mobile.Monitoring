@@ -18,6 +18,7 @@ androidxFragment = "1.6.2"
 androidxNavigation = "2.7.7"
 androidxNavigationSafeArgs = "2.7.7"
 androidxComposeBom = "2024.02.01"
+androidxComposeConstraintLayout = "1.0.1"
 androidxComposeCompiler = "1.5.10"
 androidxTestJUnit = "1.1.5"
 androidxTestEspressoCore = "3.5.1"
@@ -43,6 +44,7 @@ androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-compose-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "androidxComposeConstraintLayout" }
 androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestJUnit" }
 androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidxTestEspressoCore" }
 junit = { group = "junit", name = "junit", version.ref = "jUnit" }
@@ -58,7 +60,7 @@ android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", ver
 
 [bundles]
 android-ui = ["androidx-core-ktx", "androidx-appcompat", "android-material", "androidx-constraintlayout", "androidx-fragment-ktx"]
-android-compose-ui = ["androidx-compose-ui", "androidx-compose-ui-graphics", "androidx-compose-ui-tooling-preview", "androidx-compose-runtime", "androidx-compose-material3"]
+android-compose-ui = ["androidx-compose-ui", "androidx-compose-ui-graphics", "androidx-compose-ui-tooling-preview", "androidx-compose-runtime", "androidx-compose-material3", "androidx-compose-constraintlayout"]
 android-navigation-ui = ["androidx-navigation-fragment-ktx", "androidx-navigation-ui-ktx"]
 
 [plugins]

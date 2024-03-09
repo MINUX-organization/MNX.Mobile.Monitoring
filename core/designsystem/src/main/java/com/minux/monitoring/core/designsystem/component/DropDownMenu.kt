@@ -107,7 +107,7 @@ fun MNXDropDownMenu(
 
 @Preview
 @Composable
-fun MNXDropDownMenuPreview() {
+private fun MNXDropDownMenuPreview() {
     MNXTheme {
         val list = listOf("Alg 1", "Alg 2")
 

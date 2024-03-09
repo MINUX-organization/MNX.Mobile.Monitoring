@@ -99,7 +99,7 @@ fun MNXTextField(
 
 @Preview
 @Composable
-fun MNXTextFieldPreview() {
+private fun MNXTextFieldPreview() {
     MNXTheme {
         val text = remember {
             mutableStateOf("")
