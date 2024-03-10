@@ -15,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
@@ -34,14 +35,19 @@ fun MNXTextField(
     readOnly: Boolean = false,
     hintText: String = "",
     visualTransformation: VisualTransformation = VisualTransformation.None,
+    shape: Shape = RoundedCornerShape(4.dp),
     suffix: @Composable () -> Unit = {},
-    suffixPadding: Dp = 10.dp
+    suffixPadding: Dp = 10.dp,
+    contentPadding: PaddingValues = PaddingValues(
+        start = 10.dp,
+        top = 7.dp,
+        end = suffixPadding,
+        bottom = 7.dp
+    )
 ) {
     val interactionSource = remember {
         MutableInteractionSource()
     }
-
-    val shape = RoundedCornerShape(4.dp)
 
     val textStyle = TextStyle(
         color = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -53,7 +59,7 @@ fun MNXTextField(
     BasicTextField(
         modifier = modifier
             .border(
-                width = 2.dp,
+                width = 1.dp,
                 color = MaterialTheme.colorScheme.primary,
                 shape = shape
             ),
@@ -79,12 +85,7 @@ fun MNXTextField(
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent
                 ),
-                contentPadding = PaddingValues(
-                    start = 10.dp,
-                    top = 7.dp,
-                    end = suffixPadding,
-                    bottom = 7.dp
-                ),
+                contentPadding = contentPadding,
                 placeholder = {
                     Text(
                         text = hintText,
