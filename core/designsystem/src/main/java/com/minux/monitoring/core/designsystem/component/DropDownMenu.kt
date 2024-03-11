@@ -38,11 +38,11 @@ import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
 fun MNXDropDownMenu(
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(4.dp),
-    suffixPadding: Dp = 9.dp,
+    iconPadding: Dp = 10.dp,
     contentPadding: PaddingValues = PaddingValues(
         start = 10.dp,
         top = 7.dp,
-        end = suffixPadding,
+        end = 9.dp,
         bottom = 7.dp
     ),
     menuItems: List<String>,
@@ -84,13 +84,13 @@ fun MNXDropDownMenu(
                     modifier = Modifier
                         .graphicsLayer {
                             this.scaleY = scaleY.value
-                        },
+                        }
+                        .padding(start = iconPadding),
                     painter = painterResource(id = MNXIcons.DropDown),
                     tint = MaterialTheme.colorScheme.primary,
                     contentDescription = null
                 )
             },
-            suffixPadding = 9.dp,
             contentPadding = contentPadding
         )
 
@@ -143,9 +143,9 @@ private fun MNXDropDownMenuPreview() {
                 shape = RectangleShape,
                 contentPadding = PaddingValues(
                     start = 10.dp,
-                    top = 8.dp,
+                    top = 9.dp,
                     end = 9.dp,
-                    bottom = 8.dp
+                    bottom = 9.dp
                 ),
                 menuItems = list,
                 selectedItem = selectedText
