@@ -10,5 +10,6 @@ object MNXIcons {
     @DrawableRes val Minux = drawable.ic_minux
     @DrawableRes val MinuxHeader = drawable.ic_minux_header
     @DrawableRes val MinuxOutline = drawable.ic_minux_outline
+    @DrawableRes val Search = drawable.ic_search
     @DrawableRes val Wifi = drawable.ic_wifi
 }
