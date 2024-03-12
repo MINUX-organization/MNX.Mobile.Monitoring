@@ -1,7 +1,7 @@
-package com.minux.monitoring.di
+package com.minux.monitoring.core.data.di
 
 import android.content.Context
-import com.minux.monitoring.core.data.source.WorkerLocalDataSource
+import com.minux.monitoring.core.data.source.RigLocalDataSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,7 +14,7 @@ import javax.inject.Singleton
 object DataSourceModule {
     @Provides
     @Singleton
-    fun provideWorkerLocalDataSource(@ApplicationContext context: Context): WorkerLocalDataSource {
-        return WorkerLocalDataSource(context = context)
+    fun provideRigLocalDataSource(@ApplicationContext context: Context): RigLocalDataSource {
+        return RigLocalDataSource(context = context)
     }
 }

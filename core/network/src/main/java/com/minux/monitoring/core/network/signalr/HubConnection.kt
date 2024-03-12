@@ -1,23 +1,22 @@
-package com.minux.monitoring.core.network.api
+package com.minux.monitoring.core.network.signalr
 
 import com.microsoft.signalr.HubConnection
 import com.microsoft.signalr.HubConnectionState
-import com.microsoft.signalr.Subscription
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
-import kotlinx.coroutines.channels.ProducerScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.callbackFlow
-import java.lang.reflect.Proxy
-import java.lang.reflect.Type
+import kotlinx.coroutines.flow.flowOn
 
-inline fun <reified T> HubConnection.onReceive(
-    crossinline callback: ProducerScope<Result<T>>.(connection: HubConnection) -> Subscription
-) = callbackFlow<Result<T>> {
+internal inline fun <reified T> HubConnection.onReceive(method: String) = callbackFlow<Result<T>> {
     val compositeDisposable = CompositeDisposable()
 
-    val subscription = callback(this@onReceive)
+    val subscription = on(method, {
+        trySend(Result.success(it))
+    }, T::class.java)
 
     val connection = start()
     val disposable = connection.doOnError {
@@ -31,13 +30,13 @@ inline fun <reified T> HubConnection.onReceive(
         subscription.unsubscribe()
         compositeDisposable.dispose()
     }
-}
+}.buffer(onBufferOverflow = BufferOverflow.DROP_OLDEST).flowOn(Dispatchers.IO)
 
-fun HubConnection.onSend(hubMethodName: String, vararg data: Type) = callbackFlow<Result<Unit>> {
+internal fun <T> HubConnection.onSend(method: String, data: T) = callbackFlow<Result<Unit>> {
     val compositeDisposable = CompositeDisposable()
 
     fun tryInvoke(): Disposable {
-        return invoke(hubMethodName, data)
+        return invoke(method, data)
             .doOnComplete {
                 trySend(Result.success(Unit))
             }
@@ -72,4 +71,4 @@ fun HubConnection.onSend(hubMethodName: String, vararg data: Type) = callbackFlo
         stop()
         compositeDisposable.dispose()
     }
-}
+}.buffer(onBufferOverflow = BufferOverflow.DROP_OLDEST).flowOn(Dispatchers.IO)
