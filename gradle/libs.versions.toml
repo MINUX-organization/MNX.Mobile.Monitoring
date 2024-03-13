@@ -17,7 +17,7 @@ androidxConstraintLayout = "2.1.4"
 androidxFragment = "1.6.2"
 androidxNavigation = "2.7.7"
 androidxNavigationSafeArgs = "2.7.7"
-androidxComposeBom = "2024.02.01"
+androidxComposeBom = "2024.02.02"
 androidxComposeCompiler = "1.5.10"
 androidxTestJUnit = "1.1.5"
 androidxTestEspressoCore = "3.5.1"
@@ -66,6 +66,7 @@ android-navigation-ui = ["androidx-navigation-fragment-ktx", "androidx-navigatio
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin", version.ref = "androidxNavigationSafeArgs" }
