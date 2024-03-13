@@ -5,11 +5,11 @@ import com.microsoft.signalr.HubConnectionBuilder
 import com.microsoft.signalr.TransportEnum
 import io.reactivex.rxjava3.core.Single
 
-object MNXAsyncApiClient {
-    private const val baseUrl = "ws://something.com/api/"
+internal object MNXAsyncApiClient {
+    private const val BASE_URL = "ws://something.com/hubs/"
 
-    fun getApiClient(apiEndpoint: String): HubConnection {
-        return HubConnectionBuilder.create(baseUrl + apiEndpoint)
+    fun getApiClient(endpoint: String): HubConnection {
+        return HubConnectionBuilder.create(BASE_URL + endpoint)
             .withAccessTokenProvider(Single.defer { Single.just("") })
             .withTransport(TransportEnum.WEBSOCKETS)
             .build()

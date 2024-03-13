@@ -17,7 +17,7 @@ androidxConstraintLayout = "2.1.4"
 androidxFragment = "1.6.2"
 androidxNavigation = "2.7.7"
 androidxNavigationSafeArgs = "2.7.7"
-androidxComposeBom = "2024.02.01"
+androidxComposeBom = "2024.02.02"
 androidxComposeConstraintLayout = "1.0.1"
 androidxComposeCompiler = "1.5.10"
 androidxTestJUnit = "1.1.5"
@@ -25,6 +25,7 @@ androidxTestEspressoCore = "3.5.1"
 jUnit = "4.13.2"
 hilt = "2.50"
 okhttp = "4.12.0"
+retrofit = "2.9.0"
 signalr = "8.0.2"
 timber = "5.0.1"
 
@@ -51,6 +52,8 @@ junit = { group = "junit", name = "junit", version.ref = "jUnit" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
+retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+retrofit-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
 signalr = { group = "com.microsoft.signalr", name = "signalr", version.ref = "signalr" }
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 
@@ -67,6 +70,7 @@ android-navigation-ui = ["androidx-navigation-fragment-ktx", "androidx-navigatio
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin", version.ref = "androidxNavigationSafeArgs" }

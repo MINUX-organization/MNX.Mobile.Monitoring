@@ -1,4 +1,4 @@
-package com.minux.monitoring.core.network
+package com.minux.monitoring.core.network.service
 
 import android.content.Context
 import android.net.ConnectivityManager
