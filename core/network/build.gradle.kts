@@ -23,5 +23,10 @@ android {
 }
 
 dependencies {
+    implementation(libs.okhttp.logging)
+    implementation(libs.retrofit.core)
+    implementation(libs.retrofit.converter.gson)
     implementation(libs.signalr)
+
+    testImplementation(libs.junit)
 }
