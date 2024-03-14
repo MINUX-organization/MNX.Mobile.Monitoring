@@ -102,6 +102,7 @@ fun MNXCardGroup(
 @Composable
 fun MNXExpandableCard(
     modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.background,
     borderWidth: Dp? = null,
     borderSides: BorderSides? = null,
     containerPadding: PaddingValues = PaddingValues(),
@@ -115,7 +116,7 @@ fun MNXExpandableCard(
     expandableContent: @Composable ColumnScope.() -> Unit
 ) {
     val isExpandedState = remember {
-        mutableStateOf(false)
+        mutableStateOf(true)
     }
 
     val scaleY = remember {
@@ -154,7 +155,8 @@ fun MNXExpandableCard(
             .animateContentSize()
             .clickable {
                 isExpandedState.value = !isExpandedState.value
-            }
+            },
+        color = color
     ) {
         Column(modifier = Modifier.padding(paddingValues = containerPadding)) {
             MNXCard(modifier = Modifier.fillMaxWidth()) {

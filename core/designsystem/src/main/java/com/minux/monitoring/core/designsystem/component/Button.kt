@@ -3,6 +3,7 @@ package com.minux.monitoring.core.designsystem.component
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -52,8 +53,9 @@ fun MNXRoundedButton(
 fun MNXButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
-    text: String,
-    color: Color = MaterialTheme.colorScheme.primary
+    color: Color = MaterialTheme.colorScheme.primary,
+    contentPadding: PaddingValues = PaddingValues(),
+    content: @Composable RowScope.() -> Unit
 ) {
     CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
         val shape = RectangleShape
@@ -70,15 +72,10 @@ fun MNXButton(
             shape = shape,
             colors = ButtonDefaults.buttonColors(
                 containerColor = color
-            )
-        ) {
-            Text(
-                text = text,
-                fontSize = 20.sp,
-                fontFamily = grillSansMtFamily,
-                fontWeight = FontWeight.Normal
-            )
-        }
+            ),
+            contentPadding = contentPadding,
+            content = content
+        )
     }
 }
 
@@ -97,14 +94,16 @@ private fun MNXButtonPreview() {
             MNXButton(
                 modifier = Modifier.padding(top = 4.dp),
                 onClick = {},
-                text = "Text"
-            )
+            ) {
+                Text(text = "Text")
+            }
             MNXButton(
                 modifier = Modifier.padding(top = 8.dp),
                 onClick = {},
-                text = "Text",
                 color = MaterialTheme.colorScheme.secondary
-            )
+            ) {
+                Text(text = "Text")
+            }
         }
     }
 }
