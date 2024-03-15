@@ -5,6 +5,7 @@ import com.minux.monitoring.core.designsystem.R.drawable
 
 object MNXIcons {
     @DrawableRes val DropDown = drawable.ic_drop_down
+    @DrawableRes val Filters = drawable.ic_filters
     @DrawableRes val Logo = drawable.ic_logo
     @DrawableRes val Menu = drawable.ic_menu
     @DrawableRes val Minux = drawable.ic_minux
