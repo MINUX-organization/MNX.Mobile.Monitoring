@@ -29,5 +29,9 @@ gradlePlugin {
             id = "minux.monitoring.android.feature"
             implementationClass = "AndroidFeatureConventionPlugin"
         }
+        register("jvmLibrary") {
+            id = "minux.monitoring.jvm.library"
+            implementationClass = "JvmLibraryConventionPlugin"
+        }
     }
 }

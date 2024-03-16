@@ -21,16 +21,7 @@ internal fun Project.configureKotlinAndroid(
             sourceCompatibility = JavaVersion.VERSION_17
             targetCompatibility = JavaVersion.VERSION_17
         }
-
-        kotlinOptions {
-            val warningsAsErrors: String? by project
-            allWarningsAsErrors = warningsAsErrors.toBoolean()
-
-            jvmTarget = JavaVersion.VERSION_17.toString()
-        }
     }
-}
 
-fun CommonExtension<*, *, *, *, *, *>.kotlinOptions(block: KotlinJvmOptions.() -> Unit) {
-    (this as ExtensionAware).extensions.configure("kotlinOptions", block)
+    configureKotlin()
 }

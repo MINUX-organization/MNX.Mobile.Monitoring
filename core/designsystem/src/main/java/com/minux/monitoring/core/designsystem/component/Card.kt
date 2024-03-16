@@ -51,6 +51,7 @@ import com.minux.monitoring.core.designsystem.theme.selectiveBorder
 @Composable
 fun MNXRoundedCard(
     modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.primaryContainer,
     content: @Composable () -> Unit
 ) {
     Surface(
@@ -60,7 +61,7 @@ fun MNXRoundedCard(
             width = 1.5.dp,
             color = MaterialTheme.colorScheme.primary
         ),
-        color = MaterialTheme.colorScheme.primaryContainer,
+        color = color,
         content = content
     )
 }
@@ -68,13 +69,14 @@ fun MNXRoundedCard(
 @Composable
 fun MNXCard(
     modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.primaryContainer,
     border: BorderStroke? = null,
     content: @Composable () -> Unit
 ) {
     Surface(
         modifier = modifier,
         shape = RectangleShape,
-        color = MaterialTheme.colorScheme.primaryContainer,
+        color = color,
         border = border,
         content = content
     )
@@ -143,12 +145,14 @@ fun MNXExpandableCard(
                             color = MaterialTheme.colorScheme.primary
                         )
                     }
+
                     borderSides != null -> {
                         Modifier.selectiveBorder(
                             sides = borderSides,
                             color = MaterialTheme.colorScheme.primary
                         )
                     }
+
                     else -> Modifier
                 }
             )
