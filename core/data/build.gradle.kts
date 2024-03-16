@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.minux.monitoring.android.library)
+    alias(libs.plugins.minux.monitoring.android.hilt)
 }
 
 android {
@@ -22,6 +23,8 @@ android {
 }
 
 dependencies {
+    api(project(":core:network"))
+
     api(libs.timber)
     api(libs.kotlinx.coroutines.android)
 

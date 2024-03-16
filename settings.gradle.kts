@@ -18,5 +18,7 @@ rootProject.name = "MinuxMonitoring"
 include(":app")
 include(":feature:sign")
 include(":core:data")
-include(":core:navigation")
+include(":core:common")
 include(":core:designsystem")
+include(":core:network")
+include(":core:domain")

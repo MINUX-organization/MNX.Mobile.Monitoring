@@ -24,4 +24,5 @@ android {
 
 dependencies {
     api(libs.bundles.android.compose.ui)
+    debugApi(libs.androidx.compose.ui.tooling)
 }

@@ -8,7 +8,7 @@ import org.gradle.kotlin.dsl.provideDelegate
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 
 internal fun Project.configureKotlinAndroid(
-    commonExtension: CommonExtension<*, *, *, *, *>
+    commonExtension: CommonExtension<*, *, *, *, *, *>
 ) {
     commonExtension.apply {
         compileSdk = libs.findVersion("projectCompileSdk").getVersion()
