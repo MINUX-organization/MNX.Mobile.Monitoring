@@ -69,3 +69,4 @@ minux-monitoring-android-library = { id = "minux.monitoring.android.library", ve
 minux-monitoring-android-library-compose = { id = "minux.monitoring.android.library.compose", version = "unspecified" }
 minux-monitoring-android-hilt = { id = "minux.monitoring.android.hilt", version = "unspecified" }
 minux-monitoring-android-feature = { id = "minux.monitoring.android.feature", version = "unspecified" }
+minux-monitoring-jvm-library = { id = "minux.monitoring.jvm.library", version = "unspecified" }
