@@ -5,8 +5,10 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -74,7 +76,9 @@ fun MNXDropDownMenu(
         }
     ) {
         MNXTextField(
-            modifier = Modifier.menuAnchor(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .menuAnchor(),
             value = selectedItem.value,
             onValueChange = { selectedItem.value = it },
             readOnly = true,
@@ -94,7 +98,8 @@ fun MNXDropDownMenu(
             contentPadding = contentPadding
         )
 
-        ExposedDropdownMenu(
+        DropdownMenu(
+            modifier = Modifier.exposedDropdownSize(),
             expanded = isExpandedState.value,
             onDismissRequest = {
                 isExpandedState.value = false
