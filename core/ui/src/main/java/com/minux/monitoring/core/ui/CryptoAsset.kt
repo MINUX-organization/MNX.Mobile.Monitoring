@@ -21,9 +21,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -239,7 +236,7 @@ fun CryptoAssetFilters(
 @Composable
 fun <T> CryptoAssetGrid(
     headers: List<String>,
-    cryptoAssets: MutableState<List<T>>,
+    cryptoAssets: List<T>,
     gridItems: LazyGridScope.(item: T, itemPadding: PaddingValues) -> Unit
 ) {
     MNXCard(
@@ -292,10 +289,10 @@ private fun CryptoAssetGridHeader(headers: List<String>) {
 @Composable
 private fun <T> CryptoAssetGridItems(
     columnsCount: Int,
-    cryptoAssets: State<List<T>>,
+    cryptoAssets: List<T>,
     gridItems: LazyGridScope.(item: T, itemPadding: PaddingValues) -> Unit
 ) {
-    val contentPadding = if (cryptoAssets.value.isNotEmpty()) {
+    val contentPadding = if (cryptoAssets.isNotEmpty()) {
         PaddingValues(
             horizontal = 10.dp,
             vertical = 8.dp
@@ -313,7 +310,7 @@ private fun <T> CryptoAssetGridItems(
     ) {
         val itemPadding = PaddingValues(vertical = 6.dp)
 
-        cryptoAssets.value.forEach {
+        cryptoAssets.forEach {
             gridItems(it, itemPadding)
         }
     }
@@ -336,15 +333,12 @@ private fun CryptoAssetPreview() {
                 content = {}
             )
 
-            val cryptoAssetsState = remember {
-                mutableStateOf(
-                    emptyList<Triple<String, String, String>>()
-                )
-            }
+            val cryptoAssets =
+                emptyList<Triple<String, String, String>>()
 
             CryptoAssetGrid(
                 headers = listOf("Sample 1", "Sample 2"),
-                cryptoAssets = cryptoAssetsState,
+                cryptoAssets = cryptoAssets,
                 gridItems = { _, _  -> }
             )
         }
