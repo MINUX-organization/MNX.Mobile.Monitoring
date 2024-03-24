@@ -23,6 +23,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:domain"))
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)

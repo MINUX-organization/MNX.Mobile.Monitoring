@@ -1,10 +1,16 @@
 package com.minux.monitoring.feature.monitoring
 
+import com.minux.monitoring.core.domain.model.metrics.CoinStatisticsDetail
+import com.minux.monitoring.core.domain.model.metrics.Shares
+import com.minux.monitoring.core.domain.model.metrics.ValueUnit
+import com.minux.monitoring.core.domain.model.rig.RigDynamicData
+
 data class MonitoringState(
-    val totalPower: String = "N/A",
-    val totalRigs: String = "N/A",
-    val sharesAccepted: String = "N/A",
-    val sharesRejected: String = "N/A",
-    val coinsStatistics: List<CoinStatistics>? = null,
-    val rigs: List<String>? = null
+    val totalPower: ValueUnit? = null,
+    val totalRigs: Int? = null,
+    val totalShares: Shares? = null,
+    val coinsStatistics: List<CoinStatisticsDetail>? = null,
+    val rigs: List<RigDynamicData?>? = null,
+    val rigNames: List<String?>? = null,
+    val rigActiveStates: List<Boolean?>? = null
 )

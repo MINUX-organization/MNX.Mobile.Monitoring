@@ -58,6 +58,11 @@ import com.minux.monitoring.core.designsystem.theme.BorderSides
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
 import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
 import com.minux.monitoring.core.designsystem.theme.selectiveBorder
+import com.minux.monitoring.core.domain.model.metrics.CoinStatisticsDetail
+import com.minux.monitoring.core.domain.model.metrics.Shares
+import com.minux.monitoring.core.domain.model.metrics.ValueUnit
+import com.minux.monitoring.core.domain.model.rig.FlightSheet
+import com.minux.monitoring.core.domain.model.rig.RigDynamicData
 
 val commonTextStyle = TextStyle(
     fontSize = 16.sp,
@@ -66,9 +71,7 @@ val commonTextStyle = TextStyle(
 )
 
 @Composable
-internal fun MonitoringScreen(
-    monitoringState: MonitoringState
-) {
+internal fun MonitoringScreen(monitoringState: MonitoringState) {
     Column(modifier = Modifier.padding(12.dp)) {
         val textStyle = commonTextStyle.copy(
             color = MaterialTheme.colorScheme.onPrimary
@@ -76,9 +79,8 @@ internal fun MonitoringScreen(
 
         TotalValues(
             textStyle = textStyle,
-            totalPower = 9400,
-            totalPowerUnit = "W",
-            totalRigs = 101
+            totalPower = monitoringState.totalPower,
+            totalRigs = monitoringState.totalRigs
         )
 
         TotalSharesCard(
@@ -86,8 +88,8 @@ internal fun MonitoringScreen(
                 .fillMaxWidth()
                 .padding(top = 12.dp),
             textStyle = textStyle,
-            accepted = monitoringState.sharesAccepted,
-            rejected = monitoringState.sharesRejected
+            accepted = monitoringState.totalShares?.accepted,
+            rejected = monitoringState.totalShares?.rejected
         )
 
         CoinsStatisticsGrid(
@@ -99,12 +101,17 @@ internal fun MonitoringScreen(
             coinsStatistics = monitoringState.coinsStatistics
         )
 
-        if (!monitoringState.rigs.isNullOrEmpty()) {
+        if (!monitoringState.rigs.isNullOrEmpty() &&
+            !monitoringState.rigNames.isNullOrEmpty() &&
+            !monitoringState.rigActiveStates.isNullOrEmpty()
+        ) {
             RigsLazyColumnWithFilters(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 20.dp),
-                rigs = monitoringState.rigs
+                rigs = monitoringState.rigs,
+                rigNames = monitoringState.rigNames,
+                rigActiveStates = monitoringState.rigActiveStates
             )
         } else {
             RigsEmptyContent(
@@ -118,21 +125,12 @@ internal fun MonitoringScreen(
     }
 }
 
-data class CoinStatistics(
-    val coin: String,
-    val algorithm: String,
-    val hashRate: String,
-    val accepted: Int,
-    val rejected: Int
-)
-
 @Composable
 private fun TotalValues(
     modifier: Modifier = Modifier,
     textStyle: TextStyle,
-    totalPower: Int,
-    totalPowerUnit: String,
-    totalRigs: Int
+    totalPower: ValueUnit?,
+    totalRigs: Int?
 ) {
     Row(modifier = modifier) {
         TotalValueCard(
@@ -147,10 +145,10 @@ private fun TotalValues(
 
             Text(
                 text = buildAnnotatedString {
-                    append(text = totalPower.toString())
+                    append(text = totalPower?.value?.toString() ?: "N/A")
                     append(text = " ")
                     withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                        append(text = totalPowerUnit)
+                        append(text = totalPower?.measureUnit ?: String())
                     }
                 },
                 style = textStyle
@@ -168,7 +166,7 @@ private fun TotalValues(
             )
 
             Text(
-                text = totalRigs.toString(),
+                text = totalRigs?.toString() ?: "N/A",
                 style = textStyle
             )
         }
@@ -195,8 +193,8 @@ private fun TotalValueCard(
 private fun TotalSharesCard(
     modifier: Modifier = Modifier,
     textStyle: TextStyle,
-    accepted: String,
-    rejected: String
+    accepted: Int?,
+    rejected: Int?
 ) {
     MNXCardGroup(modifier = modifier) {
         Column {
@@ -219,7 +217,7 @@ private fun TotalSharesCard(
                         .padding(end = 3.dp),
                     contentPadding = PaddingValues(8.dp),
                     title = "Accepted",
-                    value = accepted,
+                    value = accepted?.toString() ?: "N/A",
                     valueTextColor = MaterialTheme.colorScheme.tertiary
                 )
 
@@ -229,7 +227,7 @@ private fun TotalSharesCard(
                         .padding(start = 3.dp),
                     contentPadding = PaddingValues(8.dp),
                     title = "Rejected",
-                    value = rejected,
+                    value = rejected?.toString() ?: "N/A",
                     valueTextColor = MaterialTheme.colorScheme.secondary
                 )
             }
@@ -272,7 +270,7 @@ private fun TotalSharesValueCard(
 private fun CoinsStatisticsGrid(
     modifier: Modifier = Modifier,
     headers: List<String>,
-    coinsStatistics: List<CoinStatistics>?
+    coinsStatistics: List<CoinStatisticsDetail>?
 ) {
     MNXCardGroup(modifier = modifier) {
         Column {
@@ -348,7 +346,7 @@ private fun CoinStatisticsGridItems(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
     columnsCount: Int,
-    coinsStatistics: List<CoinStatistics>
+    coinsStatistics: List<CoinStatisticsDetail>
 ) {
     LazyVerticalGrid(columns = GridCells.Fixed(columnsCount)) {
         coinsStatistics.forEach { coinStatistics ->
@@ -377,16 +375,14 @@ private fun CoinStatisticsGridItems(
             }
 
             item {
-                val (hashRateValue, hashRateUnit) = coinStatistics.hashRate.split(' ')
-
                 MNXCard(modifier = modifier) {
                     Text(
                         modifier = Modifier.padding(paddingValues = contentPadding),
                         text = buildAnnotatedString {
-                            append(text = hashRateValue)
+                            append(text = coinStatistics.hashRate.value.toString())
                             append(text = " ")
                             withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                                append(text = hashRateUnit)
+                                append(text = coinStatistics.hashRate.measureUnit)
                             }
                         },
                         textAlign = TextAlign.Center,
@@ -400,7 +396,7 @@ private fun CoinStatisticsGridItems(
                 MNXCard(modifier = modifier) {
                     Text(
                         modifier = Modifier.padding(paddingValues = contentPadding),
-                        text = coinStatistics.accepted.toString(),
+                        text = coinStatistics.shares.accepted.toString(),
                         textAlign = TextAlign.Center,
                         color = MaterialTheme.colorScheme.tertiary,
                         style = commonTextStyle
@@ -412,7 +408,7 @@ private fun CoinStatisticsGridItems(
                 MNXCard(modifier = modifier) {
                     Text(
                         modifier = Modifier.padding(paddingValues = contentPadding),
-                        text = coinStatistics.rejected.toString(),
+                        text = coinStatistics.shares.rejected.toString(),
                         textAlign = TextAlign.Center,
                         color = MaterialTheme.colorScheme.secondary,
                         style = commonTextStyle
@@ -427,7 +423,7 @@ private fun CoinStatisticsGridItems(
 private fun RigsEmptyContent(
     modifier: Modifier = Modifier,
     textStyle: TextStyle,
-    rigs: List<String>? = null
+    rigs: List<RigDynamicData?>? = null
 ) {
     Box(
         modifier = modifier
@@ -466,7 +462,9 @@ private fun RigsEmptyContent(
 @Composable
 private fun RigsLazyColumnWithFilters(
     modifier: Modifier = Modifier,
-    rigs: List<String>
+    rigs: List<RigDynamicData?>,
+    rigNames: List<String?>,
+    rigActiveStates: List<Boolean?>
 ) {
     Row(
         modifier = modifier,
@@ -514,12 +512,16 @@ private fun RigsLazyColumnWithFilters(
 
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
         items(rigs) {
-            RigStateCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 10.dp),
-                rigName = it
-            )
+            if (it != null) {
+                RigStateCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp),
+                    rigDynamicData = it,
+                    rigName = rigNames[it.index - 1]!!,
+                    rigActiveState = rigActiveStates[it.index - 1]!!
+                )
+            }
         }
     }
 }
@@ -527,7 +529,9 @@ private fun RigsLazyColumnWithFilters(
 @Composable
 private fun RigStateCard(
     modifier: Modifier = Modifier,
-    rigName: String
+    rigDynamicData: RigDynamicData,
+    rigName: String,
+    rigActiveState: Boolean
 ) {
     MNXExpandableCard(
         modifier = modifier,
@@ -559,68 +563,80 @@ private fun RigStateCard(
                         width = Dimension.fillToConstraints
                     }
             ) {
-                RigStateCardContent(rigName = rigName)
+                RigStateCardContent(
+                    index = rigDynamicData.index,
+                    name = rigName,
+                    isOnline = rigActiveState,
+                    temperature = rigDynamicData.averageTemperature,
+                    fanSpeed = rigDynamicData.fanSpeed,
+                    power = rigDynamicData.power,
+                    connectionSpeed = rigDynamicData.internetSpeed
+                )
             }
         }
     ) {
         RigStateCardExpandableContent(
             headers = listOf("Coin", "Hashrate", "Accepted", "Rejected"),
-            rigCoinsStatistics = listOf(
-                CoinStatistics(
-                    coin = "ETC",
-                    algorithm = "awda",
-                    hashRate = "153 Gh/s",
-                    accepted = 5554,
-                    rejected = 54
-                )
-            )
+            rigFlightSheet = rigDynamicData.flightSheetInfo,
+            miningUpTime = rigDynamicData.miningUpTime,
+            bootedUpTime = rigDynamicData.bootedUpTime
         )
     }
 }
 
 @Composable
-private fun RigStateCardContent(rigName: String) {
+private fun RigStateCardContent(
+    index: Int,
+    name: String,
+    isOnline: Boolean,
+    temperature: Int,
+    fanSpeed: Int,
+    power: ValueUnit,
+    connectionSpeed: ValueUnit,
+) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
-            text = "213",
+            text = index.toString(),
             color = MaterialTheme.colorScheme.onPrimary,
             style = commonTextStyle
         )
 
         Text(
             modifier = Modifier.padding(start = 12.dp),
-            text = rigName,
+            text = name,
             color = MaterialTheme.colorScheme.onPrimary,
             style = commonTextStyle
         )
 
-        RigIsActiveIndicator(
+        val indicatorColor = if (isOnline) {
+            MaterialTheme.colorScheme.tertiary
+        } else {
+            MaterialTheme.colorScheme.secondary
+        }
+
+        RigIsOnlineIndicator(
             modifier = Modifier
                 .size(16.dp)
                 .offset(x = 8.dp),
-            color = MaterialTheme.colorScheme.tertiary
+            color = indicatorColor
         )
     }
 
     RigParameters(
         modifier = Modifier
             .padding(
-                start = 35.dp,
+                start = 20.dp,
                 top = 8.dp
             ),
-        temperature = 81,
-        temperatureUnit = "°C",
-        fanSpeed = 80,
-        fanSpeedUnit = "%",
-        power = 324,
-        powerUnit = "W",
-        connectionSpeed = 123,
-        connectionSpeedUnit = "Mb/s"
+        temperature = temperature,
+        fanSpeed = fanSpeed,
+        power = power,
+        connectionSpeed = connectionSpeed,
     )
 }
 
 @Composable
-private fun RigIsActiveIndicator(
+private fun RigIsOnlineIndicator(
     modifier: Modifier = Modifier,
     color: Color
 ) {
@@ -633,13 +649,9 @@ private fun RigIsActiveIndicator(
 private fun RigParameters(
     modifier: Modifier = Modifier,
     temperature: Int,
-    temperatureUnit: String,
     fanSpeed: Int,
-    fanSpeedUnit: String,
-    power: Int,
-    powerUnit: String,
-    connectionSpeed: Int,
-    connectionSpeedUnit: String
+    power: ValueUnit,
+    connectionSpeed: ValueUnit,
 ) {
     Row(modifier = modifier) {
         RigParameter(
@@ -650,29 +662,31 @@ private fun RigParameters(
                     append(temperature.toString())
                 }
                 append(" ")
-                append(temperatureUnit)
+                append("°C")
             }
         )
         RigParameter(
             modifier = Modifier.padding(end = 16.dp),
             name = "FAN",
-            value = buildAnnotatedString { append("$fanSpeed $fanSpeedUnit") }
+            value = buildAnnotatedString { append("$fanSpeed %") }
         )
         RigParameter(
             modifier = Modifier.padding(end = 16.dp),
             name = "PWR",
             value = buildAnnotatedString {
-                append(power.toString())
+                append(power.value.toString())
                 append(" ")
                 withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                    append(powerUnit)
+                    append(power.measureUnit)
                 }
             }
         )
         RigParameter(
             name = "SIGNAL",
             icon = painterResource(id = MNXIcons.Wifi),
-            value = buildAnnotatedString { append("$connectionSpeed $connectionSpeedUnit") }
+            value = buildAnnotatedString {
+                append("${connectionSpeed.value} ${connectionSpeed.measureUnit}")
+            }
         )
     }
 }
@@ -723,7 +737,9 @@ private fun RigParameter(
 @Composable
 private fun RigStateCardExpandableContent(
     headers: List<String>,
-    rigCoinsStatistics: List<CoinStatistics>
+    rigFlightSheet: List<FlightSheet>,
+    miningUpTime: String,
+    bootedUpTime: String
 ) {
     GridHeader(
         modifier = Modifier
@@ -745,7 +761,7 @@ private fun RigStateCardExpandableContent(
                 end = 12.dp
             ),
         columnsCount = headers.count(),
-        rigCoinsStatistics = rigCoinsStatistics
+        rigFlightSheet = rigFlightSheet
     )
 
     RigStatisticsUpTime(
@@ -755,7 +771,7 @@ private fun RigStateCardExpandableContent(
                 horizontal = 6.dp,
                 vertical = 14.dp
             ),
-        upTimes = listOf("mining up time,01:00:00", "booted up time,01:00:00")
+        upTimes = listOf("mining up time,$miningUpTime", "booted up time,$bootedUpTime")
     )
 
     RigControls(modifier = Modifier.padding(horizontal = 16.dp))
@@ -765,13 +781,13 @@ private fun RigStateCardExpandableContent(
 private fun RigStatisticsGridItems(
     modifier: Modifier = Modifier,
     columnsCount: Int,
-    rigCoinsStatistics: List<CoinStatistics>
+    rigFlightSheet: List<FlightSheet>
 ) {
     LazyVerticalGrid(
         modifier = modifier,
         columns = GridCells.Fixed(columnsCount)
     ) {
-        rigCoinsStatistics.forEach {
+        rigFlightSheet.forEach {
             item {
                 Text(
                     text = it.coin,
@@ -783,10 +799,10 @@ private fun RigStatisticsGridItems(
             item {
                 Text(
                     text = buildAnnotatedString {
-                        append(it.hashRate.split(' ').first())
+                        append(it.hashRate?.value.toString())
                         append(" ")
                         withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                            append(it.hashRate.split(' ')[1])
+                            append(it.hashRate?.measureUnit)
                         }
                     },
                     textAlign = TextAlign.Center,
@@ -796,7 +812,7 @@ private fun RigStatisticsGridItems(
 
             item {
                 Text(
-                    text = it.accepted.toString(),
+                    text = it.shares?.accepted.toString(),
                     color = MaterialTheme.colorScheme.tertiary,
                     textAlign = TextAlign.Center,
                     style = commonTextStyle
@@ -805,7 +821,7 @@ private fun RigStatisticsGridItems(
 
             item {
                 Text(
-                    text = it.rejected.toString(),
+                    text = it.shares?.rejected.toString(),
                     color = MaterialTheme.colorScheme.secondary,
                     textAlign = TextAlign.Center,
                     style = commonTextStyle
@@ -919,25 +935,79 @@ private fun RigControlButton(
 private fun MonitoringScreenPreview() {
     MNXTheme {
         Surface(color = MaterialTheme.colorScheme.background) {
+            val rigDynamicData = RigDynamicData(
+                id = "This is id!",
+                index = 1,
+                averageTemperature = 81,
+                fanSpeed = 80,
+                power = ValueUnit(
+                    value = 324,
+                    measureUnit = "W"
+                ),
+                internetSpeed = ValueUnit(
+                    value = 123,
+                    measureUnit = "Mb\\s"
+                ),
+                miningUpTime = "01:00:00",
+                bootedUpTime = "01:00:00",
+                flightSheetInfo = listOf(
+                    FlightSheet(
+                        name = "This is flightSheet!",
+                        coin = "ETC",
+                        miner = "Miner",
+                        hashRate = ValueUnit(
+                            value = 153,
+                            measureUnit = "Gh\\s",
+                        ),
+                        shares = Shares(
+                            accepted = 5554,
+                            rejected = 54
+                        )
+                    )
+                )
+            )
+
             MonitoringScreen(
                 monitoringState = MonitoringState(
+                    totalPower = ValueUnit(
+                        value = 570,
+                        measureUnit = "W"
+                    ),
                     coinsStatistics = listOf(
-                        CoinStatistics(
+                        CoinStatisticsDetail(
                             coin = "Raven",
                             algorithm = "Kawpow",
-                            hashRate = "150 Mh\\s",
-                            accepted = 5000,
-                            rejected = 5000
+                            hashRate = ValueUnit(
+                                value = 150,
+                                measureUnit = "Mh\\s"
+                            ),
+                            shares = Shares(
+                                accepted = 6000,
+                                rejected = 5000
+                            )
                         ),
-                        CoinStatistics(
+                        CoinStatisticsDetail(
                             coin = "ETC",
                             algorithm = "Equihash",
-                            hashRate = "70 Mh\\s",
-                            accepted = 24000,
-                            rejected = 3400
+                            hashRate = ValueUnit(
+                                value = 70,
+                                measureUnit = "Mh\\s"
+                            ),
+                            shares = Shares(
+                                accepted = 24000,
+                                rejected = 3400
+                            )
                         )
                     ),
-                    rigs = emptyList()
+                    rigs = listOf(
+                        null,
+                        rigDynamicData.copy(index = 2),
+                        null,
+                        null,
+                        rigDynamicData.copy(index = 5)
+                    ),
+                    rigNames = listOf(null, "SomeRig", null, null, "Rig"),
+                    rigActiveStates = listOf(null, true, null, null, false)
                 )
             )
         }
