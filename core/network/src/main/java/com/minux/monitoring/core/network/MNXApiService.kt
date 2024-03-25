@@ -10,18 +10,20 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface MNXApiService {
-    @GET("/rig/{id}/gpu")
+    @GET("/rigs/{id}/gpu")
     fun getRigGpusInformation(@Path("id") rigId: String): Flow<Result<List<GpuDto>>>
 
-    @GET("/rig/{id}/cpu")
+    @GET("/rigs/{id}/cpu")
     fun getRigCpusInformation(@Path("id") rigId: String): Flow<Result<List<CpuDto>>>
 
-    @GET("/rig/{id}/motherboard")
+    @GET("/rigs/{id}/motherboard")
     fun getRigMotherboardInformation(@Path("id") rigId: String): Flow<Result<MotherboardDto>>
 
-    @GET("/rig/{id}/hdd")
-    fun getRigHddsInformation(@Path("id") rigId: String): Flow<Result<List<HddDto>>>
+    @GET("/rigs/{id}/hdd")
+    fun getRigHardDrivesInformation(@Path("id") rigId: String): Flow<Result<List<HddDto>>>
 
-    @GET("/rig/{id}/internet")
-    fun getRigInternetConnectionInformation(@Path("id") rigId: String): Flow<Result<InternetConnectionDto>>
+    @GET("/rigs/{id}/internet")
+    fun getRigInternetConnectionInformation(
+        @Path("id") rigId: String
+    ): Flow<Result<InternetConnectionDto>>
 }

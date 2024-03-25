@@ -2,24 +2,24 @@ package com.minux.monitoring.core.network.model.monitoring
 
 import com.minux.monitoring.core.network.model.monitoring.common.FlightSheetDto
 
-sealed class RigStateOneOf<T>(val typeData: T) {
-    data object Name : RigStateOneOf<String>(String())
+sealed interface RigStateOneOf<T> {
+    data object Name : RigStateOneOf<String>
 
-    data object GpuState : RigStateOneOf<Array<String>>(emptyArray())
+    data object GpuState : RigStateOneOf<Array<String>>
 
-    data object ActiveState : RigStateOneOf<String>(String())
+    data object ActiveState : RigStateOneOf<Boolean>
 
-    data object OnlineState : RigStateOneOf<Boolean>(true)
+    data object OnlineState : RigStateOneOf<String>
 
-    data object LocalIp : RigStateOneOf<Int>(0)
+    data object LocalIp : RigStateOneOf<Int>
 
-    data object MinuxVersion : RigStateOneOf<String>(String())
+    data object MinuxVersion : RigStateOneOf<String>
 
-    data object NvidiaCount : RigStateOneOf<Int>(0)
+    data object NvidiaCount : RigStateOneOf<Int>
 
-    data object AmdCount : RigStateOneOf<Int>(0)
+    data object AmdCount : RigStateOneOf<Int>
 
-    data object IntelCount : RigStateOneOf<Int>(0)
+    data object IntelCount : RigStateOneOf<Int>
 
-    data object FlightSheet : RigStateOneOf<Array<FlightSheetDto>>(emptyArray())
+    data object FlightSheet : RigStateOneOf<Array<FlightSheetDto>>
 }

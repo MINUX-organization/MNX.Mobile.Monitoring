@@ -1,8 +1,5 @@
 package com.minux.monitoring.core.network.model.monitoring.hardware.gpu
 
-import com.minux.monitoring.core.network.model.monitoring.hardware.gpu.GpuInformationDto
-import com.minux.monitoring.core.network.model.monitoring.hardware.gpu.GpuClocksDto
-
 data class GpuDto(
     val index: Int,
     val bus: String,

@@ -1,9 +1,9 @@
-package com.minux.monitoring.core.network.model.monitoring.devices
+package com.minux.monitoring.core.network.model.monitoring.device
 
 import com.minux.monitoring.core.network.model.monitoring.common.CoinStatisticsDto
 import com.minux.monitoring.core.network.model.monitoring.common.ValueUnitDto
 
-data class DevicesDynamicDataDto(
+data class DeviceDynamicDataDto(
     val id: String,
     val index: Int,
     val isActive: Boolean,
@@ -16,7 +16,7 @@ data class DevicesDynamicDataDto(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as DevicesDynamicDataDto
+        other as DeviceDynamicDataDto
 
         return coins.contentEquals(other.coins)
     }
