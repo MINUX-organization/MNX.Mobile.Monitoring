@@ -28,7 +28,10 @@ class MonitoringFragment : Fragment() {
 
             setContent {
                 val state by monitoringViewModel.monitoringState.collectAsState() // заменить на collectAsStateWithLifecycle
-                MonitoringScreen(monitoringState = state)
+                MonitoringScreen(
+                    monitoringState = state,
+                    onEvent = monitoringViewModel::onEvent
+                )
             }
         }
     }

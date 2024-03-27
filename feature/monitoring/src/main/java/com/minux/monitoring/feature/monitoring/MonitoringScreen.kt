@@ -24,11 +24,16 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -62,6 +67,7 @@ import com.minux.monitoring.core.domain.model.metrics.CoinStatisticsDetail
 import com.minux.monitoring.core.domain.model.metrics.Shares
 import com.minux.monitoring.core.domain.model.metrics.ValueUnit
 import com.minux.monitoring.core.domain.model.rig.FlightSheet
+import com.minux.monitoring.core.domain.model.rig.RigCommandParam
 import com.minux.monitoring.core.domain.model.rig.RigDynamicData
 
 val commonTextStyle = TextStyle(
@@ -71,56 +77,74 @@ val commonTextStyle = TextStyle(
 )
 
 @Composable
-internal fun MonitoringScreen(monitoringState: MonitoringState) {
-    Column(modifier = Modifier.padding(12.dp)) {
-        val textStyle = commonTextStyle.copy(
-            color = MaterialTheme.colorScheme.onPrimary
-        )
+internal fun MonitoringScreen(
+    monitoringState: MonitoringState,
+    onEvent: (MonitoringEvent) -> Unit
+) {
+    val snackbarHostState = remember {
+        SnackbarHostState()
+    }
 
-        TotalValues(
-            textStyle = textStyle,
-            totalPower = monitoringState.totalPower,
-            totalRigs = monitoringState.totalRigs
-        )
-
-        TotalSharesCard(
+    Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) { scaffoldPadding ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 12.dp),
-            textStyle = textStyle,
-            accepted = monitoringState.totalShares?.accepted,
-            rejected = monitoringState.totalShares?.rejected
-        )
-
-        CoinsStatisticsGrid(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(max = 180.dp)
-                .padding(top = 12.dp),
-            headers = listOf("Coin", "Algorithm", "Hashrate", "Accepted", "Rejected"),
-            coinsStatistics = monitoringState.coinsStatistics
-        )
-
-        if (!monitoringState.rigs.isNullOrEmpty() &&
-            !monitoringState.rigNames.isNullOrEmpty() &&
-            !monitoringState.rigActiveStates.isNullOrEmpty()
+                .padding(scaffoldPadding)
+                .padding(12.dp)
         ) {
-            RigsLazyColumnWithFilters(
+            val textStyle = commonTextStyle.copy(
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+
+            TotalValues(
+                textStyle = textStyle,
+                totalPower = monitoringState.totalPower,
+                totalRigs = monitoringState.totalRigs
+            )
+
+            TotalSharesCard(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 20.dp),
-                rigs = monitoringState.rigs,
-                rigNames = monitoringState.rigNames,
-                rigActiveStates = monitoringState.rigActiveStates
-            )
-        } else {
-            RigsEmptyContent(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 20.dp),
+                    .padding(top = 12.dp),
                 textStyle = textStyle,
-                rigs = monitoringState.rigs
+                accepted = monitoringState.totalShares?.accepted,
+                rejected = monitoringState.totalShares?.rejected
             )
+
+            CoinsStatisticsGrid(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 180.dp)
+                    .padding(top = 12.dp),
+                headers = listOf("Coin", "Algorithm", "Hashrate", "Accepted", "Rejected"),
+                coinsStatistics = monitoringState.coinsStatistics
+            )
+
+            if (!monitoringState.rigs.isNullOrEmpty() &&
+                !monitoringState.rigNames.isNullOrEmpty() &&
+                !monitoringState.rigActiveStates.isNullOrEmpty()
+            ) {
+                RigsLazyColumnWithFilters(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 20.dp),
+                    snackbarHostState = snackbarHostState,
+                    rigs = monitoringState.rigs,
+                    rigNames = monitoringState.rigNames,
+                    rigActiveStates = monitoringState.rigActiveStates,
+                    miningStatus = monitoringState.miningStatus,
+                    onRigCommandEvent = onEvent
+                )
+            } else {
+                RigsEmptyContent(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 20.dp),
+                    textStyle = textStyle,
+                    rigs = monitoringState.rigs
+                )
+            }
         }
     }
 }
@@ -462,9 +486,12 @@ private fun RigsEmptyContent(
 @Composable
 private fun RigsLazyColumnWithFilters(
     modifier: Modifier = Modifier,
+    snackbarHostState: SnackbarHostState,
     rigs: List<RigDynamicData?>,
     rigNames: List<String?>,
-    rigActiveStates: List<Boolean?>
+    rigActiveStates: List<Boolean?>,
+    miningStatus: MiningStatus,
+    onRigCommandEvent: (MonitoringEvent) -> Unit
 ) {
     Row(
         modifier = modifier,
@@ -517,9 +544,12 @@ private fun RigsLazyColumnWithFilters(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 10.dp),
+                    snackbarHostState = snackbarHostState,
                     rigDynamicData = it,
                     rigName = rigNames[it.index - 1]!!,
-                    rigActiveState = rigActiveStates[it.index - 1]!!
+                    rigActiveState = rigActiveStates[it.index - 1]!!,
+                    miningStatus = miningStatus,
+                    onRigCommandEvent = onRigCommandEvent
                 )
             }
         }
@@ -529,9 +559,12 @@ private fun RigsLazyColumnWithFilters(
 @Composable
 private fun RigStateCard(
     modifier: Modifier = Modifier,
+    snackbarHostState: SnackbarHostState,
     rigDynamicData: RigDynamicData,
     rigName: String,
-    rigActiveState: Boolean
+    rigActiveState: Boolean,
+    miningStatus: MiningStatus,
+    onRigCommandEvent: (MonitoringEvent) -> Unit,
 ) {
     MNXExpandableCard(
         modifier = modifier,
@@ -576,10 +609,14 @@ private fun RigStateCard(
         }
     ) {
         RigStateCardExpandableContent(
+            snackbarHostState = snackbarHostState,
             headers = listOf("Coin", "Hashrate", "Accepted", "Rejected"),
-            rigFlightSheet = rigDynamicData.flightSheetInfo,
+            flightSheet = rigDynamicData.flightSheetInfo,
             miningUpTime = rigDynamicData.miningUpTime,
-            bootedUpTime = rigDynamicData.bootedUpTime
+            bootedUpTime = rigDynamicData.bootedUpTime,
+            miningStatus = miningStatus,
+            rigCommand = RigCommandParam(rigId = rigDynamicData.id),
+            onRigCommandEvent = onRigCommandEvent
         )
     }
 }
@@ -736,10 +773,14 @@ private fun RigParameter(
 
 @Composable
 private fun RigStateCardExpandableContent(
+    snackbarHostState: SnackbarHostState,
     headers: List<String>,
-    rigFlightSheet: List<FlightSheet>,
+    flightSheet: List<FlightSheet>,
     miningUpTime: String,
-    bootedUpTime: String
+    bootedUpTime: String,
+    miningStatus: MiningStatus,
+    rigCommand: RigCommandParam,
+    onRigCommandEvent: (MonitoringEvent) -> Unit
 ) {
     GridHeader(
         modifier = Modifier
@@ -761,7 +802,7 @@ private fun RigStateCardExpandableContent(
                 end = 12.dp
             ),
         columnsCount = headers.count(),
-        rigFlightSheet = rigFlightSheet
+        flightSheet = flightSheet
     )
 
     RigStatisticsUpTime(
@@ -774,20 +815,44 @@ private fun RigStateCardExpandableContent(
         upTimes = listOf("mining up time,$miningUpTime", "booted up time,$bootedUpTime")
     )
 
-    RigControls(modifier = Modifier.padding(horizontal = 16.dp))
+    RigControls(
+        modifier = Modifier.padding(horizontal = 16.dp),
+        snackbarHostState = snackbarHostState,
+        miningStatus = miningStatus,
+        onPowerOffRig = {
+            onRigCommandEvent(
+                MonitoringEvent.PowerOffRig(rigCommand)
+            )
+        },
+        onRebootRig = {
+            onRigCommandEvent(
+                MonitoringEvent.RebootRig(rigCommand)
+            )
+        },
+        onStartMiningOnRig = {
+            onRigCommandEvent(
+                MonitoringEvent.StartMiningOnRig(rigCommand)
+            )
+        },
+        onStopMiningOnRig = {
+            onRigCommandEvent(
+                MonitoringEvent.StopMiningOnRig(rigCommand)
+            )
+        }
+    )
 }
 
 @Composable
 private fun RigStatisticsGridItems(
     modifier: Modifier = Modifier,
     columnsCount: Int,
-    rigFlightSheet: List<FlightSheet>
+    flightSheet: List<FlightSheet>
 ) {
     LazyVerticalGrid(
         modifier = modifier,
         columns = GridCells.Fixed(columnsCount)
     ) {
-        rigFlightSheet.forEach {
+        flightSheet.forEach {
             item {
                 Text(
                     text = it.coin,
@@ -843,7 +908,9 @@ private fun RigStatisticsUpTime(
         upTimes.forEach {
             Text(
                 text = buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onPrimaryContainer)) {
+                    withStyle(
+                        style = SpanStyle(color = MaterialTheme.colorScheme.onPrimaryContainer)
+                    ) {
                         append(it.split(',').first())
                     }
                     append("  ")
@@ -856,22 +923,31 @@ private fun RigStatisticsUpTime(
 }
 
 @Composable
-private fun RigControls(modifier: Modifier = Modifier) {
+private fun RigControls(
+    modifier: Modifier = Modifier,
+    snackbarHostState: SnackbarHostState,
+    miningStatus: MiningStatus,
+    onPowerOffRig: () -> Unit,
+    onRebootRig: () -> Unit,
+    onStartMiningOnRig: () -> Unit,
+    onStopMiningOnRig: () -> Unit
+) {
     Row(modifier = modifier) {
-        RigControlButton(
+        RigMiningControlButton(
             modifier = Modifier
                 .weight(1f)
                 .padding(horizontal = 8.dp),
-            onClick = { /*TODO*/ },
-            text = "STOP MINING",
-            color = MaterialTheme.colorScheme.secondary
+            snackbarHostState = snackbarHostState,
+            miningStatus = miningStatus,
+            onStartMiningOnRig = onStartMiningOnRig,
+            onStopMiningOnRig = onStopMiningOnRig
         )
 
         RigControlButton(
             modifier = Modifier
                 .weight(1f)
                 .padding(horizontal = 8.dp),
-            onClick = { /*TODO*/ },
+            onClick = onPowerOffRig,
             text = "POWER OFF",
             color = MaterialTheme.colorScheme.secondary
         )
@@ -888,7 +964,7 @@ private fun RigControls(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .weight(1f)
                 .padding(horizontal = 8.dp),
-            onClick = { /*TODO*/ },
+            onClick = onRebootRig,
             text = "REBOOT",
             color = MaterialTheme.colorScheme.primary
         )
@@ -897,11 +973,73 @@ private fun RigControls(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .weight(1f)
                 .padding(horizontal = 8.dp),
-            onClick = { /*TODO*/ },
+            onClick = onRebootRig,
             text = "REBOOT IN 30s",
             color = MaterialTheme.colorScheme.primary
         )
     }
+}
+
+@Composable
+private fun RigMiningControlButton(
+    modifier: Modifier = Modifier,
+    snackbarHostState: SnackbarHostState,
+    miningStatus: MiningStatus,
+    onStartMiningOnRig: () -> Unit,
+    onStopMiningOnRig: () -> Unit
+) {
+    val coroutineScope = rememberCoroutineScope()
+
+    var (miningStatusText, miningStatusColor) = Pair("", Color.White)
+
+    when (miningStatus) {
+        MiningStatus.Started -> {
+            miningStatusText = "STOP MINING"
+            miningStatusColor = MaterialTheme.colorScheme.secondary
+        }
+
+        MiningStatus.StartingFailure -> {
+            LaunchedEffect(coroutineScope) {
+                snackbarHostState.showSnackbar("Rig starting failure")
+            }
+        }
+
+        MiningStatus.Starting -> {
+            miningStatusText = "STARTING..."
+            miningStatusColor = MaterialTheme.colorScheme.primary
+        }
+
+        MiningStatus.Stopped -> {
+            miningStatusText = "START MINING"
+            miningStatusColor = MaterialTheme.colorScheme.primary
+        }
+
+        MiningStatus.StoppingFailure -> {
+            LaunchedEffect(coroutineScope) {
+                snackbarHostState.showSnackbar("Rig stopping failure")
+            }
+        }
+
+        MiningStatus.Stopping -> {
+            miningStatusText = "STOPPING..."
+            miningStatusColor = MaterialTheme.colorScheme.secondary
+        }
+    }
+
+    RigControlButton(
+        modifier = modifier,
+        onClick = {
+            if (miningStatus == MiningStatus.Started) {
+                onStopMiningOnRig()
+            }
+
+            if (miningStatus == MiningStatus.Stopped) {
+                onStartMiningOnRig()
+            }
+        },
+        text = miningStatusText,
+        color = miningStatusColor
+    )
 }
 
 @Composable
@@ -1008,7 +1146,8 @@ private fun MonitoringScreenPreview() {
                     ),
                     rigNames = listOf(null, "SomeRig", null, null, "Rig"),
                     rigActiveStates = listOf(null, true, null, null, false)
-                )
+                ),
+                onEvent = {}
             )
         }
     }
