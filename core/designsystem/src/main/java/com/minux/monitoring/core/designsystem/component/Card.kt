@@ -118,7 +118,7 @@ fun MNXExpandableCard(
     expandableContent: @Composable ColumnScope.() -> Unit
 ) {
     val isExpandedState = remember {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
 
     val scaleY = remember {
