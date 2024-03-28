@@ -35,7 +35,7 @@ dependencies {
 
     implementation(project(":core:data"))
 
-    implementation(libs.bundles.android.ui)
+    implementation(libs.bundles.android.views.ui)
     implementation(libs.bundles.android.navigation.ui)
 
     testImplementation(libs.junit)

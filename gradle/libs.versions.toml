@@ -6,7 +6,7 @@ projectTargetSdk = "34"
 projectCompileSdk = "34"
 projectVersionCode = "1"
 
-androidGradlePlugin = "8.3.0"
+androidGradlePlugin = "8.3.1"
 kotlin = "1.9.22"
 kotlinxCoroutines = "1.8.0"
 ksp = "1.9.22-1.0.17"
@@ -17,9 +17,10 @@ androidxConstraintLayout = "2.1.4"
 androidxFragment = "1.6.2"
 androidxNavigation = "2.7.7"
 androidxNavigationSafeArgs = "2.7.7"
-androidxComposeBom = "2024.02.02"
+androidxComposeBom = "2024.03.00"
 androidxComposeConstraintLayout = "1.0.1"
 androidxComposeCompiler = "1.5.10"
+androidxLifecycle = "2.7.0"
 androidxTestJUnit = "1.1.5"
 androidxTestEspressoCore = "3.5.1"
 jUnit = "4.13.2"
@@ -47,6 +48,8 @@ androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "u
 androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-compose-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "androidxComposeConstraintLayout" }
+androidx-lifecycle-runtimeCompose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidxLifecycle" }
+androidx-lifecycle-viewModelCompose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "androidxLifecycle" }
 androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestJUnit" }
 androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidxTestEspressoCore" }
 junit = { group = "junit", name = "junit", version.ref = "jUnit" }
@@ -63,8 +66,9 @@ kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-pl
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
 
 [bundles]
-android-ui = ["androidx-core-ktx", "androidx-appcompat", "android-material", "androidx-constraintlayout", "androidx-fragment-ktx"]
+android-views-ui = ["androidx-core-ktx", "androidx-appcompat", "android-material", "androidx-constraintlayout", "androidx-fragment-ktx"]
 android-compose-ui = ["androidx-compose-ui", "androidx-compose-ui-graphics", "androidx-compose-ui-tooling-preview", "androidx-compose-runtime", "androidx-compose-material3", "androidx-compose-constraintlayout"]
+android-compose-lifecycle = ["androidx-lifecycle-runtimeCompose", "androidx-lifecycle-viewModelCompose"]
 android-navigation-ui = ["androidx-navigation-fragment-ktx", "androidx-navigation-ui-ktx"]
 
 [plugins]
