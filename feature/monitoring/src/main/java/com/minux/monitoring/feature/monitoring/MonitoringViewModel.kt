@@ -87,7 +87,7 @@ class MonitoringViewModel @Inject constructor(
         )
     }.stateIn(
         viewModelScope,
-        SharingStarted.Lazily,
+        SharingStarted.WhileSubscribed(5000L),
         initialValue = MonitoringState()
     )
 

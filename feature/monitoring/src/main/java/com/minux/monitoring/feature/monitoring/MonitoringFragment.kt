@@ -4,18 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MonitoringFragment : Fragment() {
-    private val monitoringViewModel by viewModels<MonitoringViewModel>()
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -27,7 +25,9 @@ class MonitoringFragment : Fragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
-                val state by monitoringViewModel.monitoringState.collectAsState() // заменить на collectAsStateWithLifecycle
+                val monitoringViewModel = viewModel<MonitoringViewModel>()
+                val state by monitoringViewModel.monitoringState.collectAsStateWithLifecycle()
+
                 MonitoringScreen(
                     monitoringState = state,
                     onEvent = monitoringViewModel::onEvent
