@@ -71,18 +71,6 @@ interface MNXApiService {
     @GET("/miner/available")
     fun getAvailableMiners(): Flow<Result<List<String>>>
 
-    @POST("/mining/run")
-    fun startMining(@Body rigIds: List<String>): Flow<Result<Unit>>
-
-    @POST("/mining/stop")
-    fun stopMining(@Body rigIds: List<String>): Flow<Result<Unit>>
-
-    @POST("/mining/powerOff")
-    fun powerOffRig(@Body rigIds: List<String>): Flow<Result<Unit>>
-
-    @POST("/mining/reboot")
-    fun rebootRig(@Body rigIds: List<String>): Flow<Result<Unit>>
-
     @GET("/pool")
     fun getAllPools(): Flow<Result<List<PoolDto>>>
 
