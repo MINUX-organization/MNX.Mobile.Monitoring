@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridScope
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -31,6 +29,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.minux.monitoring.core.designsystem.component.GridHeader
+import com.minux.monitoring.core.designsystem.component.GridItems
 import com.minux.monitoring.core.designsystem.component.MNXButton
 import com.minux.monitoring.core.designsystem.component.MNXCard
 import com.minux.monitoring.core.designsystem.component.MNXDropDownMenu
@@ -264,7 +264,7 @@ fun <T> CryptoAssetGrid(
 
 @Composable
 private fun CryptoAssetGridHeader(headers: List<String>) {
-    LazyVerticalGrid(
+    GridHeader(
         modifier = Modifier
             .padding(
                 paddingValues = PaddingValues(
@@ -272,25 +272,22 @@ private fun CryptoAssetGridHeader(headers: List<String>) {
                     vertical = 8.dp
                 )
             ),
-        columns = GridCells.Fixed(headers.count())
-    ) {
-        items(headers) { header ->
-            Text(
-                text = header,
-                color = MaterialTheme.colorScheme.primary,
-                fontSize = 16.sp,
-                fontFamily = grillSansMtFamily,
-                fontWeight = FontWeight.Normal
-            )
-        }
-    }
+        columns = GridCells.Fixed(headers.count()),
+        headers = headers,
+        headersStyle = TextStyle(
+            color = MaterialTheme.colorScheme.primary,
+            fontSize = 16.sp,
+            fontFamily = grillSansMtFamily,
+            fontWeight = FontWeight.Normal
+        )
+    )
 }
 
 @Composable
-private fun <T> CryptoAssetGridItems(
+private inline fun <T> CryptoAssetGridItems(
     columnsCount: Int,
     cryptoAssets: List<T>,
-    gridItems: LazyGridScope.(item: T, itemPadding: PaddingValues) -> Unit
+    crossinline gridItems: LazyGridScope.(item: T, itemPadding: PaddingValues) -> Unit
 ) {
     val contentPadding = if (cryptoAssets.isNotEmpty()) {
         PaddingValues(
@@ -304,15 +301,14 @@ private fun <T> CryptoAssetGridItems(
         )
     }
 
-    LazyVerticalGrid(
-        modifier = Modifier.padding(paddingValues = contentPadding),
-        columns = GridCells.Fixed(columnsCount)
-    ) {
-        val itemPadding = PaddingValues(vertical = 6.dp)
+    val itemPadding = PaddingValues(vertical = 6.dp)
 
-        cryptoAssets.forEach {
-            gridItems(it, itemPadding)
-        }
+    GridItems(
+        modifier = Modifier.padding(paddingValues = contentPadding),
+        columns = GridCells.Fixed(columnsCount),
+        data = cryptoAssets
+    ) {
+        gridItems(it, itemPadding)
     }
 }
 
