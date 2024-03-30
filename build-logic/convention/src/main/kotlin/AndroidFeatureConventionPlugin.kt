@@ -13,9 +13,11 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
 
             dependencies {
                 add("implementation", project(":core:common"))
+                add("implementation", project(":core:ui"))
                 add("implementation", project(":core:designsystem"))
 
-                add("implementation", libs.findBundle("android.ui").get())
+                add("implementation", libs.findBundle("android.compose.lifecycle").get())
+                add("implementation", libs.findBundle("android.views.ui").get())
                 add("implementation", libs.findBundle("android.navigation.ui").get())
             }
         }
