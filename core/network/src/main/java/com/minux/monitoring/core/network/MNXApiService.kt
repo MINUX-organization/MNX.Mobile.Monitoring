@@ -6,6 +6,7 @@ import com.minux.monitoring.core.network.model.monitoring.hardware.hdd.HddDto
 import com.minux.monitoring.core.network.model.monitoring.hardware.internet.InternetConnectionDto
 import com.minux.monitoring.core.network.model.monitoring.hardware.motherboard.MotherboardDto
 import com.minux.monitoring.core.network.model.management.cryptocurrency.CryptocurrencyDto
+import com.minux.monitoring.core.network.model.management.cryptocurrency.CryptocurrencyInputDto
 import com.minux.monitoring.core.network.model.management.flightsheet.FlightSheetDto
 import com.minux.monitoring.core.network.model.management.flightsheet.FlightSheetInputDto
 import com.minux.monitoring.core.network.model.management.pool.PoolDto
@@ -47,7 +48,7 @@ interface MNXApiService {
     fun getAllCryptocurrencies(): Flow<Result<List<CryptocurrencyDto>>>
 
     @POST("/cryptocurrency")
-    fun addCryptocurrency(@Body cryptocurrencyDto: CryptocurrencyDto): Flow<Result<List<CryptocurrencyDto>>>
+    fun addCryptocurrency(@Body cryptocurrencyInputDto: CryptocurrencyInputDto): Flow<Result<List<CryptocurrencyDto>>>
 
     @DELETE("/cryptocurrency/{fullName}")
     fun removeCryptocurrency(@Path("fullName") cryptocurrencyFullName: String): Flow<Result<Unit>>
@@ -70,26 +71,14 @@ interface MNXApiService {
     @GET("/miner/available")
     fun getAvailableMiners(): Flow<Result<List<String>>>
 
-    @POST("/mining/run")
-    fun startMining(@Body rigIds: List<String>): Flow<Result<Unit>>
-
-    @POST("/mining/stop")
-    fun stopMining(@Body rigIds: List<String>): Flow<Result<Unit>>
-
-    @POST("/mining/powerOff")
-    fun powerOffRig(@Body rigIds: List<String>): Flow<Result<Unit>>
-
-    @POST("/mining/reboot")
-    fun rebootRig(@Body rigIds: List<String>): Flow<Result<Unit>>
-
     @GET("/pool")
     fun getAllPools(): Flow<Result<List<PoolDto>>>
 
     @POST("/pool")
-    fun addPool(@Body poolInputDto: PoolInputDto): Flow<Result<String>>
+    fun addPool(@Body poolInputDto: PoolInputDto): Flow<Result<PoolDto>>
 
     @PUT("/pool/{id}")
-    fun updatePool(@Path("id") poolId: String, @Body poolInputDto: PoolInputDto): Flow<Result<Unit>>
+    fun updatePool(@Path("id") poolId: String, @Body poolInputDto: PoolInputDto): Flow<Result<PoolDto>>
 
     @DELETE("/pool/{id}")
     fun removePool(@Path("id") poolId: String): Flow<Result<Unit>>
@@ -113,10 +102,10 @@ interface MNXApiService {
     fun getAllWallets(): Flow<Result<List<WalletDto>>>
 
     @POST("/wallet")
-    fun addWallet(@Body walletInputDto: WalletInputDto): Flow<Result<String>>
+    fun addWallet(@Body walletInputDto: WalletInputDto): Flow<Result<WalletDto>>
 
     @PUT("/wallet/{id}")
-    fun changeWallet(@Path("id") walletId: String, @Body walletInputDto: WalletInputDto): Flow<Result<Unit>>
+    fun changeWallet(@Path("id") walletId: String, @Body walletInputDto: WalletInputDto): Flow<Result<WalletDto>>
 
     @DELETE("/wallet/{id}")
     fun removeWallet(@Path("id") walletId: String): Flow<Result<Unit>>
