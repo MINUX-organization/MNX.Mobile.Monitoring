@@ -2,7 +2,7 @@ package com.minux.monitoring.core.network.model.monitoring
 
 import com.minux.monitoring.core.network.model.monitoring.common.FlightSheetDto
 
-data class RigsInformationDto(
+data class RigInformationDto(
     val id: String,
     val index: Int,
     val name: String,

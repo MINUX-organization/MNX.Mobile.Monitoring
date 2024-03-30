@@ -1,9 +1,9 @@
-package com.minux.monitoring.core.network.model.monitoring.rigs
+package com.minux.monitoring.core.network.model.monitoring.rig
 
 import com.minux.monitoring.core.network.model.monitoring.common.GpusCountDto
 import com.minux.monitoring.core.network.model.monitoring.common.ValueUnitDto
 
-data class DetailRigsInformationDto(
+data class DetailRigInformationDto(
     val id: String,
     val index: Int,
     val name: String,
@@ -28,7 +28,7 @@ data class DetailRigsInformationDto(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as DetailRigsInformationDto
+        other as DetailRigInformationDto
 
         return flightSheets.contentEquals(other.flightSheets)
     }
