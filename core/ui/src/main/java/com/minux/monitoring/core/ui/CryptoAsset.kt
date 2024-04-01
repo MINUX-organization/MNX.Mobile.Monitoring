@@ -223,7 +223,7 @@ fun CryptoAssetFilters(
         )
 
         SearchTextField(
-            modifier = Modifier,
+            modifier = Modifier.widthIn(max = 160.dp),
             text = searchText
         )
     }
