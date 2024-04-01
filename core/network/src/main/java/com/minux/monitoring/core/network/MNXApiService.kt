@@ -42,7 +42,7 @@ interface MNXApiService {
     fun getRigInternetConnectionInformation(
         @Path("id") rigId: String
     ): Flow<Result<InternetConnectionDto>>
-
+  
     @GET("/algorithm/available")
     fun getAvailableAlgorithms(): Flow<Result<List<String>>>
 
