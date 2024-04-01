@@ -17,6 +17,7 @@ dependencyResolutionManagement {
 rootProject.name = "MinuxMonitoring"
 include(":app")
 include(":feature:sign")
+include(":feature:cryptos")
 include(":core:data")
 include(":core:common")
 include(":core:designsystem")
