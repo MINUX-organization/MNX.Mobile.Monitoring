@@ -35,6 +35,7 @@
             <option value="$PROJECT_DIR$/feature/monitoring" />
             <option value="$PROJECT_DIR$/feature/cryptos" />
             <option value="$PROJECT_DIR$/feature/sign" />
+            <option value="$PROJECT_DIR$/feature/wallets" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />
