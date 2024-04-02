@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.minux.monitoring.core.domain.model.wallet.WalletChangeParam
 import com.minux.monitoring.core.domain.model.wallet.WalletInputParam
 import com.minux.monitoring.core.domain.model.wallet.WalletRemoveParam
+import com.minux.monitoring.core.domain.usecase.metrics.GetTotalCoinsUseCase
 import com.minux.monitoring.core.domain.usecase.wallet.AddWalletUseCase
 import com.minux.monitoring.core.domain.usecase.wallet.ChangeWalletUseCase
 import com.minux.monitoring.core.domain.usecase.wallet.GetAllWalletsUseCase
@@ -22,6 +23,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WalletsViewModel @Inject constructor(
+    getTotalCoinsUseCase: GetTotalCoinsUseCase,
     getAllWalletsUseCase: GetAllWalletsUseCase,
     private val addWalletUseCase: AddWalletUseCase,
     private val changeWalletUseCase: ChangeWalletUseCase,
@@ -31,9 +33,11 @@ class WalletsViewModel @Inject constructor(
     private val walletsStateMutable = MutableStateFlow(value = WalletsState())
     val walletsState: StateFlow<WalletsState> = combine(
         walletsStateMutable,
+        getTotalCoinsUseCase(),
         getAllWalletsUseCase()
-    ) { state, wallets ->
+    ) { state, coins, wallets ->
         state.copy(
+            coins = coins.getOrDefault(emptyList()).map { it.coin },
             wallets = wallets.getOrDefault(emptyList())
         )
     }.stateIn(

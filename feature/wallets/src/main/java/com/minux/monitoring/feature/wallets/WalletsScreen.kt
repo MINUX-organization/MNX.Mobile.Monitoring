@@ -11,9 +11,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
-import com.minux.monitoring.core.domain.model.wallet.Wallet
 import com.minux.monitoring.core.domain.model.wallet.WalletInputParam
 import com.minux.monitoring.core.ui.AddNewCryptoAssetCard
 import com.minux.monitoring.core.ui.CryptoAssetDropDownMenu
@@ -22,6 +22,7 @@ import com.minux.monitoring.core.ui.CryptoAssetGrid
 import com.minux.monitoring.core.ui.CryptoAssetTextField
 import com.minux.monitoring.core.ui.CryptoAssetTextFieldTitle
 import com.minux.monitoring.core.ui.CryptoAssetTitle
+import com.minux.monitoring.feature.wallets.ui.WalletsStatePreviewParameterProvider
 import com.minux.monitoring.feature.wallets.ui.walletsGridItems
 
 @Composable
@@ -41,7 +42,7 @@ internal fun WalletsScreen(
 
         AddNewWalletCard(
             modifier = Modifier.padding(top = 12.dp),
-            coins = listOf("Etherium Classic", "Shiba Inu", "Solana"),
+            coins = walletsState.coins,
             onAddWallet = { onEvent(it) }
         )
 
@@ -133,26 +134,14 @@ private fun WalletsFilters() {
 
 @Preview
 @Composable
-private fun WalletsScreenPreview() {
+private fun WalletsScreenPreview(
+    @PreviewParameter(WalletsStatePreviewParameterProvider::class)
+    walletsState: WalletsState
+) {
     MNXTheme {
         Surface(color = MaterialTheme.colorScheme.background) {
             WalletsScreen(
-                walletsState = WalletsState(
-                    wallets = listOf(
-                        Wallet(
-                            id = "awdd",
-                            name = "My Wallet",
-                            address = "awodimhiuhiuhiuhiuhwidm",
-                            cryptocurrency = "Solana"
-                        ),
-                        Wallet(
-                            id = "awdd",
-                            name = "My Wallet 2",
-                            address = "awawdaduhwidm",
-                            cryptocurrency = "Shiba Inu"
-                        ),
-                    )
-                ),
+                walletsState = walletsState,
                 onEvent = {}
             )
         }

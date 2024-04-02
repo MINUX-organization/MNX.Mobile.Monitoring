@@ -131,7 +131,7 @@ private fun WalletControlsGridItem(
     ) {
         Icon(
             modifier = Modifier
-                .size(width = 23.dp, height = 23.dp)
+                .size(width = 20.dp, height = 20.dp)
                 .clickable {
                     onChangeWallet(
                         WalletsEvent.ChangeWallet(
@@ -161,6 +161,7 @@ private fun WalletControlsGridItem(
                     )
                 },
             imageVector = Icons.Default.Delete,
+            tint = MaterialTheme.colorScheme.onPrimaryContainer,
             contentDescription = "Remove wallet"
         )
     }
