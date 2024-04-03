@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
@@ -37,6 +38,7 @@ import com.minux.monitoring.core.ui.CryptoAssetGrid
 import com.minux.monitoring.core.ui.CryptoAssetTextField
 import com.minux.monitoring.core.ui.CryptoAssetTextFieldTitle
 import com.minux.monitoring.core.ui.CryptoAssetTitle
+import com.minux.monitoring.feature.cryptos.ui.CryptosStatePreviewParameterProvider
 
 @Composable
 internal fun CryptosScreen(
@@ -214,14 +216,14 @@ private fun LazyGridScope.cryptosGridItems(
 
 @Preview
 @Composable
-private fun CryptosScreenPreview() {
+private fun CryptosScreenPreview(
+    @PreviewParameter(CryptosStatePreviewParameterProvider::class)
+    cryptosState: CryptosState
+) {
     MNXTheme {
         Surface(color = MaterialTheme.colorScheme.background) {
             CryptosScreen(
-                cryptosState = CryptosState(
-                    cryptoAlgorithms = listOf("Sample 1"),
-                    cryptos = emptyList()
-                ),
+                cryptosState = cryptosState,
                 onEvent = {}
             )
         }

@@ -10,7 +10,7 @@ interface CryptocurrencyRepository {
 
     fun getAllCryptocurrencies(): Flow<Result<List<Cryptocurrency>>>
 
-    fun addCryptocurrency(param: CryptocurrencyInputParam): Flow<Result<List<Cryptocurrency>>>
+    fun addCryptocurrency(param: CryptocurrencyInputParam): Flow<Result<Cryptocurrency>>
 
     fun removeCryptocurrency(param: CryptocurrencyRemoveParam): Flow<Result<Unit>>
 }
