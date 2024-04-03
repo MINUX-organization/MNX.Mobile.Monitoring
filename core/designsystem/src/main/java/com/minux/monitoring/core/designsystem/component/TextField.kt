@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -37,6 +38,7 @@ fun MNXTextField(
     value: String,
     onValueChange: (String) -> Unit = {},
     readOnly: Boolean = false,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     singleLine: Boolean = true,
     hintText: String = "",
     visualTransformation: VisualTransformation = VisualTransformation.None,
@@ -70,6 +72,7 @@ fun MNXTextField(
             ),
         value = value,
         readOnly = readOnly,
+        keyboardOptions = keyboardOptions,
         singleLine = singleLine,
         onValueChange = onValueChange,
         visualTransformation = visualTransformation,
