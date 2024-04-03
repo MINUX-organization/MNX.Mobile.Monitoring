@@ -57,8 +57,12 @@ class CryptosViewModel @Inject constructor(
 
     private fun addCryptocurrency(param: CryptocurrencyInputParam) {
         addCryptocurrencyUseCase(cryptocurrencyInputParam = param).onEach { result ->
-            result.onSuccess { cryptos ->
+            result.onSuccess { cryptocurrency ->
                 cryptosStateMutable.update { state ->
+                    val cryptos = state.cryptos
+                        .toMutableList()
+                        .apply { add(cryptocurrency) }
+
                     state.copy(cryptos = cryptos)
                 }
             }
