@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridScope
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -172,6 +173,7 @@ fun CryptoAssetTextFieldTitle(text: String) {
 @Composable
 fun CryptoAssetTextField(
     text: MutableState<String>,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     hintText: String = ""
 ) {
     MNXTextField(
@@ -180,6 +182,7 @@ fun CryptoAssetTextField(
             .padding(top = 8.dp),
         value = text.value,
         onValueChange = { text.value = it },
+        keyboardOptions = keyboardOptions,
         hintText = hintText
     )
 }
