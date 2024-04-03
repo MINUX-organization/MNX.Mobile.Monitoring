@@ -26,87 +26,89 @@ import retrofit2.http.PUT
 import retrofit2.http.Query
 
 interface MNXApiService {
-    @GET("/rig/{id}/gpu")
+    @GET("/rigs/{id}/gpu")
     fun getRigGpusInformation(@Path("id") rigId: String): Flow<Result<List<GpuDto>>>
 
-    @GET("/rig/{id}/cpu")
+    @GET("/rigs/{id}/cpu")
     fun getRigCpusInformation(@Path("id") rigId: String): Flow<Result<List<CpuDto>>>
 
-    @GET("/rig/{id}/motherboard")
+    @GET("/rigs/{id}/motherboard")
     fun getRigMotherboardInformation(@Path("id") rigId: String): Flow<Result<MotherboardDto>>
 
-    @GET("/rig/{id}/hdd")
-    fun getRigHddsInformation(@Path("id") rigId: String): Flow<Result<List<HddDto>>>
+    @GET("/rigs/{id}/hdd")
+    fun getRigHardDrivesInformation(@Path("id") rigId: String): Flow<Result<List<HddDto>>>
 
-    @GET("/rig/{id}/internet")
-    fun getRigInternetConnectionInformation(@Path("id") rigId: String): Flow<Result<InternetConnectionDto>>
+    @GET("/rigs/{id}/internet")
+    fun getRigInternetConnectionInformation(
+        @Path("id") rigId: String
+    ): Flow<Result<InternetConnectionDto>>
   
-    @GET("/algorithm/available")
+    @GET("/algorithms/available")
     fun getAvailableAlgorithms(): Flow<Result<List<String>>>
 
-    @GET("/cryptocurrency")
+    @GET("/cryptocurrencies")
     fun getAllCryptocurrencies(): Flow<Result<List<CryptocurrencyDto>>>
 
-    @POST("/cryptocurrency")
-    fun addCryptocurrency(@Body cryptocurrencyInputDto: CryptocurrencyInputDto): Flow<Result<List<CryptocurrencyDto>>>
+    @POST("/cryptocurrencies")
+    fun addCryptocurrency(@Body cryptocurrencyInputDto: CryptocurrencyInputDto): Flow<Result<CryptocurrencyDto>>
 
-    @DELETE("/cryptocurrency/{fullName}")
+    @DELETE("/cryptocurrencies/{fullName}")
     fun removeCryptocurrency(@Path("fullName") cryptocurrencyFullName: String): Flow<Result<Unit>>
 
-    @GET("/flightSheet")
+    @GET("/flightSheets")
     fun getAllFlightSheets(): Flow<Result<List<FlightSheetDto>>>
 
-    @POST("/flightSheet")
+    @POST("/flightSheets")
     fun addFlightSheet(@Body flightSheetInputDto: FlightSheetInputDto): Flow<Result<Unit>>
 
-    @POST("/flightSheet/{id}/apply")
+    @POST("/flightSheets/{id}/apply")
     fun applyFlightSheetToGpus(@Path("id") flightSheetId: String, @Body gpuIds: List<String>): Flow<Result<Unit>>
 
-    @PUT("/flightSheet/{id}")
+    @PUT("/flightSheets/{id}")
     fun changeFlightSheet(@Path("id") flightSheetId: String, @Body flightSheetInputDto: FlightSheetInputDto): Flow<Result<Unit>>
 
-    @DELETE("/flightSheet/{id}")
+    @DELETE("/flightSheets/{id}")
     fun removeFlightSheet(@Path("id") flightSheetId: String): Flow<Result<Unit>>
 
-    @GET("/miner/available")
+    @GET("/miners/available")
     fun getAvailableMiners(): Flow<Result<List<String>>>
 
-    @GET("/pool")
+    @GET("/pools")
     fun getAllPools(): Flow<Result<List<PoolDto>>>
 
-    @POST("/pool")
+    @POST("/pools")
     fun addPool(@Body poolInputDto: PoolInputDto): Flow<Result<PoolDto>>
 
-    @PUT("/pool/{id}")
+    @PUT("/pools/{id}")
     fun updatePool(@Path("id") poolId: String, @Body poolInputDto: PoolInputDto): Flow<Result<PoolDto>>
 
-    @DELETE("/pool/{id}")
+    @DELETE("/pools/{id}")
     fun removePool(@Path("id") poolId: String): Flow<Result<Unit>>
 
-    @GET("/preset")
+    @GET("/presets")
     fun getAllPresets(@Query("gpuName") gpuName: String): Flow<Result<List<PresetDto>>>
 
-    @POST("/preset")
+    @POST("/presets")
     fun savePreset(@Body presetSaveDto: PresetSaveDto): Flow<Result<String>>
 
-    @POST("/preset/{id}/apply")
+    @POST("/presets/{id}/apply")
     fun applyPresetToGpus(@Path("id") presetId: String, @Body gpuIds: List<String>): Flow<Result<Unit>>
 
-    @PUT("/preset/{id}")
+    @PUT("/presets/{id}")
     fun changePreset(@Path("id") presetId: String, @Body presetInputDto: PresetInputDto): Flow<Result<Unit>>
 
-    @DELETE("/preset/{id}")
+    @DELETE("/presets/{id}")
     fun removePreset(@Path("id") presetId: String): Flow<Result<Unit>>
 
-    @GET("/wallet")
+    @GET("/wallets")
     fun getAllWallets(): Flow<Result<List<WalletDto>>>
 
-    @POST("/wallet")
+    @POST("/wallets")
     fun addWallet(@Body walletInputDto: WalletInputDto): Flow<Result<WalletDto>>
 
-    @PUT("/wallet/{id}")
+    @PUT("/wallets/{id}")
     fun changeWallet(@Path("id") walletId: String, @Body walletInputDto: WalletInputDto): Flow<Result<WalletDto>>
 
-    @DELETE("/wallet/{id}")
+    @DELETE("/wallets/{id}")
     fun removeWallet(@Path("id") walletId: String): Flow<Result<Unit>>
 }
