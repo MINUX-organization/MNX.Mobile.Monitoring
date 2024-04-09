@@ -27,14 +27,11 @@ import com.minux.monitoring.feature.wallets.ui.walletsGridItems
 
 @Composable
 internal fun WalletsScreen(
+    modifier: Modifier = Modifier,
     walletsState: WalletsState,
     onEvent: (WalletsEvent) -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(8.dp)
-    ) {
+    Column(modifier = modifier) {
         CryptoAssetTitle(
             modifier = Modifier.fillMaxWidth(),
             text = "Wallets"
@@ -141,6 +138,9 @@ private fun WalletsScreenPreview(
     MNXTheme {
         Surface(color = MaterialTheme.colorScheme.background) {
             WalletsScreen(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp),
                 walletsState = walletsState,
                 onEvent = {}
             )

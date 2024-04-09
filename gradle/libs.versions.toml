@@ -20,6 +20,7 @@ androidxNavigationSafeArgs = "2.7.7"
 androidxComposeBom = "2024.03.00"
 androidxComposeConstraintLayout = "1.0.1"
 androidxComposeCompiler = "1.5.10"
+androidxHiltNavigationCompose = "1.2.0"
 androidxLifecycle = "2.7.0"
 androidxTestJUnit = "1.1.5"
 androidxTestEspressoCore = "3.5.1"
@@ -34,20 +35,17 @@ timber = "5.0.1"
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
-androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidxAppCompat" }
-android-material = { group = "com.google.android.material", name = "material", version.ref = "androidMaterial" }
-androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "androidxConstraintLayout" }
-androidx-fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "androidxFragment" }
-androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "androidxNavigation" }
-androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "androidxNavigation" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidxNavigation" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidxComposeBom" }
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-compose-ui-viewbinding = { group = "androidx.compose.ui", name = "ui-viewbinding" }
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-compose-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "androidxComposeConstraintLayout" }
+androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidxHiltNavigationCompose" }
 androidx-lifecycle-runtimeCompose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidxLifecycle" }
 androidx-lifecycle-viewModelCompose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "androidxLifecycle" }
 androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestJUnit" }
@@ -66,10 +64,8 @@ kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-pl
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
 
 [bundles]
-android-views-ui = ["androidx-core-ktx", "androidx-appcompat", "android-material", "androidx-constraintlayout", "androidx-fragment-ktx"]
-android-compose-ui = ["androidx-compose-ui", "androidx-compose-ui-graphics", "androidx-compose-ui-tooling-preview", "androidx-compose-runtime", "androidx-compose-material3", "androidx-compose-constraintlayout"]
+android-compose-ui = ["androidx-compose-ui", "androidx-compose-ui-graphics", "androidx-compose-ui-viewbinding", "androidx-compose-ui-tooling-preview", "androidx-compose-runtime", "androidx-compose-material3", "androidx-compose-constraintlayout"]
 android-compose-lifecycle = ["androidx-lifecycle-runtimeCompose", "androidx-lifecycle-viewModelCompose"]
-android-navigation-ui = ["androidx-navigation-fragment-ktx", "androidx-navigation-ui-ktx"]
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
@@ -82,6 +78,7 @@ navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin", version.ref 
 
 # Convention plugins
 minux-monitoring-android-application = { id = "minux.monitoring.android.application", version = "unspecified" }
+minux-monitoring-android-application-compose = { id = "minux.monitoring.android.application.compose", version = "unspecified" }
 minux-monitoring-android-library = { id = "minux.monitoring.android.library", version = "unspecified" }
 minux-monitoring-android-library-compose = { id = "minux.monitoring.android.library.compose", version = "unspecified" }
 minux-monitoring-android-hilt = { id = "minux.monitoring.android.hilt", version = "unspecified" }

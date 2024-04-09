@@ -29,14 +29,11 @@ import com.minux.monitoring.feature.pools.ui.poolsGridItems
 
 @Composable
 fun PoolsScreen(
+    modifier: Modifier = Modifier,
     poolsState: PoolsState,
     onEvent: (PoolsEvent) -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(8.dp)
-    ) {
+    Column(modifier = modifier) {
         CryptoAssetTitle(
             modifier = Modifier.fillMaxWidth(),
             text = "Pools"
@@ -148,6 +145,9 @@ fun PoolsScreenPreview(
     MNXTheme {
         Surface(color = MaterialTheme.colorScheme.background) {
             PoolsScreen(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp),
                 poolsState = poolsState,
                 onEvent = {}
             )

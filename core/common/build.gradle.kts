@@ -22,6 +22,5 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.navigation.fragment.ktx)
+
 }

@@ -13,13 +13,13 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MinuxMobile"
+        android:theme="@style/Theme.MNX"
         tools:targetApi="31">
 
         <activity
-            android:name=".presentation.AppActivity"
+            android:name=".ui.AppActivity"
             android:exported="true"
-            android:theme="@style/Theme.MinuxMobile">
+            android:theme="@style/Theme.MNX">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
