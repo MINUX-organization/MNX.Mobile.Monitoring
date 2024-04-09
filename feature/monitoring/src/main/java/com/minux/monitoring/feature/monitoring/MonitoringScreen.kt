@@ -47,6 +47,7 @@ import com.minux.monitoring.feature.monitoring.ui.TotalValues
 
 @Composable
 internal fun MonitoringScreen(
+    modifier: Modifier = Modifier,
     monitoringState: MonitoringState,
     onEvent: (MonitoringEvent) -> Unit
 ) {

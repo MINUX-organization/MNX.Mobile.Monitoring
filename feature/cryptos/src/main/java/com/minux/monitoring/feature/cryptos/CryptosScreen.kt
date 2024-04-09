@@ -42,14 +42,11 @@ import com.minux.monitoring.feature.cryptos.ui.CryptosStatePreviewParameterProvi
 
 @Composable
 internal fun CryptosScreen(
+    modifier: Modifier = Modifier,
     cryptosState: CryptosState,
     onEvent: (CryptosEvent) -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(8.dp)
-    ) {
+    Column(modifier = modifier) {
         CryptoAssetTitle(
             modifier = Modifier.fillMaxWidth(),
             text = "Cryptos"
@@ -223,6 +220,9 @@ private fun CryptosScreenPreview(
     MNXTheme {
         Surface(color = MaterialTheme.colorScheme.background) {
             CryptosScreen(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp),
                 cryptosState = cryptosState,
                 onEvent = {}
             )
