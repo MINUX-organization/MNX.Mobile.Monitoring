@@ -3,6 +3,7 @@ package com.minux.monitoring.feature.monitoring
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.minux.monitoring.core.domain.model.rig.RigCommandParam
+import com.minux.monitoring.core.domain.repository.RigRepository
 import com.minux.monitoring.core.domain.usecase.metrics.GetTotalCoinsUseCase
 import com.minux.monitoring.core.domain.usecase.metrics.GetTotalPowerUseCase
 import com.minux.monitoring.core.domain.usecase.metrics.GetTotalRigsCountUseCase
@@ -10,10 +11,6 @@ import com.minux.monitoring.core.domain.usecase.metrics.GetTotalSharesUseCase
 import com.minux.monitoring.core.domain.usecase.rig.GetRigsDynamicDataUseCase
 import com.minux.monitoring.core.domain.usecase.rig.GetRigsInformationUseCase
 import com.minux.monitoring.core.domain.usecase.rig.GetRigsStateUseCase
-import com.minux.monitoring.core.domain.usecase.rig.PowerOffRigUseCase
-import com.minux.monitoring.core.domain.usecase.rig.RebootRigUseCase
-import com.minux.monitoring.core.domain.usecase.rig.StartMiningOnRigUseCase
-import com.minux.monitoring.core.domain.usecase.rig.StopMiningOnRigUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -34,10 +31,7 @@ class MonitoringViewModel @Inject constructor(
     getRigsDynamicDataUseCase: GetRigsDynamicDataUseCase,
     getRigsInformationUseCase: GetRigsInformationUseCase,
     getRigsStateUseCase: GetRigsStateUseCase,
-    private val powerOffRigUseCase: PowerOffRigUseCase,
-    private val rebootRigUseCase: RebootRigUseCase,
-    private val startMiningOnRigUseCase: StartMiningOnRigUseCase,
-    private val stopMiningOnRigUseCase: StopMiningOnRigUseCase
+    private val rigRepository: RigRepository
 ) : ViewModel() {
 
     private val metricsMonitoringState = combine(
@@ -116,7 +110,7 @@ class MonitoringViewModel @Inject constructor(
             it.copy(powerStatus = PowerStatus.PoweringOff)
         }
 
-        powerOffRigUseCase(rigCommandParam = param).onEach { result ->
+        rigRepository.powerOffRig(param = param).onEach { result ->
             result.onSuccess {
                 monitoringStateMutable.update {
                     it.copy(powerStatus = PowerStatus.PoweredOff)
@@ -139,7 +133,7 @@ class MonitoringViewModel @Inject constructor(
             it.copy(rebootStatus = RebootStatus.Rebooting)
         }
 
-        rebootRigUseCase(rigCommandParam = param).onEach { result ->
+        rigRepository.rebootRig(param = param).onEach { result ->
             result.onSuccess {
                 monitoringStateMutable.update {
                     it.copy(rebootStatus = RebootStatus.Rebooted)
@@ -157,7 +151,7 @@ class MonitoringViewModel @Inject constructor(
             it.copy(miningStatus = MiningStatus.Starting)
         }
 
-        startMiningOnRigUseCase(rigCommandParam = param).onEach { result ->
+        rigRepository.startMiningOnRig(param = param).onEach { result ->
             result.onSuccess {
                 monitoringStateMutable.update {
                     it.copy(miningStatus = MiningStatus.Started)
@@ -180,7 +174,7 @@ class MonitoringViewModel @Inject constructor(
             it.copy(miningStatus = MiningStatus.Stopping)
         }
 
-        stopMiningOnRigUseCase(rigCommandParam = param).onEach { result ->
+        rigRepository.stopMiningOnRig(param = param).onEach { result ->
             result.onSuccess {
                 monitoringStateMutable.update {
                     it.copy(miningStatus = MiningStatus.Stopped)

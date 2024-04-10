@@ -5,11 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.minux.monitoring.core.domain.model.pool.PoolInputParam
 import com.minux.monitoring.core.domain.model.pool.PoolRemoveParam
 import com.minux.monitoring.core.domain.model.pool.PoolUpdateParam
+import com.minux.monitoring.core.domain.repository.PoolRepository
 import com.minux.monitoring.core.domain.usecase.metrics.GetTotalCoinsUseCase
-import com.minux.monitoring.core.domain.usecase.pool.AddPoolUseCase
 import com.minux.monitoring.core.domain.usecase.pool.GetAllPoolsUseCase
-import com.minux.monitoring.core.domain.usecase.pool.RemovePoolUseCase
-import com.minux.monitoring.core.domain.usecase.pool.UpdatePoolUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,9 +23,7 @@ import javax.inject.Inject
 class PoolsViewModel @Inject constructor(
     getTotalCoinsUseCase: GetTotalCoinsUseCase,
     getAllPoolsUseCase: GetAllPoolsUseCase,
-    private val addPoolUseCase: AddPoolUseCase,
-    private val updatePoolUseCase: UpdatePoolUseCase,
-    private val removePoolUseCase: RemovePoolUseCase
+    private val poolRepository: PoolRepository
 ) : ViewModel() {
 
     private val poolsStateMutable = MutableStateFlow(value = PoolsState())
@@ -55,7 +51,7 @@ class PoolsViewModel @Inject constructor(
     }
 
     private fun addPool(param: PoolInputParam) {
-        addPoolUseCase(poolInputParam = param).onEach { result ->
+        poolRepository.addPool(param = param).onEach { result ->
             result.onSuccess { pool ->
                 poolsStateMutable.update {
                     val pools = it.pools
@@ -69,7 +65,7 @@ class PoolsViewModel @Inject constructor(
     }
 
     private fun updatePool(param: PoolUpdateParam) {
-        updatePoolUseCase(poolUpdateParam = param).onEach { result ->
+        poolRepository.updatePool(param = param).onEach { result ->
             result.onSuccess { pool ->
                 poolsStateMutable.update { state ->
                     val pools = state.pools
@@ -83,7 +79,7 @@ class PoolsViewModel @Inject constructor(
     }
 
     private fun removePool(param: PoolRemoveParam) {
-        removePoolUseCase(poolRemoveParam = param).onEach { result ->
+        poolRepository.removePool(param = param).onEach { result ->
             result.onSuccess { pool ->
                 poolsStateMutable.update { state ->
                     val pools = state.pools

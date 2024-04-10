@@ -5,11 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.minux.monitoring.core.domain.model.wallet.WalletChangeParam
 import com.minux.monitoring.core.domain.model.wallet.WalletInputParam
 import com.minux.monitoring.core.domain.model.wallet.WalletRemoveParam
+import com.minux.monitoring.core.domain.repository.WalletRepository
 import com.minux.monitoring.core.domain.usecase.metrics.GetTotalCoinsUseCase
-import com.minux.monitoring.core.domain.usecase.wallet.AddWalletUseCase
-import com.minux.monitoring.core.domain.usecase.wallet.ChangeWalletUseCase
 import com.minux.monitoring.core.domain.usecase.wallet.GetAllWalletsUseCase
-import com.minux.monitoring.core.domain.usecase.wallet.RemoveWalletUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,9 +23,7 @@ import javax.inject.Inject
 class WalletsViewModel @Inject constructor(
     getTotalCoinsUseCase: GetTotalCoinsUseCase,
     getAllWalletsUseCase: GetAllWalletsUseCase,
-    private val addWalletUseCase: AddWalletUseCase,
-    private val changeWalletUseCase: ChangeWalletUseCase,
-    private val removeWalletUseCase: RemoveWalletUseCase
+    private val walletRepository: WalletRepository
 ) : ViewModel() {
 
     private val walletsStateMutable = MutableStateFlow(value = WalletsState())
@@ -63,7 +59,7 @@ class WalletsViewModel @Inject constructor(
     }
 
     private fun addWallet(param: WalletInputParam) {
-        addWalletUseCase(walletInputParam = param).onEach { result ->
+        walletRepository.addWallet(param = param).onEach { result ->
             result.onSuccess { wallet ->
                 walletsStateMutable.update { state ->
                     val wallets = state.wallets
@@ -77,7 +73,7 @@ class WalletsViewModel @Inject constructor(
     }
 
     private fun changeWallet(param: WalletChangeParam) {
-        changeWalletUseCase(walletChangeParam = param).onEach { result ->
+        walletRepository.changeWallet(param = param).onEach { result ->
             result.onSuccess { wallet ->
                 walletsStateMutable.update { state ->
                     val wallets = state.wallets
@@ -91,7 +87,7 @@ class WalletsViewModel @Inject constructor(
     }
 
     private fun removeWallet(param: WalletRemoveParam) {
-        removeWalletUseCase(walletRemoveParam = param).onEach { result ->
+        walletRepository.removeWallet(param = param).onEach { result ->
             result.onSuccess {
                 walletsStateMutable.update { state ->
                     val wallets = state.wallets
