@@ -37,7 +37,6 @@ dependencies {
     implementation(project(":feature:wallets"))
     implementation(project(":feature:pools"))
 
-    implementation(project(":core:common"))
     implementation(project(":core:ui"))
     implementation(project(":core:data"))
     implementation(project(":core:domain"))

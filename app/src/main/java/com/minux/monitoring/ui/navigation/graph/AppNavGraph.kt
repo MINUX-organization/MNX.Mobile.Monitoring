@@ -9,7 +9,6 @@ import com.minux.monitoring.feature.sign.navigation.SignGraphs
 import com.minux.monitoring.feature.sign.navigation.graph.signNavGraph
 import com.minux.monitoring.ui.MainScreen
 import com.minux.monitoring.ui.navigation.MNXDestinations
-import com.minux.monitoring.ui.navigation.MNXGraphs
 import com.minux.monitoring.ui.navigation.MNXNavigationActions
 
 @Composable
