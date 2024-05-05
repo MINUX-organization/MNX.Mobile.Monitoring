@@ -40,10 +40,9 @@ import com.minux.monitoring.core.domain.model.rig.RigDynamicData
 import com.minux.monitoring.core.ui.SearchTextField
 import com.minux.monitoring.core.ui.SortDropDownMenu
 import com.minux.monitoring.feature.monitoring.ui.CoinsStatisticsGrid
+import com.minux.monitoring.feature.monitoring.ui.MetricsCard
 import com.minux.monitoring.feature.monitoring.ui.MonitoringStatePreviewParameterProvider
 import com.minux.monitoring.feature.monitoring.ui.RigStateCard
-import com.minux.monitoring.feature.monitoring.ui.TotalSharesCard
-import com.minux.monitoring.feature.monitoring.ui.TotalValues
 
 @Composable
 internal fun MonitoringScreen(
@@ -65,17 +64,11 @@ internal fun MonitoringScreen(
         ) {
             val textStyle = commonTextStyle.copy(color = MaterialTheme.colorScheme.onPrimary)
 
-            TotalValues(
+            MetricsCard(
+                modifier = Modifier.fillMaxWidth(),
                 textStyle = textStyle,
+                totalRigs = monitoringState.totalRigs,
                 totalPower = monitoringState.totalPower,
-                totalRigs = monitoringState.totalRigs
-            )
-
-            TotalSharesCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 12.dp),
-                textStyle = textStyle,
                 accepted = monitoringState.totalShares?.accepted,
                 rejected = monitoringState.totalShares?.rejected
             )
@@ -84,7 +77,7 @@ internal fun MonitoringScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(max = 180.dp)
-                    .padding(top = 12.dp),
+                    .padding(top = 6.dp),
                 headers = listOf("Coin", "Algorithm", "Hashrate", "Accepted", "Rejected"),
                 coinsStatistics = monitoringState.coinsStatistics
             )

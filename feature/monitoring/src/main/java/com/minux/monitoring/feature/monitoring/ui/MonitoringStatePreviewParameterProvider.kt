@@ -48,6 +48,11 @@ class MonitoringStatePreviewParameterProvider : PreviewParameterProvider<Monitor
                     value = 570,
                     measureUnit = "W"
                 ),
+                totalRigs = 54,
+                totalShares = Shares(
+                    accepted = 100000,
+                    rejected = 100000,
+                ),
                 coinsStatistics = listOf(
                     CoinStatisticsDetail(
                         coin = "Raven",
