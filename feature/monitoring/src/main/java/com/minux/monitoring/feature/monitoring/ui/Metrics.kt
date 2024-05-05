@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -14,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -27,73 +27,11 @@ import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
 import com.minux.monitoring.core.domain.model.metrics.ValueUnit
 
 @Composable
-fun TotalValues(
+fun MetricsCard(
     modifier: Modifier = Modifier,
     textStyle: TextStyle,
+    totalRigs: Int?,
     totalPower: ValueUnit?,
-    totalRigs: Int?
-) {
-    Row(modifier = modifier) {
-        TotalValueCard(
-            modifier = Modifier
-                .weight(1f)
-                .padding(end = 4.dp)
-        ) {
-            Text(
-                text = "Total Power",
-                style = textStyle
-            )
-
-            Text(
-                text = buildAnnotatedString {
-                    append(text = totalPower?.value?.toString() ?: "N/A")
-                    append(text = " ")
-                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                        append(text = totalPower?.measureUnit ?: String())
-                    }
-                },
-                style = textStyle
-            )
-        }
-
-        TotalValueCard(
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 4.dp)
-        ) {
-            Text(
-                text = "Total Rigs",
-                style = textStyle
-            )
-
-            Text(
-                text = totalRigs?.toString() ?: "N/A",
-                style = textStyle
-            )
-        }
-    }
-}
-
-@Composable
-private fun TotalValueCard(
-    modifier: Modifier = Modifier,
-    content: @Composable RowScope.() -> Unit,
-) {
-    MNXCardGroup(modifier = modifier) {
-        MNXCard {
-            Row(
-                modifier = Modifier.padding(8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                content = content
-            )
-        }
-    }
-}
-
-@Composable
-fun TotalSharesCard(
-    modifier: Modifier = Modifier,
-    textStyle: TextStyle,
     accepted: Int?,
     rejected: Int?
 ) {
@@ -105,30 +43,47 @@ fun TotalSharesCard(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Total Shares",
+                        text = "Total",
                         style = textStyle
                     )
                 }
             }
 
-            Row(modifier = Modifier.padding(top = 6.dp)) {
-                TotalSharesValueCard(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(end = 3.dp),
-                    contentPadding = PaddingValues(8.dp),
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 6.dp),
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                MetricsValueCard(
+                    modifier = Modifier.weight(1f),
+                    title = "Rigs",
+                    value = buildAnnotatedString { append(totalRigs?.toString() ?: "N/A") }
+                )
+
+                MetricsValueCard(
+                    modifier = Modifier.weight(1f),
+                    title = "Power",
+                    value = buildAnnotatedString {
+                        append(text = totalPower?.value?.toString() ?: "N/A")
+                        append(text = " ")
+                        withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
+                            append(text = totalPower?.measureUnit ?: String())
+                        }
+                    }
+                )
+
+                MetricsValueCard(
+                    modifier = Modifier.weight(1f),
                     title = "Accepted",
-                    value = accepted?.toString() ?: "N/A",
+                    value = buildAnnotatedString { append(accepted?.toString() ?: "N/A") },
                     valueTextColor = MaterialTheme.colorScheme.tertiary
                 )
 
-                TotalSharesValueCard(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 3.dp),
-                    contentPadding = PaddingValues(8.dp),
+                MetricsValueCard(
+                    modifier = Modifier.weight(1f),
                     title = "Rejected",
-                    value = rejected?.toString() ?: "N/A",
+                    value = buildAnnotatedString { append(rejected?.toString() ?: "N/A") } ,
                     valueTextColor = MaterialTheme.colorScheme.secondary
                 )
             }
@@ -137,12 +92,12 @@ fun TotalSharesCard(
 }
 
 @Composable
-private fun TotalSharesValueCard(
+private fun MetricsValueCard(
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(),
+    contentPadding: PaddingValues = PaddingValues(4.dp),
     title: String,
-    value: String,
-    valueTextColor: Color
+    value: AnnotatedString,
+    valueTextColor: Color = MaterialTheme.colorScheme.onPrimary
 ) {
     MNXCard(modifier = modifier) {
         Column(
@@ -158,8 +113,8 @@ private fun TotalSharesValueCard(
 
             Text(
                 text = value,
-                fontSize = 16.sp,
                 color = valueTextColor,
+                fontSize = 16.sp,
                 fontFamily = grillSansMtFamily,
                 fontWeight = FontWeight.Normal
             )
