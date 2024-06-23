@@ -24,12 +24,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.minux.monitoring.core.data.model.wallet.Wallet
+import com.minux.monitoring.core.data.model.wallet.WalletChangeParam
+import com.minux.monitoring.core.data.model.wallet.WalletInputParam
+import com.minux.monitoring.core.data.model.wallet.WalletRemoveParam
 import com.minux.monitoring.core.designsystem.icon.MNXIcons
 import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
-import com.minux.monitoring.core.domain.model.wallet.Wallet
-import com.minux.monitoring.core.domain.model.wallet.WalletChangeParam
-import com.minux.monitoring.core.domain.model.wallet.WalletInputParam
-import com.minux.monitoring.core.domain.model.wallet.WalletRemoveParam
 import com.minux.monitoring.feature.wallets.WalletsEvent
 
 internal fun LazyGridScope.walletsGridItems(

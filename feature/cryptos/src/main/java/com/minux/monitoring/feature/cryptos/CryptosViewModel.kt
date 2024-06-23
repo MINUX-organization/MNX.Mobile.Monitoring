@@ -2,11 +2,9 @@ package com.minux.monitoring.feature.cryptos
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.minux.monitoring.core.domain.model.cryptocurrency.CryptocurrencyInputParam
-import com.minux.monitoring.core.domain.model.cryptocurrency.CryptocurrencyRemoveParam
-import com.minux.monitoring.core.domain.repository.CryptocurrencyRepository
-import com.minux.monitoring.core.domain.usecase.cryptocurrency.GetAllCryptocurrenciesUseCase
-import com.minux.monitoring.core.domain.usecase.cryptocurrency.GetAvailableAlgorithmsUseCase
+import com.minux.monitoring.core.data.model.cryptocurrency.CryptocurrencyInputParam
+import com.minux.monitoring.core.data.model.cryptocurrency.CryptocurrencyRemoveParam
+import com.minux.monitoring.core.data.repository.CryptocurrencyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,16 +18,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CryptosViewModel @Inject constructor(
-    getAvailableAlgorithmsUseCase: GetAvailableAlgorithmsUseCase,
-    getAllCryptocurrenciesUseCase: GetAllCryptocurrenciesUseCase,
     private val cryptocurrencyRepository: CryptocurrencyRepository
 ) : ViewModel() {
 
     private val cryptosStateMutable = MutableStateFlow(value = CryptosState())
     val cryptosState: StateFlow<CryptosState> = combine(
         cryptosStateMutable,
-        getAvailableAlgorithmsUseCase(),
-        getAllCryptocurrenciesUseCase()
+        cryptocurrencyRepository.getAvailableAlgorithms(),
+        cryptocurrencyRepository.getAllCryptocurrencies()
     ) { state, algorithms, cryptoCoins ->
         state.copy(
             cryptoAlgorithms = algorithms.getOrDefault(emptyList()),

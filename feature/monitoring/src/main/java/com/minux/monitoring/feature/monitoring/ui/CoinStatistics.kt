@@ -24,7 +24,7 @@ import com.minux.monitoring.core.designsystem.component.GridItems
 import com.minux.monitoring.core.designsystem.component.MNXCard
 import com.minux.monitoring.core.designsystem.component.MNXCardGroup
 import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
-import com.minux.monitoring.core.domain.model.metrics.CoinStatisticsDetail
+import com.minux.monitoring.core.data.model.metrics.CoinStatisticsDetail
 import com.minux.monitoring.core.ui.FlightSheetGridHeader
 import com.minux.monitoring.feature.monitoring.commonTextStyle
 

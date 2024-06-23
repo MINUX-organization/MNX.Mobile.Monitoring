@@ -2,12 +2,11 @@ package com.minux.monitoring.feature.pools
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.minux.monitoring.core.domain.model.pool.PoolInputParam
-import com.minux.monitoring.core.domain.model.pool.PoolRemoveParam
-import com.minux.monitoring.core.domain.model.pool.PoolUpdateParam
-import com.minux.monitoring.core.domain.repository.PoolRepository
-import com.minux.monitoring.core.domain.usecase.metrics.GetTotalCoinsUseCase
-import com.minux.monitoring.core.domain.usecase.pool.GetAllPoolsUseCase
+import com.minux.monitoring.core.data.model.pool.PoolInputParam
+import com.minux.monitoring.core.data.model.pool.PoolRemoveParam
+import com.minux.monitoring.core.data.model.pool.PoolUpdateParam
+import com.minux.monitoring.core.data.repository.MetricsRepository
+import com.minux.monitoring.core.data.repository.PoolRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,16 +20,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PoolsViewModel @Inject constructor(
-    getTotalCoinsUseCase: GetTotalCoinsUseCase,
-    getAllPoolsUseCase: GetAllPoolsUseCase,
+    private val metricsRepository: MetricsRepository,
     private val poolRepository: PoolRepository
 ) : ViewModel() {
 
     private val poolsStateMutable = MutableStateFlow(value = PoolsState())
     val poolsState: StateFlow<PoolsState> = combine(
         poolsStateMutable,
-        getTotalCoinsUseCase(),
-        getAllPoolsUseCase()
+        metricsRepository.getTotalCoins(),
+        poolRepository.getAllPools()
     ) { state, coins, pools ->
         state.copy(
             coins = coins.getOrDefault(emptyList()).map { it.coin },

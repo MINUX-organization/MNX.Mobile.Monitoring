@@ -20,12 +20,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.minux.monitoring.core.data.model.pool.Pool
+import com.minux.monitoring.core.data.model.pool.PoolInputParam
+import com.minux.monitoring.core.data.model.pool.PoolRemoveParam
+import com.minux.monitoring.core.data.model.pool.PoolUpdateParam
 import com.minux.monitoring.core.designsystem.icon.MNXIcons
 import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
-import com.minux.monitoring.core.domain.model.pool.Pool
-import com.minux.monitoring.core.domain.model.pool.PoolInputParam
-import com.minux.monitoring.core.domain.model.pool.PoolRemoveParam
-import com.minux.monitoring.core.domain.model.pool.PoolUpdateParam
 import com.minux.monitoring.feature.pools.PoolsEvent
 
 internal fun LazyGridScope.poolsGridItems(

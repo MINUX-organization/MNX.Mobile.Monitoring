@@ -1,6 +1,6 @@
 package com.minux.monitoring.feature.monitoring
 
-import com.minux.monitoring.core.domain.model.rig.RigCommandParam
+import com.minux.monitoring.core.data.model.rig.RigCommandParam
 
 sealed interface MonitoringEvent {
     data class PowerOffRig(val rigCommandParam: RigCommandParam) : MonitoringEvent

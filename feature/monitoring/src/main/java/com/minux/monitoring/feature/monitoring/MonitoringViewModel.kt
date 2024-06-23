@@ -2,15 +2,9 @@ package com.minux.monitoring.feature.monitoring
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.minux.monitoring.core.domain.model.rig.RigCommandParam
-import com.minux.monitoring.core.domain.repository.RigRepository
-import com.minux.monitoring.core.domain.usecase.metrics.GetTotalCoinsUseCase
-import com.minux.monitoring.core.domain.usecase.metrics.GetTotalPowerUseCase
-import com.minux.monitoring.core.domain.usecase.metrics.GetTotalRigsCountUseCase
-import com.minux.monitoring.core.domain.usecase.metrics.GetTotalSharesUseCase
-import com.minux.monitoring.core.domain.usecase.rig.GetRigsDynamicDataUseCase
-import com.minux.monitoring.core.domain.usecase.rig.GetRigsInformationUseCase
-import com.minux.monitoring.core.domain.usecase.rig.GetRigsStateUseCase
+import com.minux.monitoring.core.data.model.rig.RigCommandParam
+import com.minux.monitoring.core.data.repository.MetricsRepository
+import com.minux.monitoring.core.data.repository.RigRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -24,21 +18,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MonitoringViewModel @Inject constructor(
-    getTotalPowerUseCase: GetTotalPowerUseCase,
-    getTotalRigsCountUseCase: GetTotalRigsCountUseCase,
-    getTotalSharesUseCase: GetTotalSharesUseCase,
-    getTotalCoinsUseCase: GetTotalCoinsUseCase,
-    getRigsDynamicDataUseCase: GetRigsDynamicDataUseCase,
-    getRigsInformationUseCase: GetRigsInformationUseCase,
-    getRigsStateUseCase: GetRigsStateUseCase,
+    metricsRepository: MetricsRepository,
     private val rigRepository: RigRepository
 ) : ViewModel() {
 
     private val metricsMonitoringState = combine(
-        getTotalPowerUseCase(),
-        getTotalRigsCountUseCase(),
-        getTotalSharesUseCase(),
-        getTotalCoinsUseCase()
+        metricsRepository.getTotalPower(),
+        metricsRepository.getTotalRigsCount(),
+        metricsRepository.getTotalShares(),
+        metricsRepository.getTotalCoins()
     ) { power, rigsCount, shares, coins ->
         MonitoringState(
             totalPower = power.getOrNull(),
@@ -49,9 +37,9 @@ class MonitoringViewModel @Inject constructor(
     }
 
     private val rigsMonitoringState = combine(
-        getRigsDynamicDataUseCase(),
-        getRigsInformationUseCase(),
-        getRigsStateUseCase()
+        rigRepository.getRigsDynamicData(),
+        rigRepository.getRigsInformation(),
+        rigRepository.getRigsState()
     ) { rigsDynamicData, rigsInformation, rigsState ->
         MonitoringState(
             rigs = rigsDynamicData.getOrNull(),
