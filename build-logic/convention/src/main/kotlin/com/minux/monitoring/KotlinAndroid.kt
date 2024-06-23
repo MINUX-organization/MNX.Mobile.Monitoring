@@ -5,7 +5,9 @@ import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.provideDelegate
+import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 internal fun Project.configureKotlinAndroid(
     commonExtension: CommonExtension<*, *, *, *, *, *>
@@ -24,4 +26,15 @@ internal fun Project.configureKotlinAndroid(
     }
 
     configureKotlin()
+}
+
+internal fun Project.configureKotlin() {
+    tasks.withType<KotlinCompile>().configureEach {
+        kotlinOptions {
+            val warningsAsErrors: String? by project
+            allWarningsAsErrors = warningsAsErrors.toBoolean()
+
+            jvmTarget = JavaVersion.VERSION_17.toString()
+        }
+    }
 }

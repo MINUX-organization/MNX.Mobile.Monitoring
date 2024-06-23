@@ -1,7 +1,7 @@
 package com.minux.monitoring.feature.cryptos.ui
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import com.minux.monitoring.core.domain.model.cryptocurrency.Cryptocurrency
+import com.minux.monitoring.core.data.model.cryptocurrency.Cryptocurrency
 import com.minux.monitoring.feature.cryptos.CryptosState
 
 class CryptosStatePreviewParameterProvider : PreviewParameterProvider<CryptosState> {

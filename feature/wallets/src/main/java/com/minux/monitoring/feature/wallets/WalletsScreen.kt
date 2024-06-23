@@ -13,8 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import com.minux.monitoring.core.data.model.wallet.WalletInputParam
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
-import com.minux.monitoring.core.domain.model.wallet.WalletInputParam
 import com.minux.monitoring.core.ui.AddNewCryptoAssetCard
 import com.minux.monitoring.core.ui.CryptoAssetDropDownMenu
 import com.minux.monitoring.core.ui.CryptoAssetFilters

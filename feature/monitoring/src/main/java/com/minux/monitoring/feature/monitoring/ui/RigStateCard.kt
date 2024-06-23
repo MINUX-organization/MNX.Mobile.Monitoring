@@ -24,15 +24,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.Dimension
+import com.minux.monitoring.core.data.model.metrics.ValueUnit
+import com.minux.monitoring.core.data.model.rig.RigCommandParam
+import com.minux.monitoring.core.data.model.rig.RigDynamicData
 import com.minux.monitoring.core.designsystem.component.GridItems
 import com.minux.monitoring.core.designsystem.component.MNXExpandableCard
 import com.minux.monitoring.core.designsystem.icon.MNXIcons
 import com.minux.monitoring.core.designsystem.theme.BorderSide
 import com.minux.monitoring.core.designsystem.theme.BorderSides
-import com.minux.monitoring.core.domain.model.metrics.ValueUnit
-import com.minux.monitoring.core.domain.model.rig.FlightSheet
-import com.minux.monitoring.core.domain.model.rig.RigCommandParam
-import com.minux.monitoring.core.domain.model.rig.RigDynamicData
 import com.minux.monitoring.core.ui.FlightSheetGridHeader
 import com.minux.monitoring.core.ui.RigIsOnlineIndicator
 import com.minux.monitoring.core.ui.RigParameters
@@ -173,7 +172,7 @@ private fun RigStateCardContent(
 private fun RigStateCardExpandableContent(
     snackbarHostState: SnackbarHostState,
     headers: List<String>,
-    flightSheet: List<FlightSheet>,
+    flightSheet: List<com.minux.monitoring.core.data.model.rig.FlightSheet>,
     miningUpTime: String,
     bootedUpTime: String,
     miningStatus: MiningStatus,
@@ -242,7 +241,7 @@ private fun RigStateCardExpandableContent(
     )
 }
 
-private fun LazyGridScope.rigFlightSheetGridItems(flightSheet: FlightSheet) {
+private fun LazyGridScope.rigFlightSheetGridItems(flightSheet: com.minux.monitoring.core.data.model.rig.FlightSheet) {
     item {
         Text(
             text = flightSheet.coin,

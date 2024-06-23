@@ -1,7 +1,7 @@
 package com.minux.monitoring.feature.pools.ui
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import com.minux.monitoring.core.domain.model.pool.Pool
+import com.minux.monitoring.core.data.model.pool.Pool
 import com.minux.monitoring.feature.pools.PoolsState
 
 class PoolsStatePreviewParameterProvider : PreviewParameterProvider<PoolsState> {

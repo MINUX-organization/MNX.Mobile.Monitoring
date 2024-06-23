@@ -21,10 +21,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.minux.monitoring.core.data.model.metrics.ValueUnit
 import com.minux.monitoring.core.designsystem.component.MNXCard
 import com.minux.monitoring.core.designsystem.component.MNXCardGroup
 import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
-import com.minux.monitoring.core.domain.model.metrics.ValueUnit
 
 @Composable
 fun MetricsCard(

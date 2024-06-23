@@ -1,11 +1,11 @@
 package com.minux.monitoring.feature.monitoring.ui
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import com.minux.monitoring.core.domain.model.metrics.CoinStatisticsDetail
-import com.minux.monitoring.core.domain.model.metrics.Shares
-import com.minux.monitoring.core.domain.model.metrics.ValueUnit
-import com.minux.monitoring.core.domain.model.rig.FlightSheet
-import com.minux.monitoring.core.domain.model.rig.RigDynamicData
+import com.minux.monitoring.core.data.model.metrics.CoinStatisticsDetail
+import com.minux.monitoring.core.data.model.metrics.Shares
+import com.minux.monitoring.core.data.model.metrics.ValueUnit
+import com.minux.monitoring.core.data.model.rig.FlightSheet
+import com.minux.monitoring.core.data.model.rig.RigDynamicData
 import com.minux.monitoring.feature.monitoring.MonitoringState
 
 class MonitoringStatePreviewParameterProvider : PreviewParameterProvider<MonitoringState> {

@@ -26,11 +26,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.minux.monitoring.core.data.model.cryptocurrency.Cryptocurrency
+import com.minux.monitoring.core.data.model.cryptocurrency.CryptocurrencyInputParam
+import com.minux.monitoring.core.data.model.cryptocurrency.CryptocurrencyRemoveParam
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
 import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
-import com.minux.monitoring.core.domain.model.cryptocurrency.Cryptocurrency
-import com.minux.monitoring.core.domain.model.cryptocurrency.CryptocurrencyInputParam
-import com.minux.monitoring.core.domain.model.cryptocurrency.CryptocurrencyRemoveParam
 import com.minux.monitoring.core.ui.AddNewCryptoAssetCard
 import com.minux.monitoring.core.ui.CryptoAssetDropDownMenu
 import com.minux.monitoring.core.ui.CryptoAssetFilters

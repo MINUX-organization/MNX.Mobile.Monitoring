@@ -30,13 +30,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.minux.monitoring.core.data.model.rig.RigDynamicData
 import com.minux.monitoring.core.designsystem.icon.MNXIcons
 import com.minux.monitoring.core.designsystem.theme.BorderSide
 import com.minux.monitoring.core.designsystem.theme.BorderSides
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
 import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
 import com.minux.monitoring.core.designsystem.theme.selectiveBorder
-import com.minux.monitoring.core.domain.model.rig.RigDynamicData
 import com.minux.monitoring.core.ui.SearchTextField
 import com.minux.monitoring.core.ui.SortDropDownMenu
 import com.minux.monitoring.feature.monitoring.ui.CoinsStatisticsGrid

@@ -1,7 +1,7 @@
 package com.minux.monitoring.feature.wallets.ui
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import com.minux.monitoring.core.domain.model.wallet.Wallet
+import com.minux.monitoring.core.data.model.wallet.Wallet
 import com.minux.monitoring.feature.wallets.WalletsState
 
 class WalletsStatePreviewParameterProvider : PreviewParameterProvider<WalletsState> {
