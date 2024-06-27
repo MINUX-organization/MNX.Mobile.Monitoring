@@ -156,14 +156,17 @@ fun MNXExpandableCard(
                     else -> Modifier
                 }
             )
-            .animateContentSize()
-            .clickable {
-                isExpandedState.value = !isExpandedState.value
-            },
+            .animateContentSize(),
         color = color
     ) {
         Column(modifier = Modifier.padding(paddingValues = containerPadding)) {
-            MNXCard(modifier = Modifier.fillMaxWidth()) {
+            MNXCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        isExpandedState.value = !isExpandedState.value
+                    }
+            ) {
                 ConstraintLayout(
                     modifier = Modifier
                         .padding(paddingValues = contentPadding)
