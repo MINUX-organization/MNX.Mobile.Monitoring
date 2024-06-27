@@ -29,10 +29,11 @@ import com.minux.monitoring.core.ui.FlightSheetGridHeader
 import com.minux.monitoring.feature.monitoring.commonTextStyle
 
 @Composable
-fun CoinsStatisticsGrid(
-    modifier: Modifier = Modifier,
+internal fun CoinsStatisticsGrid(
     headers: List<String>,
-    coinsStatistics: List<CoinStatisticsDetail>?
+    coinsStatistics: List<CoinStatisticsDetail>,
+    modifier: Modifier = Modifier,
+    placeHolderText: String
 ) {
     MNXCardGroup(modifier = modifier) {
         Column {
@@ -47,7 +48,7 @@ fun CoinsStatisticsGrid(
                 color = MaterialTheme.colorScheme.primary
             )
 
-            if (coinsStatistics.isNullOrEmpty()) {
+            if (coinsStatistics.isEmpty()) {
                 MNXCard(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -58,7 +59,7 @@ fun CoinsStatisticsGrid(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "N/A",
+                            text = placeHolderText,
                             color = MaterialTheme.colorScheme.onPrimary,
                             fontSize = 16.sp,
                             fontFamily = grillSansMtFamily,
@@ -66,7 +67,6 @@ fun CoinsStatisticsGrid(
                         )
                     }
                 }
-
             } else {
                 GridItems(
                     columns = GridCells.Fixed(headers.count()),

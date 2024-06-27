@@ -10,4 +10,6 @@ sealed interface MonitoringEvent {
     data class StartMiningOnRig(val rigCommandParam: RigCommandParam) : MonitoringEvent
 
     data class StopMiningOnRig(val rigCommandParam: RigCommandParam) : MonitoringEvent
+
+    data object Refresh : MonitoringEvent
 }

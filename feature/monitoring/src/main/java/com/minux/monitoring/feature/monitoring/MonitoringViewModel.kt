@@ -2,79 +2,52 @@ package com.minux.monitoring.feature.monitoring
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.minux.monitoring.core.data.model.metrics.CoinStatisticsDetail
+import com.minux.monitoring.core.data.model.metrics.Shares
+import com.minux.monitoring.core.data.model.metrics.ValueUnit
 import com.minux.monitoring.core.data.model.rig.RigCommandParam
+import com.minux.monitoring.core.data.model.rig.RigDynamicData
 import com.minux.monitoring.core.data.repository.MetricsRepository
 import com.minux.monitoring.core.data.repository.RigRepository
+import com.minux.monitoring.core.data.util.combine
+import com.minux.monitoring.core.data.util.copy
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
 class MonitoringViewModel @Inject constructor(
-    metricsRepository: MetricsRepository,
+    private val metricsRepository: MetricsRepository,
     private val rigRepository: RigRepository
 ) : ViewModel() {
 
-    private val metricsMonitoringState = combine(
-        metricsRepository.getTotalPower(),
-        metricsRepository.getTotalRigsCount(),
-        metricsRepository.getTotalShares(),
-        metricsRepository.getTotalCoins()
-    ) { power, rigsCount, shares, coins ->
-        MonitoringState(
-            totalPower = power.getOrNull(),
-            totalRigs = rigsCount.getOrNull(),
-            totalShares = shares.getOrNull(),
-            coinsStatistics = coins.getOrNull()
+    private val _monitoringState = MutableStateFlow(MonitoringViewModelState())
+    val monitoringState: StateFlow<MonitoringUiState> = _monitoringState
+        .map(MonitoringViewModelState::toUiState)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000L),
+            initialValue = MonitoringUiState.Loading
         )
-    }
 
-    private val rigsMonitoringState = combine(
-        rigRepository.getRigsDynamicData(),
-        rigRepository.getRigsInformation(),
-        rigRepository.getRigsState()
-    ) { rigsDynamicData, rigsInformation, rigsState ->
-        MonitoringState(
-            rigs = rigsDynamicData.getOrNull(),
-            rigNames = rigsInformation.getOrNull()?.map {
-                it.name
-            },
-            rigActiveStates = rigsState.getOrNull()?.map {
-                it.isActive
-            }
-        )
+    init {
+        fetchMetricsAndRigs()
     }
-
-    private val monitoringStateMutable = MutableStateFlow(value = MonitoringState())
-    val monitoringState: StateFlow<MonitoringState> = combine(
-        monitoringStateMutable,
-        metricsMonitoringState,
-        rigsMonitoringState
-    ) { state, metricsState, rigsState ->
-        state.copy(
-            totalPower = metricsState.totalPower,
-            totalRigs = metricsState.totalRigs,
-            totalShares = metricsState.totalShares,
-            coinsStatistics = metricsState.coinsStatistics,
-            rigs = rigsState.rigs,
-            rigNames = rigsState.rigNames,
-            rigActiveStates = rigsState.rigActiveStates
-        )
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5000L),
-        initialValue = MonitoringState()
-    )
 
     fun onEvent(monitoringEvent: MonitoringEvent) {
         when (monitoringEvent) {
+            MonitoringEvent.Refresh -> fetchMetricsAndRigs()
+
             is MonitoringEvent.PowerOffRig -> {
                 powerOffRig(param = monitoringEvent.rigCommandParam)
             }
@@ -93,90 +66,268 @@ class MonitoringViewModel @Inject constructor(
         }
     }
 
-    private fun powerOffRig(param: RigCommandParam) {
-        monitoringStateMutable.update {
-            it.copy(powerStatus = PowerStatus.PoweringOff)
-        }
+    private fun fetchMetricsAndRigs() {
+        combine(
+            metricsRepository.getTotalPower(),
+            metricsRepository.getTotalRigsCount(),
+            metricsRepository.getTotalShares(),
+            metricsRepository.getTotalCoins(),
+            rigRepository.getRigsDynamicData(),
+            rigRepository.getRigsInformation(),
+            rigRepository.getRigsState()
+        ) { power, rigsCount, shares, coins, rigsDynamicData, rigsInformation, rigsState ->
+            MonitoringViewModelState(
+                totalPower = power.getOrThrow(),
+                totalRigs = rigsCount.getOrThrow(),
+                totalShares = shares.getOrThrow(),
+                coinsStatistics = coins.getOrThrow(),
+                rigs = rigsDynamicData.getOrThrow(),
+                rigNames = rigsInformation.getOrThrow().map { it.name },
+                rigActiveStates = rigsState.getOrThrow().map { it.isActive }
+            )
+        }.onStart {
+            _monitoringState.update { it.copy(isLoading = true) }
+        }.onEach { result ->
+            _monitoringState.update { result }
+        }.catch {
+            MonitoringViewModelState(
+                isLoading = false,
+                hasError = Pair(true, it.message)
+            )
+        }.launchIn(viewModelScope)
+    }
 
-        rigRepository.powerOffRig(param = param).onEach { result ->
-            result.onSuccess {
-                monitoringStateMutable.update {
-                    it.copy(powerStatus = PowerStatus.PoweredOff)
+    private fun powerOffRig(param: RigCommandParam) {
+        rigRepository
+            .powerOffRig(param = param)
+            .onStart {
+                _monitoringState.update {
+                    it.copy(
+                        rigPowerStates = it.rigPowerStates.copy(
+                            index = param.rigIndex,
+                            element = RigPowerState.PoweringOff
+                        )
+                    )
                 }
-            }.onFailure {
-                with(monitoringStateMutable) {
-                    update {
-                        it.copy(powerStatus = PowerStatus.PoweringOffFailure)
+            }
+            .onEach { result ->
+                result.onSuccess {
+                    _monitoringState.update {
+                        it.copy(
+                            rigPowerStates = it.rigPowerStates.copy(
+                                index = param.rigIndex,
+                                element = RigPowerState.PoweredOff
+                            ),
+                            rigMiningStatuses = it.rigMiningStatuses.copy(
+                                index = param.rigIndex,
+                                element = RigMiningStatus.Stopped
+                            )
+                        )
                     }
-                    update {
-                        it.copy(powerStatus = PowerStatus.PoweredOn)
+                }.onFailure { exception ->
+                    with(_monitoringState) {
+                        update {
+                            it.copy(
+                                rigPowerStates = it.rigPowerStates.copy(
+                                    index = param.rigIndex,
+                                    element = RigPowerState.Error(message = exception.message)
+                                )
+                            )
+                        }
+
+                        delay(300)
+
+                        update {
+                            it.copy(
+                                rigPowerStates = it.rigPowerStates.copy(
+                                    index = param.rigIndex,
+                                    element = RigPowerState.PoweredOn
+                                )
+                            )
+                        }
                     }
                 }
             }
-        }.launchIn(viewModelScope)
+            .launchIn(viewModelScope)
     }
 
     private fun rebootRig(param: RigCommandParam) {
-        monitoringStateMutable.update {
-            it.copy(rebootStatus = RebootStatus.Rebooting)
+        _monitoringState.update {
+            it.copy(
+                rigPowerStates = it.rigPowerStates.copy(
+                    index = param.rigIndex,
+                    element = RigPowerState.Rebooting
+                )
+            )
         }
 
-        rigRepository.rebootRig(param = param).onEach { result ->
-            result.onSuccess {
-                monitoringStateMutable.update {
-                    it.copy(rebootStatus = RebootStatus.Rebooted)
-                }
-            }.onFailure {
-                monitoringStateMutable.update {
-                    it.copy(rebootStatus = RebootStatus.RebootingFailure)
+        rigRepository
+            .rebootRig(param = param)
+            .onEach { result ->
+                result.onSuccess {
+                    _monitoringState.update {
+                        it.copy(
+                            rigPowerStates = it.rigPowerStates.copy(
+                                index = param.rigIndex,
+                                element = RigPowerState.PoweredOn
+                            )
+                        )
+                    }
+                }.onFailure { exception ->
+                    with(_monitoringState) {
+                        update {
+                            it.copy(
+                                rigPowerStates = it.rigPowerStates.copy(
+                                    index = param.rigIndex,
+                                    element = RigPowerState.Error(message = exception.message)
+                                )
+                            )
+                        }
+
+                        delay(300)
+
+                        update {
+                            it.copy(
+                                rigPowerStates = it.rigPowerStates.copy(
+                                    index = param.rigIndex,
+                                    element = RigPowerState.PoweredOn
+                                )
+                            )
+                        }
+                    }
                 }
             }
-        }.launchIn(viewModelScope)
+            .launchIn(viewModelScope)
     }
 
     private fun startMiningOnRig(param: RigCommandParam) {
-        monitoringStateMutable.update {
-            it.copy(miningStatus = MiningStatus.Starting)
+        _monitoringState.update {
+            it.copy(
+                rigMiningStatuses = it.rigMiningStatuses.copy(
+                    index = param.rigIndex,
+                    element = RigMiningStatus.Starting
+                )
+            )
         }
 
-        rigRepository.startMiningOnRig(param = param).onEach { result ->
-            result.onSuccess {
-                monitoringStateMutable.update {
-                    it.copy(miningStatus = MiningStatus.Started)
-                }
-            }.onFailure {
-                with(monitoringStateMutable) {
-                    update {
-                        it.copy(miningStatus = MiningStatus.StartingFailure)
+        rigRepository
+            .startMiningOnRig(param = param)
+            .onEach { result ->
+                result.onSuccess {
+                    _monitoringState.update {
+                        it.copy(
+                            rigMiningStatuses = it.rigMiningStatuses.copy(
+                                index = param.rigIndex,
+                                element = RigMiningStatus.Started
+                            )
+                        )
                     }
-                    update {
-                        it.copy(miningStatus = MiningStatus.Stopped)
+                }.onFailure { exception ->
+                    with(_monitoringState) {
+                        update {
+                            it.copy(
+                                rigMiningStatuses = it.rigMiningStatuses.copy(
+                                    index = param.rigIndex,
+                                    element = RigMiningStatus.Error(message = exception.message)
+                                )
+                            )
+                        }
+
+                        delay(300)
+
+                        update {
+                            it.copy(
+                                rigMiningStatuses = it.rigMiningStatuses.copy(
+                                    index = param.rigIndex,
+                                    element = RigMiningStatus.Stopped
+                                )
+                            )
+                        }
                     }
                 }
             }
-        }.launchIn(viewModelScope)
+            .launchIn(viewModelScope)
     }
 
     private fun stopMiningOnRig(param: RigCommandParam) {
-        monitoringStateMutable.update {
-            it.copy(miningStatus = MiningStatus.Stopping)
+        _monitoringState.update {
+            it.copy(
+                rigMiningStatuses = it.rigMiningStatuses.copy(
+                    index = param.rigIndex,
+                    element = RigMiningStatus.Stopping
+                )
+            )
         }
 
-        rigRepository.stopMiningOnRig(param = param).onEach { result ->
-            result.onSuccess {
-                monitoringStateMutable.update {
-                    it.copy(miningStatus = MiningStatus.Stopped)
-                }
-            }.onFailure {
-                with(monitoringStateMutable) {
-                    update {
-                        it.copy(miningStatus = MiningStatus.StoppingFailure)
+        rigRepository
+            .stopMiningOnRig(param = param)
+            .onEach { result ->
+                result.onSuccess {
+                    _monitoringState.update {
+                        it.copy(
+                            rigMiningStatuses = it.rigMiningStatuses.copy(
+                                index = param.rigIndex,
+                                element = RigMiningStatus.Stopped
+                            )
+                        )
                     }
-                    update {
-                        it.copy(miningStatus = MiningStatus.Started)
+                }.onFailure { exception ->
+                    with(_monitoringState) {
+                        update {
+                            it.copy(
+                                rigMiningStatuses = it.rigMiningStatuses.copy(
+                                    index = param.rigIndex,
+                                    element = RigMiningStatus.Error(message = exception.message)
+                                )
+                            )
+                        }
+
+                        delay(300)
+
+                        update {
+                            it.copy(
+                                rigMiningStatuses = it.rigMiningStatuses.copy(
+                                    index = param.rigIndex,
+                                    element = RigMiningStatus.Started
+                                )
+                            )
+                        }
                     }
                 }
             }
-        }.launchIn(viewModelScope)
+            .launchIn(viewModelScope)
+    }
+}
+
+private data class MonitoringViewModelState(
+    val isLoading: Boolean = false,
+    val hasError: Pair<Boolean, String?> = Pair(false, null),
+    val totalPower: ValueUnit = ValueUnit(0, ""),
+    val totalRigs: Int = 0,
+    val totalShares: Shares = Shares(0, 0),
+    val coinsStatistics: List<CoinStatisticsDetail> = emptyList(),
+    val rigs: List<RigDynamicData?> = emptyList(),
+    val rigNames: List<String?> = emptyList(),
+    val rigActiveStates: List<Boolean?> = emptyList(),
+    val rigPowerStates: List<RigPowerState?> = emptyList(),
+    val rigMiningStatuses: List<RigMiningStatus?> = emptyList()
+) {
+    fun toUiState(): MonitoringUiState {
+        return when {
+            isLoading -> return MonitoringUiState.Loading
+            hasError.first -> return MonitoringUiState.Error(message = hasError.second)
+            totalRigs == 0 -> return MonitoringUiState.NoRigs
+            else -> MonitoringUiState.HasRigs(
+                totalPower = totalPower,
+                totalRigs = totalRigs,
+                totalShares = totalShares,
+                coinsStatistics = coinsStatistics,
+                rigs = rigs,
+                rigNames = rigNames,
+                rigActiveStates = rigActiveStates,
+                rigPowerStates = rigPowerStates,
+                rigMiningStatuses = rigMiningStatuses
+            )
+        }
     }
 }
