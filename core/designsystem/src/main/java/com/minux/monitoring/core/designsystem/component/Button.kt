@@ -27,9 +27,9 @@ import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
 
 @Composable
 fun MNXRoundedButton(
-    modifier: Modifier = Modifier,
     onClick: () -> Unit,
-    text: String
+    text: String,
+    modifier: Modifier = Modifier,
 ) {
     Button(
         modifier = modifier,
@@ -51,10 +51,11 @@ fun MNXRoundedButton(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MNXButton(
-    modifier: Modifier = Modifier,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     color: Color = MaterialTheme.colorScheme.primary,
-    contentPadding: PaddingValues = PaddingValues(),
+    contentPadding: PaddingValues = PaddingValues(horizontal = 12.dp),
     content: @Composable RowScope.() -> Unit
 ) {
     CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
@@ -69,6 +70,7 @@ fun MNXButton(
                 )
                 .padding(3.dp),
             onClick = onClick,
+            enabled = enabled,
             shape = shape,
             colors = ButtonDefaults.buttonColors(
                 containerColor = color
@@ -91,12 +93,14 @@ private fun MNXButtonPreview() {
                 onClick = {},
                 text = "Text"
             )
+
             MNXButton(
                 modifier = Modifier.padding(top = 4.dp),
                 onClick = {},
             ) {
                 Text(text = "Text")
             }
+
             MNXButton(
                 modifier = Modifier.padding(top = 8.dp),
                 onClick = {},
