@@ -5,8 +5,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -20,8 +23,9 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun MainScreen(navController: NavHostController = rememberNavController()) {
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
         topBar = {
@@ -34,6 +38,9 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
                     }
                 }
             )
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
         }
     ) { scaffoldPadding ->
         AppNavigationDrawer(
@@ -46,7 +53,10 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
                     .fillMaxSize()
                     .padding(paddingValues = scaffoldPadding)
             ) {
-                MainNavGraph(navController = navController)
+                MainNavGraph(
+                    navController = navController,
+                    snackbarHostState = snackbarHostState
+                )
             }
         }
     }

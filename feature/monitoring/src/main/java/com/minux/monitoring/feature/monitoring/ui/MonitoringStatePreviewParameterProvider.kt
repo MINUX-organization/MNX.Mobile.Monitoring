@@ -4,46 +4,20 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.minux.monitoring.core.data.model.metrics.CoinStatisticsDetail
 import com.minux.monitoring.core.data.model.metrics.Shares
 import com.minux.monitoring.core.data.model.metrics.ValueUnit
-import com.minux.monitoring.core.data.model.rig.FlightSheet
-import com.minux.monitoring.core.data.model.rig.RigDynamicData
-import com.minux.monitoring.feature.monitoring.MonitoringState
+import com.minux.monitoring.feature.monitoring.MonitoringUiState
+import com.minux.monitoring.feature.monitoring.RigMiningStatus
+import com.minux.monitoring.feature.monitoring.RigPowerState
 
-class MonitoringStatePreviewParameterProvider : PreviewParameterProvider<MonitoringState> {
-    private val rigDynamicData = RigDynamicData(
-        id = "This is id!",
-        index = 1,
-        averageTemperature = 81,
-        fanSpeed = 80,
-        power = ValueUnit(
-            value = 324,
-            measureUnit = "W"
-        ),
-        internetSpeed = ValueUnit(
-            value = 123,
-            measureUnit = "Mb\\s"
-        ),
-        miningUpTime = "01:00:00",
-        bootedUpTime = "01:00:00",
-        flightSheetInfo = listOf(
-            FlightSheet(
-                name = "This is flightSheet!",
-                coin = "ETC",
-                miner = "Miner",
-                hashRate = ValueUnit(
-                    value = 153,
-                    measureUnit = "Gh\\s",
-                ),
-                shares = Shares(
-                    accepted = 5554,
-                    rejected = 54
-                )
-            )
-        )
-    )
+class MonitoringStatePreviewParameterProvider : PreviewParameterProvider<MonitoringUiState> {
+    private val rigDynamicDataPreviewParameterProvider = RigDynamicDataPreviewParameterProvider()
+    private val rigDynamicData = rigDynamicDataPreviewParameterProvider.values.first()
 
-    override val values: Sequence<MonitoringState>
+    override val values: Sequence<MonitoringUiState>
         get() = sequenceOf(
-            MonitoringState(
+            MonitoringUiState.Loading,
+            MonitoringUiState.Error(),
+            MonitoringUiState.NoRigs,
+            MonitoringUiState.HasRigs(
                 totalPower = ValueUnit(
                     value = 570,
                     measureUnit = "W"
@@ -80,14 +54,40 @@ class MonitoringStatePreviewParameterProvider : PreviewParameterProvider<Monitor
                     )
                 ),
                 rigs = listOf(
-                    null,
+                    rigDynamicData.copy(index = 1),
                     rigDynamicData.copy(index = 2),
                     null,
                     null,
                     rigDynamicData.copy(index = 5)
                 ),
-                rigNames = listOf(null, "SomeRig", null, null, "Rig"),
-                rigActiveStates = listOf(null, true, null, null, false)
+                rigNames = listOf(
+                    "First rig",
+                    "SomeRig",
+                    null,
+                    null,
+                    "Rig"
+                ),
+                rigActiveStates = listOf(
+                    true,
+                    true,
+                    null,
+                    null,
+                    false
+                ),
+                rigPowerStates = listOf(
+                    RigPowerState.Rebooting,
+                    RigPowerState.PoweredOn,
+                    null,
+                    null,
+                    RigPowerState.PoweringOff
+                ),
+                rigMiningStatuses = listOf(
+                    RigMiningStatus.Started,
+                    RigMiningStatus.Stopping,
+                    null,
+                    null,
+                    RigMiningStatus.Stopped
+                )
             )
         )
 }

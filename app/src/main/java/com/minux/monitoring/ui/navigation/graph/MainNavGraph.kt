@@ -1,5 +1,6 @@
 package com.minux.monitoring.ui.navigation.graph
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -11,13 +12,16 @@ import com.minux.monitoring.feature.wallets.navigation.walletsScreen
 import com.minux.monitoring.ui.navigation.MNXGraphs
 
 @Composable
-fun MainNavGraph(navController: NavHostController) {
+fun MainNavGraph(
+    navController: NavHostController,
+    snackbarHostState: SnackbarHostState
+) {
     NavHost(
         navController = navController,
         route = MNXGraphs.MainNavGraph.name,
         startDestination = MonitoringDestinations.MonitoringRoute.name
     ) {
-        monitoringScreen()
+        monitoringScreen(snackbarHostState = snackbarHostState)
         cryptosScreen()
         walletsScreen()
         poolsScreen()

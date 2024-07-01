@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,9 +23,12 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.Dimension
 import com.minux.monitoring.core.data.model.metrics.ValueUnit
+import com.minux.monitoring.core.data.model.rig.FlightSheet
 import com.minux.monitoring.core.data.model.rig.RigCommandParam
 import com.minux.monitoring.core.data.model.rig.RigDynamicData
 import com.minux.monitoring.core.designsystem.component.GridItems
@@ -32,21 +36,24 @@ import com.minux.monitoring.core.designsystem.component.MNXExpandableCard
 import com.minux.monitoring.core.designsystem.icon.MNXIcons
 import com.minux.monitoring.core.designsystem.theme.BorderSide
 import com.minux.monitoring.core.designsystem.theme.BorderSides
+import com.minux.monitoring.core.designsystem.theme.MNXTheme
 import com.minux.monitoring.core.ui.FlightSheetGridHeader
 import com.minux.monitoring.core.ui.RigIsOnlineIndicator
 import com.minux.monitoring.core.ui.RigParameters
-import com.minux.monitoring.feature.monitoring.MiningStatus
 import com.minux.monitoring.feature.monitoring.MonitoringEvent
+import com.minux.monitoring.feature.monitoring.RigMiningStatus
+import com.minux.monitoring.feature.monitoring.RigPowerState
 import com.minux.monitoring.feature.monitoring.commonTextStyle
 
 @Composable
-fun RigStateCard(
+internal fun RigStateCard(
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState,
     rigDynamicData: RigDynamicData,
     rigName: String,
     rigActiveState: Boolean,
-    miningStatus: MiningStatus,
+    rigPowerState: RigPowerState,
+    rigMiningStatus: RigMiningStatus,
     onRigCommandEvent: (MonitoringEvent) -> Unit,
 ) {
     MNXExpandableCard(
@@ -97,8 +104,12 @@ fun RigStateCard(
             flightSheet = rigDynamicData.flightSheetInfo,
             miningUpTime = rigDynamicData.miningUpTime,
             bootedUpTime = rigDynamicData.bootedUpTime,
-            miningStatus = miningStatus,
-            rigCommand = RigCommandParam(rigId = rigDynamicData.id),
+            rigPowerState = rigPowerState,
+            rigMiningStatus = rigMiningStatus,
+            rigCommand = RigCommandParam(
+                rigId = rigDynamicData.id,
+                rigIndex = rigDynamicData.index
+            ),
             onRigCommandEvent = onRigCommandEvent
         )
     }
@@ -172,10 +183,11 @@ private fun RigStateCardContent(
 private fun RigStateCardExpandableContent(
     snackbarHostState: SnackbarHostState,
     headers: List<String>,
-    flightSheet: List<com.minux.monitoring.core.data.model.rig.FlightSheet>,
+    flightSheet: List<FlightSheet>,
     miningUpTime: String,
     bootedUpTime: String,
-    miningStatus: MiningStatus,
+    rigPowerState: RigPowerState,
+    rigMiningStatus: RigMiningStatus,
     rigCommand: RigCommandParam,
     onRigCommandEvent: (MonitoringEvent) -> Unit
 ) {
@@ -215,9 +227,10 @@ private fun RigStateCardExpandableContent(
     )
 
     RigControls(
-        modifier = Modifier.padding(horizontal = 16.dp),
+        modifier = Modifier.padding(bottom = 6.dp),
         snackbarHostState = snackbarHostState,
-        miningStatus = miningStatus,
+        rigPowerState = rigPowerState,
+        rigMiningStatus = rigMiningStatus,
         onPowerOffRig = {
             onRigCommandEvent(
                 MonitoringEvent.PowerOffRig(rigCommand)
@@ -241,7 +254,7 @@ private fun RigStateCardExpandableContent(
     )
 }
 
-private fun LazyGridScope.rigFlightSheetGridItems(flightSheet: com.minux.monitoring.core.data.model.rig.FlightSheet) {
+private fun LazyGridScope.rigFlightSheetGridItems(flightSheet: FlightSheet) {
     item {
         Text(
             text = flightSheet.coin,
@@ -304,6 +317,28 @@ private fun RigStatisticsUpTime(
                     append(it.split(',')[1])
                 },
                 style = commonTextStyle
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+fun RigStateCardPreview(
+    @PreviewParameter(RigDynamicDataPreviewParameterProvider::class)
+    rigDynamicData: RigDynamicData
+) {
+    MNXTheme {
+        Surface(color = MaterialTheme.colorScheme.background) {
+            RigStateCard(
+                modifier = Modifier.fillMaxWidth(),
+                snackbarHostState = SnackbarHostState(),
+                rigDynamicData = rigDynamicData,
+                rigName = "Rig Name",
+                rigActiveState = true,
+                rigPowerState = RigPowerState.PoweredOn,
+                rigMiningStatus = RigMiningStatus.Starting,
+                onRigCommandEvent = {}
             )
         }
     }

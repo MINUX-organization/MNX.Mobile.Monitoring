@@ -1,5 +1,6 @@
 package com.minux.monitoring.feature.monitoring.navigation
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -10,6 +11,7 @@ import com.minux.monitoring.feature.monitoring.MonitoringViewModel
 
 @Composable
 internal fun MonitoringRoute(
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
     viewModel: MonitoringViewModel = hiltViewModel()
 ) {
@@ -17,7 +19,8 @@ internal fun MonitoringRoute(
 
     MonitoringScreen(
         modifier = modifier,
-        monitoringState = state,
+        monitoringUiState = state,
+        snackbarHostState = snackbarHostState,
         onEvent = viewModel::onEvent
     )
 }

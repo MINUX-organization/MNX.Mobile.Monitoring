@@ -1,6 +1,8 @@
 package com.minux.monitoring.feature.monitoring.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -14,143 +16,239 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.minux.monitoring.core.designsystem.component.MNXButton
-import com.minux.monitoring.feature.monitoring.MiningStatus
+import com.minux.monitoring.feature.monitoring.RigMiningStatus
+import com.minux.monitoring.feature.monitoring.RigPowerState
 import com.minux.monitoring.feature.monitoring.commonTextStyle
 
 @Composable
-fun RigControls(
+internal fun RigControls(
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState,
-    miningStatus: MiningStatus,
+    rigPowerState: RigPowerState,
+    rigMiningStatus: RigMiningStatus,
     onPowerOffRig: () -> Unit,
     onRebootRig: () -> Unit,
     onStartMiningOnRig: () -> Unit,
     onStopMiningOnRig: () -> Unit
 ) {
-    Row(modifier = modifier) {
-        RigMiningControlButton(
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 8.dp),
-            snackbarHostState = snackbarHostState,
-            miningStatus = miningStatus,
-            onStartMiningOnRig = onStartMiningOnRig,
-            onStopMiningOnRig = onStopMiningOnRig
-        )
-
-        RigControlButton(
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 8.dp),
-            onClick = onPowerOffRig,
-            text = "POWER OFF",
-            color = MaterialTheme.colorScheme.secondary
-        )
-    }
-
-    Row(
-        modifier = modifier
-            .padding(
-                top = 12.dp,
-                bottom = 6.dp
-            )
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        RigControlButton(
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 8.dp),
-            onClick = onRebootRig,
-            text = "REBOOT",
-            color = MaterialTheme.colorScheme.primary
-        )
+        Row(
+            modifier = Modifier.padding(horizontal = 20.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            RigMiningControlButton(
+                modifier = Modifier.weight(1f),
+                snackbarHostState = snackbarHostState,
+                rigPowerState = rigPowerState,
+                rigMiningStatus = rigMiningStatus,
+                onStartMiningOnRig = onStartMiningOnRig,
+                onStopMiningOnRig = onStopMiningOnRig
+            )
 
-        RigControlButton(
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 8.dp),
-            onClick = onRebootRig,
-            text = "REBOOT IN 30s",
-            color = MaterialTheme.colorScheme.primary
-        )
+            RigPowerControlButton(
+                modifier = Modifier.weight(1f),
+                rigPowerState = rigPowerState,
+                snackbarHostState = snackbarHostState,
+                onPowerOffRig = onPowerOffRig
+            )
+        }
+
+        Row(
+            modifier = modifier.padding(horizontal = 20.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            RigRebootControlButton(
+                modifier = Modifier.weight(1f),
+                rigPowerState = rigPowerState,
+                snackbarHostState = snackbarHostState,
+                onRebootRig = onRebootRig
+            )
+
+            RigControlButton(
+                modifier = Modifier.weight(1f),
+                onClick = onRebootRig,
+                text = "FAN SETTINGS",
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
     }
 }
 
 @Composable
-private fun RigMiningControlButton(
-    modifier: Modifier = Modifier,
+private fun RigPowerControlButton(
+    rigPowerState: RigPowerState,
     snackbarHostState: SnackbarHostState,
-    miningStatus: MiningStatus,
-    onStartMiningOnRig: () -> Unit,
-    onStopMiningOnRig: () -> Unit
+    onPowerOffRig: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val coroutineScope = rememberCoroutineScope()
 
-    var (miningStatusText, miningStatusColor) = Pair("", Color.White)
+    val isEnabled = rigPowerState is RigPowerState.PoweredOn ||
+            rigPowerState is RigPowerState.PoweredOff
+    var powerStateText = ""
 
-    when (miningStatus) {
-        MiningStatus.Started -> {
+    when (rigPowerState) {
+        RigPowerState.PoweredOn -> {
+            powerStateText = "POWER OFF"
+        }
+
+        RigPowerState.PoweredOff -> {
+            powerStateText = "POWER ON"
+        }
+
+        RigPowerState.PoweringOff -> {
+            powerStateText = "POWERING OFF"
+        }
+
+        RigPowerState.Rebooting -> {
+            powerStateText = "POWER OFF"
+        }
+
+        is RigPowerState.Error -> {
+            LaunchedEffect(coroutineScope) {
+                snackbarHostState.showSnackbar(
+                    message = rigPowerState.message ?: "Error was occurred"
+                )
+            }
+        }
+    }
+
+    RigControlButton(
+        modifier = modifier,
+        onClick = onPowerOffRig,
+        text = powerStateText,
+        color = MaterialTheme.colorScheme.secondary,
+        enabled = isEnabled
+    )
+}
+
+@Composable
+private fun RigRebootControlButton(
+    rigPowerState: RigPowerState,
+    snackbarHostState: SnackbarHostState,
+    onRebootRig: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val coroutineScope = rememberCoroutineScope()
+
+    val isEnabled = rigPowerState is RigPowerState.PoweredOn
+    var powerStateText = ""
+
+    when (rigPowerState) {
+        RigPowerState.PoweredOn -> {
+            powerStateText = "REBOOT"
+        }
+
+        RigPowerState.PoweredOff -> {
+            powerStateText = "REBOOT"
+        }
+
+        RigPowerState.PoweringOff -> {
+            powerStateText = "REBOOT"
+        }
+
+        RigPowerState.Rebooting -> {
+            powerStateText = "REBOOTING"
+        }
+
+        is RigPowerState.Error -> {
+            LaunchedEffect(coroutineScope) {
+                snackbarHostState.showSnackbar(
+                    message = rigPowerState.message ?: "Error was occurred"
+                )
+            }
+        }
+    }
+
+    RigControlButton(
+        modifier = modifier,
+        onClick = onRebootRig,
+        text = powerStateText,
+        color = MaterialTheme.colorScheme.primary,
+        enabled = isEnabled
+    )
+}
+
+@Composable
+private fun RigMiningControlButton(
+    rigPowerState: RigPowerState,
+    rigMiningStatus: RigMiningStatus,
+    snackbarHostState: SnackbarHostState,
+    onStartMiningOnRig: () -> Unit,
+    onStopMiningOnRig: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val coroutineScope = rememberCoroutineScope()
+
+    val isEnabled = rigPowerState is RigPowerState.PoweredOn &&
+            (rigMiningStatus is RigMiningStatus.Started ||
+                    rigMiningStatus is RigMiningStatus.Stopped)
+
+    var miningStatusText = ""
+
+    when (rigMiningStatus) {
+        RigMiningStatus.Started -> {
             miningStatusText = "STOP MINING"
-            miningStatusColor = MaterialTheme.colorScheme.secondary
         }
 
-        MiningStatus.StartingFailure -> {
-            LaunchedEffect(coroutineScope) {
-                snackbarHostState.showSnackbar("Rig starting failure")
-            }
-        }
-
-        MiningStatus.Starting -> {
-            miningStatusText = "STARTING..."
-            miningStatusColor = MaterialTheme.colorScheme.primary
-        }
-
-        MiningStatus.Stopped -> {
+        RigMiningStatus.Stopped -> {
             miningStatusText = "START MINING"
-            miningStatusColor = MaterialTheme.colorScheme.primary
         }
 
-        MiningStatus.StoppingFailure -> {
+        RigMiningStatus.Starting -> {
+            miningStatusText = "STARTING"
+        }
+
+        RigMiningStatus.Stopping -> {
+            miningStatusText = "STOPPING"
+        }
+
+        is RigMiningStatus.Error -> {
             LaunchedEffect(coroutineScope) {
-                snackbarHostState.showSnackbar("Rig stopping failure")
+                snackbarHostState.showSnackbar(
+                    message = rigMiningStatus.message ?: "Error was occurred"
+                )
             }
-        }
-
-        MiningStatus.Stopping -> {
-            miningStatusText = "STOPPING..."
-            miningStatusColor = MaterialTheme.colorScheme.secondary
         }
     }
 
     RigControlButton(
         modifier = modifier,
         onClick = {
-            if (miningStatus == MiningStatus.Started) {
+            if (rigMiningStatus == RigMiningStatus.Started) {
                 onStopMiningOnRig()
             }
 
-            if (miningStatus == MiningStatus.Stopped) {
+            if (rigMiningStatus == RigMiningStatus.Stopped) {
                 onStartMiningOnRig()
             }
         },
         text = miningStatusText,
-        color = miningStatusColor
+        color = MaterialTheme.colorScheme.secondary,
+        enabled = isEnabled
     )
 }
 
 @Composable
 private fun RigControlButton(
-    modifier: Modifier = Modifier,
     onClick: () -> Unit,
     text: String,
-    color: Color
+    color: Color,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
 ) {
     MNXButton(
         modifier = Modifier
             .height(40.dp)
             .then(modifier),
         onClick = onClick,
+        enabled = enabled,
         color = color
     ) {
         Box(
@@ -159,6 +257,7 @@ private fun RigControlButton(
         ) {
             Text(
                 text = text,
+                textAlign = TextAlign.Center,
                 style = commonTextStyle
             )
         }
