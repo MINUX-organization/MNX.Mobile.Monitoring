@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
@@ -76,11 +77,10 @@ fun MNXDrawerHeader(
                 painter = painterResource(id = MNXIcons.MinuxHeader)
             )
             .selectiveBorder(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.primary,
                 sides = BorderSides(
-                    start = BorderSide.Start()
-                )
+                    start = BorderSide.Start(width = 1.dp)
+                ),
+                color = MaterialTheme.colorScheme.primary
             )
             .padding(paddingValues = contentPadding),
         verticalArrangement = verticalArrangement,
@@ -101,7 +101,6 @@ fun MNXNavigationDrawerItem(
         modifier
             .background(brush = OrangeVerticalGradient)
             .selectiveBorder(
-                width = 1.dp,
                 sides = borderSides,
                 color = MaterialTheme.colorScheme.onSecondaryContainer
             )
@@ -109,7 +108,6 @@ fun MNXNavigationDrawerItem(
         modifier
             .background(color = Color.Transparent)
             .selectiveBorder(
-                width = 1.dp,
                 sides = borderSides,
                 color = MaterialTheme.colorScheme.primary
             )
@@ -146,20 +144,6 @@ private fun MNXNavigationDrawerPreview() {
             initialValue = DrawerValue.Open
         )
 
-        val coroutineScope = rememberCoroutineScope()
-
-        val items = listOf(
-            "Text 1", "Text 2", "Text 3", "Text 4", "Text 5", "Text 6"
-        )
-
-        val selectedItem = remember {
-            mutableStateOf(items.first())
-        }
-
-        val selectedIndex = remember {
-            mutableIntStateOf(0)
-        }
-
         CompositionLocalProvider(
             value = LocalLayoutDirection provides LayoutDirection.Rtl
         ) {
@@ -170,81 +154,18 @@ private fun MNXNavigationDrawerPreview() {
                         value = LocalLayoutDirection provides LayoutDirection.Ltr
                     ) {
                         MNXDrawerSheet(modifier = Modifier.width(280.dp)) {
-                            MNXDrawerHeader(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(180.dp),
-                                verticalArrangement = Arrangement.Bottom,
-                                contentPadding = PaddingValues(
-                                    start = 10.dp,
-                                    bottom = 16.dp
-                                )
-                            ) {
-                                Text(
-                                    text = "Minux User #1",
-                                    color = MaterialTheme.colorScheme.onPrimary,
-                                    fontSize = 20.sp,
-                                    fontFamily = grillSansMtFamily,
-                                    fontWeight = FontWeight.Normal
-                                )
+                            MNXNavigationDrawerHeader()
 
-                                Text(
-                                    text = "minux.studio@minux.com",
-                                    fontSize = 20.sp,
-                                    fontFamily = grillSansMtFamily,
-                                    fontWeight = FontWeight.Normal
-                                )
-                            }
-
-                            items.forEachIndexed { index, item ->
-                                var borderSides = BorderSides(
-                                    start = BorderSide.Start(),
-                                    end = BorderSide.End()
-                                )
-
-                                when {
-                                    index - selectedIndex.intValue <= -1 -> {
-                                        borderSides = borderSides.copy(
-                                            top = BorderSide.Top()
-                                        )
-                                    }
-
-                                    index == selectedIndex.intValue -> {
-                                        borderSides = borderSides.copy(
-                                            top = BorderSide.Top(),
-                                            bottom = BorderSide.Bottom()
-                                        )
-                                    }
-
-                                    index - selectedIndex.intValue >= 1 -> {
-                                        borderSides = borderSides.copy(
-                                            bottom = BorderSide.Bottom()
-                                        )
-                                    }
-                                }
-
-                                MNXNavigationDrawerItem(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    text = item,
-                                    selected = selectedItem.value == item,
-                                    borderSides = borderSides,
-                                    onClick = {
-                                        coroutineScope.launch {
-                                            selectedItem.value = item
-                                            selectedIndex.intValue = index
-                                            drawerState.close()
-                                        }
-                                    }
-                                )
-                            }
+                            MNXNavigationDrawerItems(drawerState = drawerState)
 
                             Spacer(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .selectiveBorder(
-                                        width = 1.dp,
-                                        color = MaterialTheme.colorScheme.primary,
-                                        sides = BorderSides(start = BorderSide.Start())
+                                        sides = BorderSides(
+                                            start = BorderSide.Start(width = 1.dp)
+                                        ),
+                                        color = MaterialTheme.colorScheme.primary
                                     )
                             )
                         }
@@ -253,5 +174,93 @@ private fun MNXNavigationDrawerPreview() {
                 content = {}
             )
         }
+    }
+}
+
+@Composable
+private fun MNXNavigationDrawerHeader() {
+    MNXDrawerHeader(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(180.dp),
+        verticalArrangement = Arrangement.Bottom,
+        contentPadding = PaddingValues(
+            start = 10.dp,
+            bottom = 16.dp
+        )
+    ) {
+        Text(
+            text = "Minux User #1",
+            color = MaterialTheme.colorScheme.onPrimary,
+            fontSize = 20.sp,
+            fontFamily = grillSansMtFamily,
+            fontWeight = FontWeight.Normal
+        )
+
+        Text(
+            text = "minux.studio@minux.com",
+            fontSize = 20.sp,
+            fontFamily = grillSansMtFamily,
+            fontWeight = FontWeight.Normal
+        )
+    }
+}
+
+@Composable
+private fun MNXNavigationDrawerItems(drawerState: DrawerState) {
+    val coroutineScope = rememberCoroutineScope()
+
+    val items = listOf(
+        "Text 1", "Text 2", "Text 3", "Text 4", "Text 5", "Text 6"
+    )
+
+    val selectedItem = remember {
+        mutableStateOf(items[1])
+    }
+
+    val selectedIndex = remember {
+        mutableIntStateOf(1)
+    }
+
+    items.forEachIndexed { index, item ->
+        var borderSides = BorderSides(
+            start = BorderSide.Start(width = 1.dp),
+            end = BorderSide.End(width = 1.dp)
+        )
+
+        when {
+            index - selectedIndex.intValue <= -1 -> {
+                borderSides = borderSides.copy(
+                    top = BorderSide.Top(width = 1.dp)
+                )
+            }
+
+            index == selectedIndex.intValue -> {
+                borderSides = borderSides.copy(
+                    top = BorderSide.Top(width = 1.dp),
+                    bottom = BorderSide.Bottom(width = 1.dp)
+                )
+            }
+
+            index - selectedIndex.intValue >= 1 -> {
+                borderSides = borderSides.copy(
+                    bottom = BorderSide.Bottom(width = 1.dp)
+                )
+            }
+        }
+
+        MNXNavigationDrawerItem(
+            modifier = Modifier.fillMaxWidth(),
+            text = item,
+            selected = selectedItem.value == item,
+            borderSides = borderSides,
+            onClick = {
+                coroutineScope.launch {
+                    selectedItem.value = item
+                    selectedIndex.intValue = index
+                    drawerState.close()
+                }
+            }
+        )
     }
 }
