@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridScope
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -26,7 +27,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.Dimension
 import com.minux.monitoring.core.data.model.metrics.ValueUnit
 import com.minux.monitoring.core.data.model.rig.FlightSheet
 import com.minux.monitoring.core.data.model.rig.RigCommandParam
@@ -47,14 +47,14 @@ import com.minux.monitoring.feature.monitoring.commonTextStyle
 
 @Composable
 internal fun RigStateCard(
-    modifier: Modifier = Modifier,
-    snackbarHostState: SnackbarHostState,
     rigDynamicData: RigDynamicData,
     rigName: String,
     rigActiveState: Boolean,
     rigPowerState: RigPowerState,
     rigMiningStatus: RigMiningStatus,
+    snackbarHostState: SnackbarHostState,
     onRigCommandEvent: (MonitoringEvent) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     MNXExpandableCard(
         modifier = modifier,
@@ -64,29 +64,22 @@ internal fun RigStateCard(
             end = BorderSide.End(width = 3.dp),
             bottom = BorderSide.Bottom(width = 1.dp)
         ),
-        containerPadding = PaddingValues(
+        contentPadding = PaddingValues(
             horizontal = 7.dp,
             vertical = 5.dp
         ),
-        contentPadding = PaddingValues(
-            start = 8.dp,
-            top = 10.dp,
-            end = 8.dp,
-            bottom = 6.dp
-        ),
-        content = { iconDropDown ->
-            val columnContent = createRef()
-
-            Column(
+        content = { iconCardStateModifier ->
+            Row(
                 modifier = Modifier
-                    .constrainAs(columnContent) {
-                        start.linkTo(parent.start)
-                        top.linkTo(parent.top)
-                        end.linkTo(iconDropDown.start)
-                        width = Dimension.fillToConstraints
-                    }
+                    .padding(horizontal = 8.dp)
+                    .padding(
+                        top = 10.dp,
+                        bottom = 6.dp
+                    ),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 RigStateCardContent(
+                    modifier = Modifier.weight(1f),
                     index = rigDynamicData.index,
                     name = rigName,
                     isOnline = rigActiveState,
@@ -95,11 +88,17 @@ internal fun RigStateCard(
                     power = rigDynamicData.power,
                     connectionSpeed = rigDynamicData.internetSpeed
                 )
+
+                Icon(
+                    modifier = iconCardStateModifier,
+                    painter = painterResource(id = MNXIcons.DropDown),
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                    contentDescription = null
+                )
             }
         }
     ) {
         RigStateCardExpandableContent(
-            snackbarHostState = snackbarHostState,
             headers = listOf("Coin", "Hashrate", "Accepted", "Rejected"),
             flightSheet = rigDynamicData.flightSheetInfo,
             miningUpTime = rigDynamicData.miningUpTime,
@@ -110,6 +109,7 @@ internal fun RigStateCard(
                 rigId = rigDynamicData.id,
                 rigIndex = rigDynamicData.index
             ),
+            snackbarHostState = snackbarHostState,
             onRigCommandEvent = onRigCommandEvent
         )
     }
@@ -124,64 +124,66 @@ private fun RigStateCardContent(
     fanSpeed: Int,
     power: ValueUnit,
     connectionSpeed: ValueUnit,
+    modifier: Modifier = Modifier
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(
-            text = index.toString(),
-            color = MaterialTheme.colorScheme.onPrimary,
-            style = commonTextStyle
-        )
+    Column(modifier = modifier) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = index.toString(),
+                color = MaterialTheme.colorScheme.onPrimary,
+                style = commonTextStyle
+            )
 
-        Text(
-            modifier = Modifier.padding(start = 12.dp),
-            text = name,
-            color = MaterialTheme.colorScheme.onPrimary,
-            style = commonTextStyle
-        )
+            Text(
+                modifier = Modifier.padding(start = 12.dp),
+                text = name,
+                color = MaterialTheme.colorScheme.onPrimary,
+                style = commonTextStyle
+            )
 
-        val indicatorColor = if (isOnline) {
-            MaterialTheme.colorScheme.tertiary
-        } else {
-            MaterialTheme.colorScheme.secondary
+            val indicatorColor = if (isOnline) {
+                MaterialTheme.colorScheme.tertiary
+            } else {
+                MaterialTheme.colorScheme.secondary
+            }
+
+            RigIsOnlineIndicator(
+                modifier = Modifier
+                    .size(16.dp)
+                    .offset(x = 8.dp),
+                color = indicatorColor
+            )
         }
 
-        RigIsOnlineIndicator(
-            modifier = Modifier
-                .size(16.dp)
-                .offset(x = 8.dp),
-            color = indicatorColor
+        RigParameters(
+            modifier = Modifier.padding(start = 20.dp, top = 8.dp),
+            parameters = mapOf(
+                "TEMP" to buildAnnotatedString {
+                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.secondary)) {
+                        append(temperature.toString())
+                    }
+                    append(" ")
+                    append("°C")
+                },
+                "FAN" to buildAnnotatedString { append("$fanSpeed %") },
+                "PWR" to buildAnnotatedString {
+                    append(power.value.toString())
+                    append(" ")
+                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
+                        append(power.measureUnit)
+                    }
+                },
+                "SIGNAL" to buildAnnotatedString {
+                    append("${connectionSpeed.value} ${connectionSpeed.measureUnit}")
+                }
+            ),
+            icons = mapOf("SIGNAL" to painterResource(id = MNXIcons.Wifi))
         )
     }
-
-    RigParameters(
-        modifier = Modifier.padding(start = 20.dp, top = 8.dp),
-        parameters = mapOf(
-            "TEMP" to buildAnnotatedString {
-                withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.secondary)) {
-                    append(temperature.toString())
-                }
-                append(" ")
-                append("°C")
-            },
-            "FAN" to buildAnnotatedString { append("$fanSpeed %") },
-            "PWR" to buildAnnotatedString {
-                append(power.value.toString())
-                append(" ")
-                withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                    append(power.measureUnit)
-                }
-            },
-            "SIGNAL" to buildAnnotatedString {
-                append("${connectionSpeed.value} ${connectionSpeed.measureUnit}")
-            }
-        ),
-        icons = mapOf("SIGNAL" to painterResource(id = MNXIcons.Wifi))
-    )
 }
 
 @Composable
 private fun RigStateCardExpandableContent(
-    snackbarHostState: SnackbarHostState,
     headers: List<String>,
     flightSheet: List<FlightSheet>,
     miningUpTime: String,
@@ -189,6 +191,7 @@ private fun RigStateCardExpandableContent(
     rigPowerState: RigPowerState,
     rigMiningStatus: RigMiningStatus,
     rigCommand: RigCommandParam,
+    snackbarHostState: SnackbarHostState,
     onRigCommandEvent: (MonitoringEvent) -> Unit
 ) {
     FlightSheetGridHeader(
@@ -298,8 +301,8 @@ private fun LazyGridScope.rigFlightSheetGridItems(flightSheet: FlightSheet) {
 
 @Composable
 private fun RigStatisticsUpTime(
-    modifier: Modifier = Modifier,
-    upTimes: List<String>
+    upTimes: List<String>,
+    modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier,
