@@ -6,62 +6,60 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 fun Modifier.selectiveBorder(
-    width: Dp? = null,
-    color: Color? = null,
-    sides: BorderSides = BorderSides(),
-    shape: Shape = RectangleShape
+    sides: BorderSides = BorderSides(
+        start = BorderSide.Start(width = 1.dp),
+        top = BorderSide.Top(width = 1.dp),
+        end = BorderSide.End(width = 1.dp),
+        bottom = BorderSide.Bottom(width = 1.dp)
+    ),
+    color: Color
 ) = this
-    .clip(shape)
+    .clip(RectangleShape)
     .drawWithContent {
         drawContent()
 
         val borderSides = listOf(sides.start, sides.top, sides.end, sides.bottom)
 
-        /**
-         * Добавить поддержку RoundedCornerShape, путем дорисовывания закруклений с помощью drawArc
-         * Например, если включены Bottom и Start стороны то дорисовать соотвественно в нижнем левом углу
-         * Если включена одна любая сторона, то ничего не дорисовывать
-         */
-
         borderSides.forEach { side ->
             if (side == null) return@forEach
 
-            val sideWidth = (width ?: side.sideWidth).toPx()
-            val sideColor = color ?: side.sideColor
+            val sideWidth = side.sideWidth.toPx()
 
             when (side) {
                 is BorderSide.Start -> {
                     drawLine(
-                        color = sideColor,
+                        color = color,
                         start = Offset(sideWidth / 2, 0f),
                         end = Offset(sideWidth / 2, size.height),
                         strokeWidth = sideWidth
                     )
                 }
+
                 is BorderSide.Top -> {
                     drawLine(
-                        color = sideColor,
+                        color = color,
                         start = Offset(0f, sideWidth / 2),
                         end = Offset(size.width, sideWidth / 2),
                         strokeWidth = sideWidth
                     )
                 }
+
                 is BorderSide.End -> {
                     drawLine(
-                        color = sideColor,
+                        color = color,
                         start = Offset(size.width - (sideWidth / 2), 0f),
                         end = Offset(size.width - (sideWidth / 2), size.height),
                         strokeWidth = sideWidth
                     )
                 }
+
                 is BorderSide.Bottom -> {
                     drawLine(
-                        color = sideColor,
+                        color = color,
                         start = Offset(0f, size.height - (sideWidth / 2)),
                         end = Offset(size.width, size.height - (sideWidth / 2)),
                         strokeWidth = sideWidth
@@ -71,7 +69,6 @@ fun Modifier.selectiveBorder(
         }
     }
 
-
 data class BorderSides(
     val start: BorderSide.Start? = null,
     val top: BorderSide.Top? = null,
@@ -79,24 +76,12 @@ data class BorderSides(
     val bottom: BorderSide.Bottom? = null
 )
 
-sealed class BorderSide(val sideWidth: Dp, val sideColor: Color) {
-    data class Start(
-        val width: Dp = 0.dp,
-        val color: Color = Color.Transparent
-    ) : BorderSide(sideWidth = width, sideColor = color)
+sealed class BorderSide(val sideWidth: Dp) {
+    data class Start(val width: Dp) : BorderSide(sideWidth = width)
 
-    data class Top(
-        val width: Dp = 0.dp,
-        val color: Color = Color.Transparent
-    ) : BorderSide(sideWidth = width, sideColor = color)
+    data class Top(val width: Dp) : BorderSide(sideWidth = width)
 
-    data class End(
-        val width: Dp = 0.dp,
-        val color: Color = Color.Transparent
-    ) : BorderSide(sideWidth = width, sideColor = color)
+    data class End(val width: Dp) : BorderSide(sideWidth = width)
 
-    data class Bottom(
-        val width: Dp = 0.dp,
-        val color: Color = Color.Transparent
-    ) : BorderSide(sideWidth = width, sideColor = color)
+    data class Bottom(val width: Dp) : BorderSide(sideWidth = width)
 }
