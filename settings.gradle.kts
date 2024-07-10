@@ -18,6 +18,7 @@ rootProject.name = "MinuxMonitoring"
 include(":app")
 include(":feature:sign")
 include(":feature:monitoring")
+include(":feature:devices")
 include(":feature:cryptos")
 include(":feature:wallets")
 include(":feature:pools")
