@@ -5,7 +5,9 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
@@ -18,7 +20,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -38,6 +39,9 @@ import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MNXDropDownMenu(
+    menuItems: List<String>,
+    selectedMenuItem: String,
+    onSelectedMenuItemChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(4.dp),
     iconPadding: Dp = 10.dp,
@@ -46,20 +50,18 @@ fun MNXDropDownMenu(
         top = 7.dp,
         end = 9.dp,
         bottom = 7.dp
-    ),
-    menuItems: List<String>,
-    selectedItem: MutableState<String>
+    )
 ) {
     val isExpandedState = remember {
         mutableStateOf(false)
     }
 
-    val scaleY = remember {
+    val iconScaleY = remember {
         Animatable(initialValue = 1f)
     }
 
-    LaunchedEffect(key1 = isExpandedState.value) {
-        scaleY.animateTo(
+    LaunchedEffect(isExpandedState.value) {
+        iconScaleY.animateTo(
             targetValue = if (isExpandedState.value) -1f else 1f,
             animationSpec = TweenSpec(
                 durationMillis = 250,
@@ -69,26 +71,23 @@ fun MNXDropDownMenu(
     }
 
     ExposedDropdownMenuBox(
-        modifier = modifier,
         expanded = isExpandedState.value,
         onExpandedChange = {
             isExpandedState.value = !isExpandedState.value
         }
     ) {
         MNXTextField(
+            value = selectedMenuItem,
+            onValueChange = { onSelectedMenuItemChange(it) },
             modifier = Modifier
-                .fillMaxWidth()
+                .then(modifier)
                 .menuAnchor(),
-            value = selectedItem.value,
-            onValueChange = { selectedItem.value = it },
             readOnly = true,
             shape = shape,
             suffix = {
                 Icon(
                     modifier = Modifier
-                        .graphicsLayer {
-                            this.scaleY = scaleY.value
-                        }
+                        .graphicsLayer(scaleY = iconScaleY.value)
                         .padding(start = iconPadding),
                     painter = painterResource(id = MNXIcons.DropDown),
                     tint = MaterialTheme.colorScheme.primary,
@@ -117,7 +116,7 @@ fun MNXDropDownMenu(
                         )
                     },
                     onClick = {
-                        selectedItem.value = menuItems[index]
+                        onSelectedMenuItemChange(menuItems[index])
                         isExpandedState.value = false
                     },
                     contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
@@ -131,19 +130,24 @@ fun MNXDropDownMenu(
 @Composable
 private fun MNXDropDownMenuPreview() {
     MNXTheme {
-        val list = listOf("Alg 1", "Alg 2")
+        val items = listOf("Alg 1", "Alg 2")
 
-        val selectedText = remember {
+        val selectedItem = remember {
             mutableStateOf("Sort by")
         }
 
         Column(modifier = Modifier.padding(10.dp)) {
             MNXDropDownMenu(
-                menuItems = list,
-                selectedItem = selectedText
+                menuItems = items,
+                selectedMenuItem = selectedItem.value,
+                onSelectedMenuItemChange = { selectedItem.value = it },
+                modifier = Modifier.fillMaxWidth()
             )
 
             MNXDropDownMenu(
+                menuItems = items,
+                selectedMenuItem = selectedItem.value,
+                onSelectedMenuItemChange = { selectedItem.value = it },
                 modifier = Modifier.padding(top = 10.dp),
                 shape = RectangleShape,
                 contentPadding = PaddingValues(
@@ -151,10 +155,10 @@ private fun MNXDropDownMenuPreview() {
                     top = 9.dp,
                     end = 9.dp,
                     bottom = 9.dp
-                ),
-                menuItems = list,
-                selectedItem = selectedText
+                )
             )
+
+            Spacer(modifier = Modifier.height(100.dp))
         }
     }
 }
