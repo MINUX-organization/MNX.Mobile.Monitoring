@@ -2,28 +2,22 @@ package com.minux.monitoring.core.ui
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridScope
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -32,69 +26,33 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.minux.monitoring.core.designsystem.component.GridHeader
 import com.minux.monitoring.core.designsystem.component.GridItems
-import com.minux.monitoring.core.designsystem.component.MNXButton
+import com.minux.monitoring.core.designsystem.component.MNXBorderedButton
 import com.minux.monitoring.core.designsystem.component.MNXCard
-import com.minux.monitoring.core.designsystem.component.MNXDropDownMenu
 import com.minux.monitoring.core.designsystem.component.MNXTextField
-import com.minux.monitoring.core.designsystem.icon.MNXIcons
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
-import com.minux.monitoring.core.designsystem.theme.MNXTypography
 import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
 
 /**
- * [CryptoAssetTitle] component is used in the following screens: Cryptos, Wallets, Pools.
+ * Color for CryptoAsset components.
  */
 
-@Composable
-fun CryptoAssetTitle(
-    modifier: Modifier = Modifier,
-    text: String
-) {
-    val titleStyle = MNXTypography.headlineMedium.copy(
-        fontFamily = grillSansMtFamily,
-        color = MaterialTheme.colorScheme.onPrimary
-    )
-
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            text = text,
-            style = titleStyle
-        )
-
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                modifier = Modifier.padding(end = 6.dp),
-                painter = painterResource(id = MNXIcons.Filters),
-                tint = MaterialTheme.colorScheme.onPrimary,
-                contentDescription = null
-            )
-
-            Text(
-                text = "Filters",
-                style = titleStyle
-            )
-        }
-    }
-}
+private val cryptoAssetColor = Color(0x33000000)
 
 /**
- * [AddNewCryptoAssetCard] component is used in the following screens: Cryptos, Wallets, Pools.
+ * [NewCryptoAssetCardWithAddButton] component is used in the following screens:
+ * Cryptos, Wallets, Pools.
  */
 
 @Composable
-fun AddNewCryptoAssetCard(
-    modifier: Modifier = Modifier,
+fun NewCryptoAssetCardWithAddButton(
     title: String,
-    onAddButtonClick: () -> Unit,
+    onAddClick: () -> Unit,
+    modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    Column {
+    Column(modifier = modifier) {
         MNXCard(
-            modifier = modifier,
-            color = Color(0x33000000),
+            color = cryptoAssetColor,
             border = BorderStroke(
                 width = 1.dp,
                 color = MaterialTheme.colorScheme.primary
@@ -102,10 +60,12 @@ fun AddNewCryptoAssetCard(
         ) {
             Column(
                 modifier = Modifier
+                    .padding(horizontal = 12.dp)
                     .padding(
-                        horizontal = 16.dp,
-                        vertical = 24.dp
-                    )
+                        top = 18.dp,
+                        bottom = 30.dp
+                    ),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
                     modifier = Modifier.fillMaxWidth(),
@@ -121,15 +81,12 @@ fun AddNewCryptoAssetCard(
             }
         }
 
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.CenterEnd
-        ) {
-            MNXButton(
-                modifier = Modifier
-                    .width(100.dp)
-                    .padding(top = 12.dp),
-                onClick = onAddButtonClick
+        Row(modifier = Modifier.padding(top = 12.dp)) {
+            Spacer(modifier = Modifier.weight(1f))
+
+            MNXBorderedButton(
+                modifier = Modifier.width(100.dp),
+                onClick = onAddClick
             ) {
                 Text(
                     text = "Add",
@@ -143,108 +100,20 @@ fun AddNewCryptoAssetCard(
 }
 
 /**
- * [CryptoAssetTextFieldTitle] component is used in the following screens: Cryptos, Wallets, Pools.
- */
-
-@Composable
-fun CryptoAssetTextFieldTitle(text: String) {
-    val textFieldStyle = TextStyle(
-        color = MaterialTheme.colorScheme.onPrimary,
-        fontSize = 16.sp,
-        fontFamily = grillSansMtFamily,
-        fontWeight = FontWeight.Normal,
-        lineHeight = 18.sp
-    )
-
-    Text(
-        modifier = Modifier.padding(
-            start = 2.dp,
-            top = 12.dp
-        ),
-        text = text,
-        style = textFieldStyle
-    )
-}
-
-/**
- * [CryptoAssetTextField] component is used in the following screens: Cryptos, Wallets, Pools.
- */
-
-@Composable
-fun CryptoAssetTextField(
-    text: MutableState<String>,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    hintText: String = ""
-) {
-    MNXTextField(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 8.dp),
-        value = text.value,
-        onValueChange = { text.value = it },
-        keyboardOptions = keyboardOptions,
-        hintText = hintText
-    )
-}
-
-/**
- * [CryptoAssetDropDownMenu] component is used in the following screens: Cryptos, Wallets, Pools.
- */
-
-@Composable
-fun CryptoAssetDropDownMenu(
-    items: List<String>,
-    selectedItem: MutableState<String>
-) {
-    MNXDropDownMenu(
-        modifier = Modifier.padding(top = 8.dp),
-        menuItems = items,
-        selectedItem = selectedItem
-    )
-}
-
-/**
- * [CryptoAssetFilters] component is used in the following screens: Cryptos, Wallets, Pools.
- */
-
-@Composable
-fun CryptoAssetFilters(
-    sortItems: List<String>,
-    selectedSortItem: MutableState<String>,
-    searchText: MutableState<String>
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 32.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        SortDropDownMenu(
-            modifier = Modifier.widthIn(max = 160.dp),
-            items = sortItems,
-            selectedItem = selectedSortItem
-        )
-
-        SearchTextField(
-            modifier = Modifier.widthIn(max = 160.dp),
-            text = searchText
-        )
-    }
-}
-
-/**
  * [CryptoAssetGrid] component is used in the following screens: Cryptos, Wallets, Pools.
  */
 
 @Composable
 fun <T> CryptoAssetGrid(
     headers: List<String>,
-    cryptoAssets: List<T>,
-    gridItems: LazyGridScope.(item: T, itemPadding: PaddingValues) -> Unit
+    cryptoAssetItems: List<T>,
+    modifier: Modifier = Modifier,
+    columnsCount: Int = headers.count(),
+    itemsContent: LazyGridScope.(item: T, itemPadding: PaddingValues) -> Unit
 ) {
     MNXCard(
-        modifier = Modifier.padding(top = 12.dp),
-        color = Color(0x33000000),
+        modifier = modifier,
+        color = cryptoAssetColor,
         border = BorderStroke(
             width = 1.dp,
             color = MaterialTheme.colorScheme.primary
@@ -252,14 +121,16 @@ fun <T> CryptoAssetGrid(
     ) {
         Column {
             CryptoAssetGridHeader(headers = headers)
+
             HorizontalDivider(
                 thickness = 1.dp,
                 color = MaterialTheme.colorScheme.primary
             )
+
             CryptoAssetGridItems(
-                columnsCount = headers.count(),
-                cryptoAssets = cryptoAssets,
-                gridItems = gridItems
+                columnsCount = columnsCount,
+                cryptoAssetItems = cryptoAssetItems,
+                content = itemsContent
             )
         }
     }
@@ -289,10 +160,10 @@ private fun CryptoAssetGridHeader(headers: List<String>) {
 @Composable
 private inline fun <T> CryptoAssetGridItems(
     columnsCount: Int,
-    cryptoAssets: List<T>,
-    crossinline gridItems: LazyGridScope.(item: T, itemPadding: PaddingValues) -> Unit
+    cryptoAssetItems: List<T>,
+    crossinline content: LazyGridScope.(item: T, itemPadding: PaddingValues) -> Unit
 ) {
-    val contentPadding = if (cryptoAssets.isNotEmpty()) {
+    val contentPadding = if (cryptoAssetItems.isNotEmpty()) {
         PaddingValues(
             horizontal = 10.dp,
             vertical = 8.dp
@@ -309,37 +180,64 @@ private inline fun <T> CryptoAssetGridItems(
     GridItems(
         modifier = Modifier.padding(paddingValues = contentPadding),
         columns = GridCells.Fixed(columnsCount),
-        data = cryptoAssets
+        items = cryptoAssetItems
     ) {
-        gridItems(it, itemPadding)
+        content(it, itemPadding)
     }
 }
 
 @Preview
 @Composable
-private fun CryptoAssetPreview() {
+internal fun NewCryptoAssetCardWithAddButtonPreview() {
     MNXTheme {
-        Column(modifier = Modifier.padding(12.dp)) {
-            CryptoAssetTitle(
-                modifier = Modifier.fillMaxWidth(),
-                text = "Sample"
+        NewCryptoAssetCardWithAddButton(
+            title = "Sample",
+            onAddClick = {}
+        ) {
+            Text(
+                text = "Label",
+                style = TextStyle(
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontSize = 16.sp,
+                    fontFamily = grillSansMtFamily,
+                    fontWeight = FontWeight.Normal
+                )
             )
 
-            AddNewCryptoAssetCard(
-                modifier = Modifier.padding(top = 8.dp),
-                title = "Sample",
-                onAddButtonClick = {},
-                content = {}
-            )
-
-            val cryptoAssets =
-                emptyList<Triple<String, String, String>>()
-
-            CryptoAssetGrid(
-                headers = listOf("Sample 1", "Sample 2"),
-                cryptoAssets = cryptoAssets,
-                gridItems = { _, _  -> }
+            MNXTextField(
+                value = "Text",
+                onValueChange = {},
+                modifier = Modifier.fillMaxWidth()
             )
         }
+    }
+}
+
+@Preview
+@Composable
+internal fun CryptoAssetGridPreview() {
+    MNXTheme {
+        val cryptoAssets = listOf(
+            Triple("1", "2", "3")
+        )
+
+        CryptoAssetGrid(
+            headers = listOf("Sample 1", "Sample 2", "Sample 3"),
+            cryptoAssetItems = cryptoAssets,
+            itemsContent = { item, itemPadding ->
+                 item {
+                     Text(
+                         text = item.first,
+                         modifier = Modifier.padding(paddingValues = itemPadding),
+                         style = TextStyle(
+                             color = MaterialTheme.colorScheme.onPrimary,
+                             fontSize = 16.sp,
+                             fontFamily = grillSansMtFamily,
+                             fontWeight = FontWeight.Normal
+                         )
+                     )
+                 }
+            }
+        )
     }
 }
