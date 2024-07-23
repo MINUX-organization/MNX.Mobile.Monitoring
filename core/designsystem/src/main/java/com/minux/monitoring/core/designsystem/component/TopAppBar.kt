@@ -23,34 +23,35 @@ import com.minux.monitoring.core.designsystem.theme.MNXTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MNXTopAppBar(
-    modifier: Modifier = Modifier,
-    titleIconModifier: Modifier = Modifier,
     titleIcon: Painter,
     navigationIcon: Painter,
-    onNavigationIconClick: () -> Unit
+    onNavigationClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     CenterAlignedTopAppBar(
-        modifier = modifier,
-        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.background
-        ),
         title = {
             Icon(
-                modifier = titleIconModifier,
+                modifier = Modifier
+                    .width(250.dp)
+                    .offset(y = 1.5.dp),
                 painter = titleIcon,
                 tint = MaterialTheme.colorScheme.primary,
                 contentDescription = "Minux"
             )
         },
+        modifier = modifier,
         navigationIcon = {
-            IconButton(onClick = onNavigationIconClick) {
+            IconButton(onClick = onNavigationClick) {
                 Icon(
                     painter = navigationIcon,
-                    tint = MaterialTheme.colorScheme.primary,
-                    contentDescription = "Menu"
+                    contentDescription = "Menu",
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
-        }
+        },
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.background
+        )
     )
 }
 
@@ -60,12 +61,9 @@ private fun MNXTopAppBarPreview() {
     MNXTheme {
         CompositionLocalProvider(value = LocalLayoutDirection provides LayoutDirection.Rtl) {
             MNXTopAppBar(
-                titleIconModifier = Modifier
-                    .width(250.dp)
-                    .offset(y = 1.5.dp),
                 titleIcon = painterResource(id = MNXIcons.Logo),
                 navigationIcon = painterResource(id = MNXIcons.Menu),
-                onNavigationIconClick = {}
+                onNavigationClick = {}
             )
         }
     }
