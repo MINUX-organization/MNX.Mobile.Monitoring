@@ -5,6 +5,7 @@ import com.minux.monitoring.core.designsystem.R.drawable
 
 object MNXIcons {
     @DrawableRes val ArrowBack = drawable.ic_arrow_back
+    @DrawableRes val Check = drawable.ic_check
     @DrawableRes val DropDown = drawable.ic_drop_down
     @DrawableRes val Edit = drawable.ic_edit
     @DrawableRes val Filters = drawable.ic_filters
