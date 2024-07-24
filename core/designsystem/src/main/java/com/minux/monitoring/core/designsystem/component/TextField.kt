@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -34,23 +35,18 @@ import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MNXTextField(
-    modifier: Modifier = Modifier,
     value: String,
-    onValueChange: (String) -> Unit = {},
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
     readOnly: Boolean = false,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     singleLine: Boolean = true,
-    hintText: String = "",
+    hint: String = "",
     visualTransformation: VisualTransformation = VisualTransformation.None,
     shape: Shape = RoundedCornerShape(4.dp),
     prefix: @Composable () -> Unit = {},
     suffix: @Composable () -> Unit = {},
-    contentPadding: PaddingValues = PaddingValues(
-        start = 7.dp,
-        top = 7.dp,
-        end = 7.dp,
-        bottom = 7.dp
-    )
+    contentPadding: PaddingValues = PaddingValues(7.dp)
 ) {
     val interactionSource = remember {
         MutableInteractionSource()
@@ -64,20 +60,21 @@ fun MNXTextField(
     )
 
     BasicTextField(
+        value = value,
+        onValueChange = onValueChange,
         modifier = modifier
             .border(
                 width = 1.dp,
                 color = MaterialTheme.colorScheme.primary,
                 shape = shape
             ),
-        value = value,
         readOnly = readOnly,
+        textStyle = textStyle,
         keyboardOptions = keyboardOptions,
         singleLine = singleLine,
-        onValueChange = onValueChange,
         visualTransformation = visualTransformation,
         interactionSource = interactionSource,
-        textStyle = textStyle,
+        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
         decorationBox = { innerTextField ->
             TextFieldDefaults.DecorationBox(
                 value = value,
@@ -97,7 +94,7 @@ fun MNXTextField(
                 contentPadding = contentPadding,
                 placeholder = {
                     Text(
-                        text = hintText,
+                        text = hint,
                         style = textStyle
                     )
                 },
@@ -120,11 +117,14 @@ private fun MNXTextFieldPreview() {
             MNXTextField(
                 value = text.value,
                 onValueChange = { text.value = it },
-                hintText = "Login"
+                hint = "Login"
             )
 
             MNXTextField(
+                value = text.value,
+                onValueChange = { text.value = it },
                 modifier = Modifier.padding(top = 10.dp),
+                hint = "Login",
                 shape = RectangleShape,
                 prefix = {
                     Icon(
@@ -137,10 +137,7 @@ private fun MNXTextFieldPreview() {
                 contentPadding = PaddingValues(
                     horizontal = 7.dp,
                     vertical = 9.dp
-                ),
-                value = text.value,
-                onValueChange = { text.value = it },
-                hintText = "Login",
+                )
             )
         }
     }

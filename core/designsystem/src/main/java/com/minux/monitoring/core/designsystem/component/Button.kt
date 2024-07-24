@@ -1,7 +1,6 @@
 package com.minux.monitoring.core.designsystem.component
 
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
@@ -12,45 +11,41 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
-import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
 
 @Composable
-fun MNXRoundedButton(
+fun MNXButton(
     onClick: () -> Unit,
-    text: String,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    shape: Shape = RoundedCornerShape(6.dp),
+    color: Color = MaterialTheme.colorScheme.primary,
+    contentPadding: PaddingValues = PaddingValues(horizontal = 48.dp),
+    content: @Composable RowScope.() -> Unit
 ) {
     Button(
-        modifier = modifier,
         onClick = onClick,
-        shape = RoundedCornerShape(6.dp),
-        contentPadding = PaddingValues(
-            horizontal = 48.dp
-        )
-    ) {
-        Text(
-            text = text,
-            fontSize = 20.sp,
-            fontFamily = grillSansMtFamily,
-            fontWeight = FontWeight.Normal
-        )
-    }
+        modifier = modifier,
+        enabled = enabled,
+        shape = shape,
+        colors = ButtonDefaults.buttonColors(containerColor = color),
+        contentPadding = contentPadding,
+        content = content
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MNXButton(
+fun MNXBorderedButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
@@ -62,6 +57,7 @@ fun MNXButton(
         val shape = RectangleShape
 
         Button(
+            onClick = onClick,
             modifier = modifier
                 .border(
                     width = 0.5.dp,
@@ -69,45 +65,65 @@ fun MNXButton(
                     shape = shape
                 )
                 .padding(3.dp),
-            onClick = onClick,
             enabled = enabled,
             shape = shape,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = color
-            ),
+            colors = ButtonDefaults.buttonColors(containerColor = color),
             contentPadding = contentPadding,
             content = content
         )
     }
 }
 
+@Composable
+fun MNXTextButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    contentPadding: PaddingValues = PaddingValues(),
+    content: @Composable RowScope.() -> Unit
+) {
+    TextButton(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+        shape = RoundedCornerShape(6.dp),
+        colors = ButtonDefaults.textButtonColors(
+            contentColor = MaterialTheme.colorScheme.onBackground
+        ),
+        contentPadding = contentPadding,
+        content = content
+    )
+}
+
 @Preview
 @Composable
 private fun MNXButtonPreview() {
     MNXTheme {
-        Column(
-            modifier = Modifier.padding(10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+        MNXButton(onClick = {}) {
+            Text(text = "Text")
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun MNXBorderedButtonPreview() {
+    MNXTheme {
+        MNXBorderedButton(
+            onClick = {},
+            color = MaterialTheme.colorScheme.secondary
         ) {
-            MNXRoundedButton(
-                onClick = {},
-                text = "Text"
-            )
+            Text(text = "Text")
+        }
+    }
+}
 
-            MNXButton(
-                modifier = Modifier.padding(top = 4.dp),
-                onClick = {},
-            ) {
-                Text(text = "Text")
-            }
-
-            MNXButton(
-                modifier = Modifier.padding(top = 8.dp),
-                onClick = {},
-                color = MaterialTheme.colorScheme.secondary
-            ) {
-                Text(text = "Text")
-            }
+@Preview
+@Composable
+private fun MNXTextButtonPreview() {
+    MNXTheme {
+        MNXTextButton(onClick = {}) {
+            Text(text = "Text")
         }
     }
 }
