@@ -8,17 +8,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
+import com.minux.monitoring.core.designsystem.theme.MNXTheme
 
 @Composable
 fun GridHeader(
-    modifier: Modifier = Modifier,
     columns: GridCells,
     headers: List<String>,
+    modifier: Modifier = Modifier,
     headersStyle: TextStyle = TextStyle()
 ) {
     LazyVerticalGrid(
-        modifier = modifier,
-        columns = columns
+        columns = columns,
+        modifier = modifier
     ) {
         items(headers) { header ->
             Text(
@@ -31,17 +33,43 @@ fun GridHeader(
 
 @Composable
 inline fun <T> GridItems(
-    modifier: Modifier = Modifier,
     columns: GridCells,
-    data: List<T>,
-    crossinline gridItems: LazyGridScope.(item: T) -> Unit
+    items: List<T>,
+    modifier: Modifier = Modifier,
+    crossinline content: LazyGridScope.(item: T) -> Unit
 ) {
     LazyVerticalGrid(
-        modifier = modifier,
-        columns = columns
+        columns = columns,
+        modifier = modifier
     ) {
-        data.forEach {
-            gridItems(it)
+        items.forEach {
+            content(it)
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun GridHeaderPreview() {
+    MNXTheme {
+        GridHeader(
+            columns = GridCells.Fixed(5),
+            headers = listOf("Sample 1", "Sample 2")
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun GridItemsPreview() {
+    MNXTheme {
+        GridItems(
+            columns = GridCells.Fixed(5),
+            items = listOf("Item 1", "Item 2")
+        ) { item ->
+            item {
+                Text(text = item)
+            }
         }
     }
 }
