@@ -26,13 +26,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.minux.monitoring.core.designsystem.icon.MNXIcons
-import com.minux.monitoring.core.designsystem.theme.BorderSide
-import com.minux.monitoring.core.designsystem.theme.BorderSides
+import com.minux.monitoring.core.designsystem.modifier.BorderSide
+import com.minux.monitoring.core.designsystem.modifier.BorderSides
+import com.minux.monitoring.core.designsystem.modifier.selectiveBorder
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
 import com.minux.monitoring.core.designsystem.theme.OrangeVerticalGradient
 import com.minux.monitoring.core.designsystem.theme.TurquoiseRadialGradient
 import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
-import com.minux.monitoring.core.designsystem.theme.selectiveBorder
 
 @Composable
 fun MNXDrawerSheet(

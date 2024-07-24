@@ -1,9 +1,6 @@
 package com.minux.monitoring.core.designsystem.component
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.TweenSpec
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,7 +17,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -28,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -37,11 +32,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.minux.monitoring.core.designsystem.icon.MNXIcons
-import com.minux.monitoring.core.designsystem.theme.BorderSide
-import com.minux.monitoring.core.designsystem.theme.BorderSides
+import com.minux.monitoring.core.designsystem.modifier.BorderSide
+import com.minux.monitoring.core.designsystem.modifier.BorderSides
+import com.minux.monitoring.core.designsystem.modifier.flipScale
+import com.minux.monitoring.core.designsystem.modifier.selectiveBorder
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
 import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
-import com.minux.monitoring.core.designsystem.theme.selectiveBorder
 
 @Composable
 fun MNXCard(
@@ -86,25 +82,11 @@ fun MNXExpandableCard(
     borderWidth: Dp? = null,
     borderSides: BorderSides? = null,
     contentPadding: PaddingValues = PaddingValues(),
-    content: @Composable (cardStateIconModifier: Modifier) -> Unit,
+    content: @Composable (isExpanded: Boolean) -> Unit,
     expandableContent: @Composable ColumnScope.() -> Unit
 ) {
-    val isExpandedState = remember {
+    val isExpanded = remember {
         mutableStateOf(false)
-    }
-
-    val iconScaleY = remember {
-        Animatable(initialValue = 1f)
-    }
-
-    LaunchedEffect(isExpandedState.value) {
-        iconScaleY.animateTo(
-            targetValue = if (isExpandedState.value) -1f else 1f,
-            animationSpec = TweenSpec(
-                durationMillis = 250,
-                easing = LinearEasing
-            )
-        )
     }
     
     val borderModifier = when {
@@ -136,13 +118,13 @@ fun MNXExpandableCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
-                        isExpandedState.value = !isExpandedState.value
+                        isExpanded.value = !isExpanded.value
                     }
             ) {
-                content(Modifier.graphicsLayer(scaleY = iconScaleY.value))
+                content(isExpanded.value)
             }
 
-            if (isExpandedState.value) {
+            if (isExpanded.value) {
                 expandableContent()
             }
         }
@@ -246,7 +228,7 @@ private fun MNXExpandableCardPreview() {
                 horizontal = 7.dp,
                 vertical = 5.dp
             ),
-            content = { cardStateIconModifier ->
+            content = { isExpanded ->
                 Row(
                     modifier = Modifier.padding(
                         paddingValues = PaddingValues(
@@ -265,10 +247,10 @@ private fun MNXExpandableCardPreview() {
                     }
 
                     Icon(
-                        modifier = cardStateIconModifier,
                         painter = painterResource(id = MNXIcons.DropDown),
-                        tint = MaterialTheme.colorScheme.onPrimary,
-                        contentDescription = null
+                        contentDescription = null,
+                        modifier = Modifier.flipScale(state = isExpanded),
+                        tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }

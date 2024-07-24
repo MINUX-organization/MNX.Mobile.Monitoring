@@ -1,8 +1,5 @@
 package com.minux.monitoring.core.designsystem.component
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.TweenSpec
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -19,13 +16,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,6 +28,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.minux.monitoring.core.designsystem.icon.MNXIcons
+import com.minux.monitoring.core.designsystem.modifier.flipScale
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
 import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
 
@@ -52,28 +48,14 @@ fun MNXDropDownMenu(
         bottom = 7.dp
     )
 ) {
-    val isExpandedState = remember {
+    val isExpanded = remember {
         mutableStateOf(false)
     }
 
-    val iconScaleY = remember {
-        Animatable(initialValue = 1f)
-    }
-
-    LaunchedEffect(isExpandedState.value) {
-        iconScaleY.animateTo(
-            targetValue = if (isExpandedState.value) -1f else 1f,
-            animationSpec = TweenSpec(
-                durationMillis = 250,
-                easing = LinearEasing
-            )
-        )
-    }
-
     ExposedDropdownMenuBox(
-        expanded = isExpandedState.value,
+        expanded = isExpanded.value,
         onExpandedChange = {
-            isExpandedState.value = !isExpandedState.value
+            isExpanded.value = !isExpanded.value
         }
     ) {
         MNXTextField(
@@ -87,7 +69,7 @@ fun MNXDropDownMenu(
             suffix = {
                 Icon(
                     modifier = Modifier
-                        .graphicsLayer(scaleY = iconScaleY.value)
+                        .flipScale(state = isExpanded.value)
                         .padding(start = iconPadding),
                     painter = painterResource(id = MNXIcons.DropDown),
                     tint = MaterialTheme.colorScheme.primary,
@@ -99,9 +81,9 @@ fun MNXDropDownMenu(
 
         DropdownMenu(
             modifier = Modifier.exposedDropdownSize(),
-            expanded = isExpandedState.value,
+            expanded = isExpanded.value,
             onDismissRequest = {
-                isExpandedState.value = false
+                isExpanded.value = false
             }
         ) {
             menuItems.forEachIndexed { index, text ->
@@ -117,7 +99,7 @@ fun MNXDropDownMenu(
                     },
                     onClick = {
                         onSelectedMenuItemChange(menuItems[index])
-                        isExpandedState.value = false
+                        isExpanded.value = false
                     },
                     contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
                 )
