@@ -306,7 +306,7 @@ private fun GPUItemExpandableContent(
 @Preview
 @Composable
 internal fun GPUItemPreview(
-    @PreviewParameter(GPUPreviewParameterProvider::class)
+    @PreviewParameter(GPUItemPreviewParameterProvider::class)
     gpuModel: GPUItemModel
 ) {
     MNXTheme {

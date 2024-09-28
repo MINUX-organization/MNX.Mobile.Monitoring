@@ -224,7 +224,7 @@ private fun CPUIndicators(
 @Preview
 @Composable
 internal fun CPUItemPreview(
-    @PreviewParameter(CPUPreviewParameterProvider::class)
+    @PreviewParameter(CPUItemPreviewParameterProvider::class)
     cpuModel: CPUItemModel
 ) {
     MNXTheme {

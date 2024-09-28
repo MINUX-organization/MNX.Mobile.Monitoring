@@ -7,7 +7,7 @@ import com.minux.monitoring.feature.devices.presentation.model.cpu.CPUIndicators
 import com.minux.monitoring.feature.devices.presentation.model.cpu.CPUSummaryModel
 import com.minux.monitoring.feature.devices.presentation.ui.DeviceCoinStatisticsPreviewParameterProvider
 
-class CPUPreviewParameterProvider : PreviewParameterProvider<CPUItemModel> {
+class CPUItemPreviewParameterProvider : PreviewParameterProvider<CPUItemModel> {
     private val deviceCoinStatisticsPreviewParameterProvider =
         DeviceCoinStatisticsPreviewParameterProvider()
 

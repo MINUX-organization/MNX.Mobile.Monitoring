@@ -12,7 +12,7 @@ import com.minux.monitoring.feature.devices.presentation.model.gpu.summary.GPUIn
 import com.minux.monitoring.feature.devices.presentation.model.gpu.summary.GPUSummaryModel
 import com.minux.monitoring.feature.devices.presentation.ui.DeviceCoinStatisticsPreviewParameterProvider
 
-class GPUPreviewParameterProvider : PreviewParameterProvider<GPUItemModel> {
+class GPUItemPreviewParameterProvider : PreviewParameterProvider<GPUItemModel> {
     private val deviceCoinStatisticsPreviewParameterProvider =
         DeviceCoinStatisticsPreviewParameterProvider()
 
