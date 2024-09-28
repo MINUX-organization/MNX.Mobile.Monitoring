@@ -26,6 +26,7 @@ import com.minux.monitoring.core.designsystem.theme.MNXTypography
 import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
 import com.minux.monitoring.core.ui.FiltersButton
 import com.minux.monitoring.feature.devices.presentation.model.CPUItemModel
+import com.minux.monitoring.feature.devices.presentation.model.DeviceItemModel
 import com.minux.monitoring.feature.devices.presentation.model.GPUItemModel
 import com.minux.monitoring.feature.devices.presentation.ui.DevicesStatePreviewParameterProvider
 import com.minux.monitoring.feature.devices.presentation.ui.cpu.CPUItem
@@ -116,28 +117,37 @@ private fun DevicesScreenSuccess(
                 items = uiState.devices,
                 key = { item -> item.deviceId }
             ) { device ->
-                when (device) {
-                    is GPUItemModel -> {
-                        GPUItem(
-                            model = device,
-                            onSettingsClick = {},
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 10.dp)
-                        )
-                    }
-
-                    is CPUItemModel -> {
-                        CPUItem(
-                            model = device,
-                            onSettingsClick = {},
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 10.dp)
-                        )
-                    }
-                }
+                DeviceItem(
+                    model = device,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 10.dp)
+                )
             }
+        }
+    }
+}
+
+@Composable
+private fun DeviceItem(
+    model: DeviceItemModel,
+    modifier: Modifier = Modifier
+) {
+    when (model) {
+        is GPUItemModel -> {
+            GPUItem(
+                model = model,
+                onSettingsClick = {},
+                modifier = modifier
+            )
+        }
+
+        is CPUItemModel -> {
+            CPUItem(
+                model = model,
+                onSettingsClick = {},
+                modifier = modifier
+            )
         }
     }
 }
