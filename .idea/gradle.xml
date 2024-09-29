@@ -33,6 +33,8 @@
             <option value="$PROJECT_DIR$/feature/cryptos" />
             <option value="$PROJECT_DIR$/feature/monitoring" />
             <option value="$PROJECT_DIR$/feature/pools" />
+            <option value="$PROJECT_DIR$/feature/presets" />
+            <option value="$PROJECT_DIR$/feature/presets/impl" />
             <option value="$PROJECT_DIR$/feature/sign" />
             <option value="$PROJECT_DIR$/feature/wallets" />
           </set>
