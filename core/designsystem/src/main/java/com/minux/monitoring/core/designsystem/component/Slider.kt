@@ -30,8 +30,6 @@ import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,15 +47,13 @@ fun MNXSlider(
     modifier: Modifier = Modifier
 ) {
     CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
-        val textMeasurer = rememberTextMeasurer()
         val density = LocalDensity.current
-        val drawPadding = with(LocalDensity.current) { 10.dp.toPx() }
-        val lineSize = with(LocalDensity.current) {
-            DpSize(
-                width = MNXSliderTokens.CurrentValueIndicatorWidth,
-                height = 18.dp
-            ).toSize()
-        }
+        val drawPadding = with(density) { MNXSliderTokens.ContentPadding.toPx() }
+        val labelPadding = with(density) { MNXSliderTokens.LabelsVerticalPadding.toPx() }
+
+        val textMeasurer = rememberTextMeasurer()
+
+        val lineSize = with(density) { MNXSliderTokens.CurrentValueIndicatorSize.toSize() }
         val lineColor = MaterialTheme.colorScheme.primary
 
         val state = remember(value) {
@@ -77,17 +73,16 @@ fun MNXSlider(
                     drawContent()
 
                     val sliderOffset = SliderOffset(
-                        valueRange = valueRange,
+                        valueRange = state.valueRange,
                         contentWidth = size.width,
                         contentPadding = drawPadding,
-                        density = density,
-                        labelPadding = MNXSliderTokens.LabelsVerticalPadding
+                        labelPadding = labelPadding
                     )
 
                     drawSliderLabels(
                         sliderState = state,
                         sliderOffset = sliderOffset,
-                        textMeasurer = textMeasurer
+                        measurer = textMeasurer
                     )
 
                     drawSliderCurrentValueIndicator(
@@ -97,9 +92,9 @@ fun MNXSlider(
                         indicatorColor = lineColor
                     )
                 },
-            valueRange = valueRange,
+            valueRange = state.valueRange,
             track = {
-                MNXSliderDefaults.Track()
+                MNXSliderDefaults.Track(sliderState = state)
             }
         )
     }
@@ -112,21 +107,39 @@ private class MNXSliderState(
 )
 
 private object MNXSliderDefaults {
+
     @Composable
     fun Track(
+        sliderState: MNXSliderState,
         modifier: Modifier = Modifier,
         shape: Shape = RectangleShape
     ) {
+        val values = with(sliderState.valueRange) {
+            (start.toInt()..endInclusive.toInt()).toList()
+        }
+
+        val valueIndex = values.indexOf(sliderState.currentValue.toInt())
+
         Box(
             modifier = modifier
                 .fillMaxWidth()
-                .height(6.dp)
+                .height(MNXSliderTokens.TrackHeight)
                 .background(
-                    color = Color(0xFF111111),
+                    color = MNXSliderTokens.InactiveTrackColor,
+                    shape = shape
+                )
+        )
+
+        Box(
+            modifier = modifier
+                .fillMaxWidth(valueIndex.toFloat() / values.size)
+                .height(MNXSliderTokens.TrackHeight)
+                .background(
+                    color = MNXSliderTokens.ActiveTrackColor,
                     shape = shape
                 )
                 .border(
-                    width = 0.5.dp,
+                    width = MNXSliderTokens.TrackBorderWidth,
                     brush = TurquoiseHorizontalGradient,
                     shape = shape
                 )
@@ -135,48 +148,53 @@ private object MNXSliderDefaults {
 }
 
 private object MNXSliderTokens {
-    val CurrentValueIndicatorWidth = 1.dp
+    val ActiveTrackColor = Color(0xFF111111)
+    val ContentPadding = 10.dp
+    val CurrentValueIndicatorSize = DpSize(1.dp, 18.dp)
+    val InactiveTrackColor = Color.Black
     val LabelsVerticalPadding = 20.dp
+    val TrackHeight = 6.dp
+    val TrackBorderWidth = 0.5.dp
 }
 
 private class SliderOffset(
-    private val valueRange: ClosedFloatingPointRange<Float>,
-    private val contentWidth: Float,
+    valueRange: ClosedFloatingPointRange<Float>,
+    contentWidth: Float,
     private val contentPadding: Float,
-    private val density: Density,
-    private val labelPadding: Dp,
+    private val labelPadding: Float,
 ) {
+    private val values = with(valueRange) { start.toInt()..endInclusive.toInt() }.toList()
+    private val stepSize = contentWidth.minus(2 * contentPadding).div(values.size - 1)
+
     fun getIndicatorOffset(value: Float): Float {
-        val values = (valueRange.start.toInt()..valueRange.endInclusive.toInt()).toList()
-
-        val distance = (contentWidth.minus(2 * contentPadding))
-            .div(values.size.minus(1))
-
         val index = values.indexOf(value.toInt())
 
-        return contentPadding + index.times(distance)
+        return if (index != -1)
+            contentPadding + index.times(stepSize)
+        else
+            contentPadding
     }
 
-    fun getLabelOffset(value: Float, measuredText: TextLayoutResult): Offset {
-        return Offset(
-            x = getIndicatorOffset(value) - (measuredText.size.width / 2),
-            y = with(density) { -labelPadding.toPx() }
-        )
-    }
+    fun getLabelOffset(value: Float, labelType: LabelType): Offset {
+        val labelOffset = when (labelType) {
+            is LabelType.Indicator -> labelType.measuredText.size.width / 2
+            LabelType.Start -> 0
+            is LabelType.End -> labelType.measuredText.size.width
+        }
 
-    fun getStartLabelOffset(value: Float): Offset {
         return Offset(
-            x = getIndicatorOffset(value),
-            y = with(density) { -labelPadding.toPx() }
+            x = getIndicatorOffset(value) - labelOffset,
+            y = -labelPadding
         )
     }
+}
 
-    fun getEndLabelOffset(value: Float, measuredText: TextLayoutResult): Offset {
-        return Offset(
-            x = getIndicatorOffset(value) - measuredText.size.width,
-            y = with(density) { -labelPadding.toPx() }
-        )
-    }
+private sealed interface LabelType {
+    data class Indicator(val measuredText: TextLayoutResult) : LabelType
+
+    data object Start : LabelType
+
+    data class End(val measuredText: TextLayoutResult) : LabelType
 }
 
 private fun DrawScope.drawSliderCurrentValueIndicator(
@@ -198,17 +216,17 @@ private fun DrawScope.drawSliderCurrentValueIndicator(
 private fun DrawScope.drawSliderLabels(
     sliderState: MNXSliderState,
     sliderOffset: SliderOffset,
-    textMeasurer: TextMeasurer
+    measurer: TextMeasurer
 ) {
     val startLabelPosition = drawStartSliderLabel(
         value = sliderState.valueRange.start,
-        textMeasurer = textMeasurer,
+        textMeasurer = measurer,
         offset = sliderOffset
     )
 
     val endLabelPosition = drawEndSliderLabel(
         value = sliderState.valueRange.endInclusive,
-        textMeasurer = textMeasurer,
+        textMeasurer = measurer,
         offset = sliderOffset
     )
 
@@ -216,7 +234,7 @@ private fun DrawScope.drawSliderLabels(
         value = sliderState.value,
         currentValue = sliderState.currentValue,
         offset = sliderOffset,
-        textMeasurer = textMeasurer,
+        textMeasurer = measurer,
         startLabelPosition = startLabelPosition,
         endLabelPosition = endLabelPosition
     )
@@ -244,7 +262,7 @@ private fun DrawScope.drawSliderIndicatorLabels(
 
     val thumbLabelOffset = offset.getLabelOffset(
         value = value,
-        measuredText = thumbLabelMeasuredText
+        labelType = LabelType.Indicator(measuredText = thumbLabelMeasuredText)
     )
 
     val thumbLabelPositions = Pair(
@@ -259,7 +277,7 @@ private fun DrawScope.drawSliderIndicatorLabels(
 
     val currentValueLabelOffset = offset.getLabelOffset(
         value = currentValue,
-        measuredText = currentValueLabelMeasuredText
+        labelType = LabelType.Indicator(measuredText = currentValueLabelMeasuredText)
     )
 
     val currentValueLabelPositions = Pair(
@@ -298,7 +316,7 @@ private fun DrawScope.drawStartSliderLabel(
         style = labelStyle
     )
 
-    val labelOffset = offset.getStartLabelOffset(value = value)
+    val labelOffset = offset.getLabelOffset(value = value, labelType = LabelType.Start)
 
     drawText(
         textLayoutResult = labelMeasuredText,
@@ -318,9 +336,9 @@ private fun DrawScope.drawEndSliderLabel(
         style = labelStyle
     )
 
-    val labelOffset = offset.getEndLabelOffset(
+    val labelOffset = offset.getLabelOffset(
         value = value,
-        measuredText = labelMeasuredText
+        labelType = LabelType.End(measuredText = labelMeasuredText)
     )
 
     drawText(
@@ -342,7 +360,7 @@ private fun MNXSliderPreview() {
         MNXSlider(
             value = number.floatValue,
             onValueChange = { number.floatValue = it },
-            currentValue = 1200f,
+            currentValue = 1700f,
             valueRange = 800f..3000f
         )
     }
