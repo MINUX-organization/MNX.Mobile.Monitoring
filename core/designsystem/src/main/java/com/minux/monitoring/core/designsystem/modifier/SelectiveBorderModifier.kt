@@ -87,11 +87,11 @@ data class BorderSides(
 )
 
 sealed class BorderSide(val sideWidth: Dp) {
-    data class Start(val width: Dp) : BorderSide(sideWidth = width)
+    class Start(val width: Dp) : BorderSide(sideWidth = width)
 
-    data class Top(val width: Dp) : BorderSide(sideWidth = width)
+    class Top(val width: Dp) : BorderSide(sideWidth = width)
 
-    data class End(val width: Dp) : BorderSide(sideWidth = width)
+    class End(val width: Dp) : BorderSide(sideWidth = width)
 
-    data class Bottom(val width: Dp) : BorderSide(sideWidth = width)
+    class Bottom(val width: Dp) : BorderSide(sideWidth = width)
 }

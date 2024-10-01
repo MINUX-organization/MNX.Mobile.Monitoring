@@ -1,13 +1,15 @@
 package com.minux.monitoring.core.designsystem.component
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.runtime.Composable
@@ -30,6 +32,7 @@ import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -46,7 +49,7 @@ fun MNXSlider(
     valueRange: ClosedFloatingPointRange<Float>,
     modifier: Modifier = Modifier
 ) {
-    CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
+    CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
         val density = LocalDensity.current
         val drawPadding = with(density) { MNXSliderTokens.ContentPadding.toPx() }
         val labelPadding = with(density) { MNXSliderTokens.LabelsVerticalPadding.toPx() }
@@ -93,6 +96,9 @@ fun MNXSlider(
                     )
                 },
             valueRange = state.valueRange,
+            thumb = {
+                MNXSliderDefaults.Thumb()
+            },
             track = {
                 MNXSliderDefaults.Track(sliderState = state)
             }
@@ -107,6 +113,15 @@ private class MNXSliderState(
 )
 
 private object MNXSliderDefaults {
+
+    @Composable
+    fun Thumb(modifier: Modifier = Modifier) {
+        val thumbColor = MaterialTheme.colorScheme.primary
+
+        Canvas(modifier = modifier.size(20.dp)) {
+            drawCircle(color = thumbColor)
+        }
+    }
 
     @Composable
     fun Track(
@@ -354,7 +369,7 @@ private fun DrawScope.drawEndSliderLabel(
 private fun MNXSliderPreview() {
     MNXTheme {
         val number = remember {
-            mutableFloatStateOf(2200f)
+            mutableFloatStateOf(1700f)
         }
 
         MNXSlider(
