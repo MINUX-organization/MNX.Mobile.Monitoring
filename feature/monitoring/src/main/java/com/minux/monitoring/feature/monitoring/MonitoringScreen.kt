@@ -37,16 +37,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.minux.monitoring.core.data.model.metrics.CoinStatisticsDetail
 import com.minux.monitoring.core.data.model.rig.RigDynamicData
-import com.minux.monitoring.core.designsystem.component.MNXRoundedButton
+import com.minux.monitoring.core.designsystem.component.MNXButton
 import com.minux.monitoring.core.designsystem.icon.MNXIcons
-import com.minux.monitoring.core.designsystem.theme.BorderSide
-import com.minux.monitoring.core.designsystem.theme.BorderSides
+import com.minux.monitoring.core.designsystem.modifier.BorderSide
+import com.minux.monitoring.core.designsystem.modifier.BorderSides
+import com.minux.monitoring.core.designsystem.modifier.selectiveBorder
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
 import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
-import com.minux.monitoring.core.designsystem.theme.selectiveBorder
 import com.minux.monitoring.core.ui.SearchTextField
 import com.minux.monitoring.core.ui.SortDropDownMenu
-import com.minux.monitoring.feature.monitoring.ui.CoinsStatisticsGrid
+import com.minux.monitoring.feature.monitoring.ui.CoinStatisticsGrid
 import com.minux.monitoring.feature.monitoring.ui.MetricsCard
 import com.minux.monitoring.feature.monitoring.ui.MonitoringStatePreviewParameterProvider
 import com.minux.monitoring.feature.monitoring.ui.RigStateCard
@@ -60,7 +60,7 @@ internal val commonTextStyle = TextStyle(
 @Composable
 internal fun MonitoringScreen(
     monitoringUiState: MonitoringUiState,
-    snackbarHostState: SnackbarHostState,
+    snackBarHostState: SnackbarHostState,
     onEvent: (MonitoringEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -108,7 +108,7 @@ internal fun MonitoringScreen(
                 MonitoringScreenHasRigs(
                     modifier = monitoringModifier,
                     uiState = monitoringUiState,
-                    snackbarHostState = snackbarHostState,
+                    snackBarHostState = snackBarHostState,
                     onRigCommandEvent = onEvent
                 )
             }
@@ -178,10 +178,14 @@ private fun MonitoringScreenError(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            MNXRoundedButton(
-                onClick = { onRetryEvent(MonitoringEvent.Refresh) },
-                text = "Try again"
-            )
+            MNXButton(
+                onClick = { onRetryEvent(MonitoringEvent.Refresh) }
+            ) {
+                Text(
+                    text = "Try again",
+                    style = textStyle
+                )
+            }
         }
     }
 }
@@ -215,10 +219,14 @@ private fun MonitoringScreenNoRigs(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            MNXRoundedButton(
-                onClick = { onRetryEvent(MonitoringEvent.Refresh) },
-                text = "Try again"
-            )
+            MNXButton(
+                onClick = { onRetryEvent(MonitoringEvent.Refresh) }
+            ) {
+                Text(
+                    text = "Try again",
+                    style = textStyle
+                )
+            }
         }
     }
 }
@@ -226,7 +234,7 @@ private fun MonitoringScreenNoRigs(
 @Composable
 private fun MonitoringScreenHasRigs(
     uiState: MonitoringUiState.HasRigs,
-    snackbarHostState: SnackbarHostState,
+    snackBarHostState: SnackbarHostState,
     onRigCommandEvent: (MonitoringEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -248,7 +256,7 @@ private fun MonitoringScreenHasRigs(
         rigActiveStates = uiState.rigActiveStates,
         rigPowerStates = uiState.rigPowerStates,
         rigMiningStatuses = uiState.rigMiningStatuses,
-        snackbarHostState = snackbarHostState,
+        snackbarHostState = snackBarHostState,
         onRigCommandEvent = onRigCommandEvent,
     )
 }
@@ -287,7 +295,7 @@ private fun TotalRigsData(
         modifier = Modifier.fillMaxWidth()
     )
 
-    CoinsStatisticsGrid(
+    CoinStatisticsGrid(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(max = 180.dp)
@@ -339,9 +347,10 @@ private fun RigsWithFilters(
         }
 
         SortDropDownMenu(
-            modifier = Modifier.widthIn(max = 160.dp),
-            items = listOf("Online", "Temperature", "Power"),
-            selectedItem = selectedText
+            options = listOf("Online", "Temperature", "Power"),
+            selectedOption = selectedText.value,
+            onSelectedOptionChange = { selectedText.value = it },
+            modifier = Modifier.widthIn(max = 160.dp)
         )
 
         val searchText = remember {
@@ -349,8 +358,9 @@ private fun RigsWithFilters(
         }
 
         SearchTextField(
-            modifier = Modifier.widthIn(max = 160.dp),
-            text = searchText
+            query = searchText.value,
+            onQueryChange = { searchText.value = it },
+            modifier = Modifier.widthIn(max = 160.dp)
         )
     }
 
@@ -389,7 +399,7 @@ internal fun MonitoringScreenPreview(
             MonitoringScreen(
                 modifier = Modifier.fillMaxSize(),
                 monitoringUiState = monitoringUiState,
-                snackbarHostState = SnackbarHostState(),
+                snackBarHostState = SnackbarHostState(),
                 onEvent = {}
             )
         }
