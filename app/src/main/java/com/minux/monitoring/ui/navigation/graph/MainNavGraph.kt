@@ -14,14 +14,14 @@ import com.minux.monitoring.ui.navigation.MNXGraphs
 @Composable
 fun MainNavGraph(
     navController: NavHostController,
-    snackbarHostState: SnackbarHostState
+    snackBarHostState: SnackbarHostState
 ) {
     NavHost(
         navController = navController,
         route = MNXGraphs.MainNavGraph.name,
         startDestination = MonitoringDestinations.MonitoringRoute.name
     ) {
-        monitoringScreen(snackbarHostState = snackbarHostState)
+        monitoringScreen(snackBarHostState = snackBarHostState)
         cryptosScreen()
         walletsScreen()
         poolsScreen()
