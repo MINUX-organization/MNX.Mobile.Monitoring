@@ -77,18 +77,16 @@ fun MNXBorderedCard(
 
 @Composable
 fun MNXExpandableCard(
+    expanded: Boolean,
+    onExpandedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.background,
     borderWidth: Dp? = null,
     borderSides: BorderSides? = null,
     contentPadding: PaddingValues = PaddingValues(),
-    content: @Composable (isExpanded: Boolean) -> Unit,
+    content: @Composable () -> Unit,
     expandableContent: @Composable ColumnScope.() -> Unit
 ) {
-    val isExpanded = remember {
-        mutableStateOf(false)
-    }
-    
     val borderModifier = when {
         borderSides == null && borderWidth != null -> {
             Modifier.border(
@@ -117,14 +115,11 @@ fun MNXExpandableCard(
             MNXCard(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable {
-                        isExpanded.value = !isExpanded.value
-                    }
-            ) {
-                content(isExpanded.value)
-            }
+                    .clickable { onExpandedChange(!expanded) },
+                content = content
+            )
 
-            if (isExpanded.value) {
+            if (expanded) {
                 expandableContent()
             }
         }
@@ -216,7 +211,13 @@ private fun MNXBorderedCardPreview() {
 @Composable
 private fun MNXExpandableCardPreview() {
     MNXTheme {
+        val isExpanded = remember {
+            mutableStateOf(true)
+        }
+
         MNXExpandableCard(
+            expanded = isExpanded.value,
+            onExpandedChange = { isExpanded.value = it },
             modifier = Modifier.fillMaxWidth(),
             borderSides = BorderSides(
                 start = BorderSide.Start(width = 3.dp),
@@ -228,15 +229,13 @@ private fun MNXExpandableCardPreview() {
                 horizontal = 7.dp,
                 vertical = 5.dp
             ),
-            content = { isExpanded ->
+            content = {
                 Row(
                     modifier = Modifier.padding(
-                        paddingValues = PaddingValues(
-                            start = 8.dp,
-                            top = 10.dp,
-                            end = 8.dp,
-                            bottom = 6.dp
-                        )
+                        start = 8.dp,
+                        top = 10.dp,
+                        end = 8.dp,
+                        bottom = 6.dp
                     ),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -249,7 +248,7 @@ private fun MNXExpandableCardPreview() {
                     Icon(
                         painter = painterResource(id = MNXIcons.DropDown),
                         contentDescription = null,
-                        modifier = Modifier.flipScale(state = isExpanded),
+                        modifier = Modifier.flipScale(state = isExpanded.value),
                         tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }

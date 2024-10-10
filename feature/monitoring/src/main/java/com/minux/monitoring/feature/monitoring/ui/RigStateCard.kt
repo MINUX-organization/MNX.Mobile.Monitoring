@@ -17,6 +17,8 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -60,7 +62,13 @@ internal fun RigStateCard(
     onRigCommandEvent: (MonitoringEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val isExpanded = remember {
+        mutableStateOf(false)
+    }
+
     MNXExpandableCard(
+        expanded = isExpanded.value,
+        onExpandedChange = { isExpanded.value = it },
         modifier = modifier,
         borderSides = BorderSides(
             start = BorderSide.Start(width = 3.dp),
@@ -72,7 +80,7 @@ internal fun RigStateCard(
             horizontal = 7.dp,
             vertical = 5.dp
         ),
-        content = { isExpanded ->
+        content = {
             Row(
                 modifier = Modifier
                     .padding(horizontal = 8.dp)
@@ -94,7 +102,7 @@ internal fun RigStateCard(
                 )
 
                 Icon(
-                    modifier = Modifier.flipScale(state = isExpanded),
+                    modifier = Modifier.flipScale(state = isExpanded.value),
                     painter = painterResource(id = MNXIcons.DropDown),
                     tint = MaterialTheme.colorScheme.onPrimary,
                     contentDescription = null
