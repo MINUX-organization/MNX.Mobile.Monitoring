@@ -7,36 +7,43 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.minux.monitoring.core.data.model.pool.PoolInputParam
+import com.minux.monitoring.core.designsystem.component.MNXDropDownMenu
+import com.minux.monitoring.core.designsystem.component.MNXTextField
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
-import com.minux.monitoring.core.ui.AddNewCryptoAssetCard
-import com.minux.monitoring.core.ui.CryptoAssetDropDownMenu
-import com.minux.monitoring.core.ui.CryptoAssetFilters
+import com.minux.monitoring.core.designsystem.theme.MNXTypography
+import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
 import com.minux.monitoring.core.ui.CryptoAssetGrid
-import com.minux.monitoring.core.ui.CryptoAssetTextField
-import com.minux.monitoring.core.ui.CryptoAssetTextFieldTitle
-import com.minux.monitoring.core.ui.CryptoAssetTitle
+import com.minux.monitoring.core.ui.NewCryptoAssetCardWithAddButton
+import com.minux.monitoring.core.ui.SearchAndSortBar
 import com.minux.monitoring.feature.pools.ui.PoolsStatePreviewParameterProvider
 import com.minux.monitoring.feature.pools.ui.poolsGridItems
 
 @Composable
-fun PoolsScreen(
+internal fun PoolsScreen(
     modifier: Modifier = Modifier,
     poolsState: PoolsState,
     onEvent: (PoolsEvent) -> Unit
 ) {
     Column(modifier = modifier) {
-        CryptoAssetTitle(
-            modifier = Modifier.fillMaxWidth(),
-            text = "Pools"
+        Text(
+            text = "Pools",
+            style = MNXTypography.headlineMedium.copy(
+                color = MaterialTheme.colorScheme.onPrimary,
+                fontFamily = grillSansMtFamily
+            )
         )
 
         AddNewPoolCard(
@@ -45,11 +52,12 @@ fun PoolsScreen(
             onAddPool = { addPool -> onEvent(addPool) }
         )
 
-        PoolsFilters()
+        PoolsFilters(modifier = Modifier.padding(top = 48.dp))
 
         CryptoAssetGrid(
-            headers = listOf("Coin", "Domain", "Port", String()),
-            cryptoAssets = poolsState.pools
+            headers = listOf("Coin", "Domain", "Port", ""),
+            cryptoAssetItems = poolsState.pools,
+            modifier = Modifier.padding(top = 8.dp)
         ) { item, itemPadding ->
             poolsGridItems(
                 item = item,
@@ -61,65 +69,105 @@ fun PoolsScreen(
     }
 }
 
+private val poolsTextStyle = TextStyle(
+    fontSize = 16.sp,
+    fontFamily = grillSansMtFamily,
+    fontWeight = FontWeight.Normal,
+    lineHeight = 18.sp
+)
+
 @Composable
 private fun AddNewPoolCard(
     modifier: Modifier = Modifier,
     coins: List<String>,
     onAddPool: (PoolsEvent.AddPool) -> Unit
 ) {
-    val domainText = remember {
+    val domain = remember {
         mutableStateOf("")
     }
 
-    val portText = remember {
+    val port = remember {
         mutableStateOf("")
     }
 
-    val coinText = remember {
+    val coin = remember {
         mutableStateOf(coins.first())
     }
 
-    AddNewCryptoAssetCard(
-        modifier = modifier,
+    NewCryptoAssetCardWithAddButton(
         title = "Add new pool",
-        onAddButtonClick = {
+        onAddClick = {
             onAddPool(
                 PoolsEvent.AddPool(
                     PoolInputParam(
-                        domain = domainText.value,
-                        port = portText.value.toInt(),
-                        cryptocurrencyId = coinText.value
+                        domain = domain.value,
+                        port = port.value.toInt(),
+                        cryptocurrencyId = coin.value
                     )
                 )
             )
-        }
+        },
+        modifier = modifier
     ) {
-        CryptoAssetTextFieldTitle(text = "Domain")
-        CryptoAssetTextField(
-            text = domainText,
-            hintText = "Domain address to pool"
+        Text(
+            text = "Domain",
+            color = MaterialTheme.colorScheme.onPrimary,
+            modifier = Modifier.padding(
+                start = 2.dp,
+                top = 12.dp
+            ),
+            style = poolsTextStyle
         )
 
-        CryptoAssetTextFieldTitle(text = "Port")
-        CryptoAssetTextField(
-            text = portText,
+        MNXTextField(
+            value = domain.value,
+            onValueChange = { domain.value = it },
+            modifier = Modifier.fillMaxWidth(),
+            hint = "Domain address to pool"
+        )
+
+        Text(
+            text = "Port",
+            color = MaterialTheme.colorScheme.onPrimary,
+            modifier = Modifier.padding(
+                start = 2.dp,
+                top = 12.dp
+            ),
+            style = poolsTextStyle
+        )
+
+        MNXTextField(
+            value = port.value,
+            onValueChange = { port.value = it },
+            modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number
             ),
-            hintText = "1234"
+            hint = "0000"
         )
 
-        CryptoAssetTextFieldTitle(text = "Coin")
-        CryptoAssetDropDownMenu(
-            items = coins,
-            selectedItem = coinText
+        Text(
+            text = "Coin",
+            color = MaterialTheme.colorScheme.onPrimary,
+            modifier = Modifier.padding(
+                start = 2.dp,
+                top = 12.dp
+            ),
+            style = poolsTextStyle
+        )
+
+        MNXDropDownMenu(
+            menuItems = coins,
+            selectedMenuItem = coin.value,
+            onSelectedMenuItemChange = { coin.value = it },
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }
 
 @Composable
-private fun PoolsFilters() {
-    val selectedSortItem = remember {
+private fun PoolsFilters(modifier: Modifier = Modifier) {
+    val selectedSortOption = remember {
         mutableStateOf("Sort by")
     }
 
@@ -127,10 +175,13 @@ private fun PoolsFilters() {
         mutableStateOf("")
     }
 
-    CryptoAssetFilters(
-        sortItems = listOf("Option 1", "Option 2"),
-        selectedSortItem = selectedSortItem,
-        searchText = searchText
+    SearchAndSortBar(
+        sortOptions = listOf("Option 1", "Option 2"),
+        selectedSortOption = selectedSortOption.value,
+        onSelectedSortOptionChange = { selectedSortOption.value = it },
+        searchQuery = searchText.value,
+        onSearchQueryChange = { searchText.value = it },
+        modifier = modifier
     )
 }
 

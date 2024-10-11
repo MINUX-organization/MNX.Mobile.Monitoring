@@ -1,13 +1,15 @@
 package com.minux.monitoring.core.designsystem.component
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.runtime.Composable
@@ -30,6 +32,7 @@ import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -46,15 +49,15 @@ fun MNXSlider(
     valueRange: ClosedFloatingPointRange<Float>,
     modifier: Modifier = Modifier
 ) {
-    CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
+    CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
         val density = LocalDensity.current
         val drawPadding = with(density) { MNXSliderTokens.ContentPadding.toPx() }
-        val labelPadding = with(density) { MNXSliderTokens.LabelsVerticalPadding.toPx() }
-
-        val textMeasurer = rememberTextMeasurer()
 
         val lineSize = with(density) { MNXSliderTokens.CurrentValueIndicatorSize.toSize() }
         val lineColor = MaterialTheme.colorScheme.primary
+
+        val labelPadding = with(density) { MNXSliderTokens.LabelsVerticalPadding.toPx() }
+        val textMeasurer = rememberTextMeasurer()
 
         val state = remember(value) {
             MNXSliderState(
@@ -74,7 +77,7 @@ fun MNXSlider(
 
                     val sliderOffset = SliderOffset(
                         valueRange = state.valueRange,
-                        contentWidth = size.width,
+                        contentSize = size,
                         contentPadding = drawPadding,
                         labelPadding = labelPadding
                     )
@@ -93,6 +96,9 @@ fun MNXSlider(
                     )
                 },
             valueRange = state.valueRange,
+            thumb = {
+                MNXSliderDefaults.Thumb()
+            },
             track = {
                 MNXSliderDefaults.Track(sliderState = state)
             }
@@ -100,13 +106,26 @@ fun MNXSlider(
     }
 }
 
-private class MNXSliderState(
-    val value: Float,
-    val currentValue: Float,
-    val valueRange: ClosedFloatingPointRange<Float>
-)
+private object MNXSliderTokens {
+    val ActiveTrackColor = Color(0xFF111111)
+    val ContentPadding = 10.dp
+    val CurrentValueIndicatorSize = DpSize(1.dp, 18.dp)
+    val InactiveTrackColor = Color.Black
+    val LabelsVerticalPadding = 20.dp
+    val TrackHeight = 6.dp
+    val TrackBorderWidth = 0.5.dp
+}
 
 private object MNXSliderDefaults {
+
+    @Composable
+    fun Thumb(modifier: Modifier = Modifier) {
+        val thumbColor = MaterialTheme.colorScheme.primary
+
+        Canvas(modifier = modifier.size(20.dp)) {
+            drawCircle(color = thumbColor)
+        }
+    }
 
     @Composable
     fun Track(
@@ -147,32 +166,35 @@ private object MNXSliderDefaults {
     }
 }
 
-private object MNXSliderTokens {
-    val ActiveTrackColor = Color(0xFF111111)
-    val ContentPadding = 10.dp
-    val CurrentValueIndicatorSize = DpSize(1.dp, 18.dp)
-    val InactiveTrackColor = Color.Black
-    val LabelsVerticalPadding = 20.dp
-    val TrackHeight = 6.dp
-    val TrackBorderWidth = 0.5.dp
-}
+private class MNXSliderState(
+    val value: Float,
+    val currentValue: Float,
+    val valueRange: ClosedFloatingPointRange<Float>
+)
 
 private class SliderOffset(
     valueRange: ClosedFloatingPointRange<Float>,
-    contentWidth: Float,
+    private val contentSize: Size,
     private val contentPadding: Float,
     private val labelPadding: Float,
 ) {
     private val values = with(valueRange) { start.toInt()..endInclusive.toInt() }.toList()
-    private val stepSize = contentWidth.minus(2 * contentPadding).div(values.size - 1)
+    private val stepSize = contentSize.width
+        .minus(2 * contentPadding)
+        .div(values.size - 1)
 
-    fun getIndicatorOffset(value: Float): Float {
+    fun getIndicatorOffset(value: Float): Offset {
         val index = values.indexOf(value.toInt())
 
-        return if (index != -1)
+        val indicatorOffset = if (index != -1)
             contentPadding + index.times(stepSize)
         else
             contentPadding
+
+        return Offset(
+            x = indicatorOffset,
+            y = contentSize.height / 2
+        )
     }
 
     fun getLabelOffset(value: Float, labelType: LabelType): Offset {
@@ -183,18 +205,18 @@ private class SliderOffset(
         }
 
         return Offset(
-            x = getIndicatorOffset(value) - labelOffset,
+            x = getIndicatorOffset(value).x - labelOffset,
             y = -labelPadding
         )
     }
 }
 
 private sealed interface LabelType {
-    data class Indicator(val measuredText: TextLayoutResult) : LabelType
+    class Indicator(val measuredText: TextLayoutResult) : LabelType
 
     data object Start : LabelType
 
-    data class End(val measuredText: TextLayoutResult) : LabelType
+    class End(val measuredText: TextLayoutResult) : LabelType
 }
 
 private fun DrawScope.drawSliderCurrentValueIndicator(
@@ -204,11 +226,12 @@ private fun DrawScope.drawSliderCurrentValueIndicator(
     indicatorColor: Color
 ) {
     val indicatorOffset = sliderOffset.getIndicatorOffset(value = sliderState.currentValue)
+    val indicatorHeightHalf = indicatorSize.height / 2
 
     drawLine(
         color = indicatorColor,
-        start = Offset(x = indicatorOffset, y = 4f),
-        end = Offset(x = indicatorOffset, y = indicatorSize.height),
+        start = Offset(x = indicatorOffset.x, y = indicatorOffset.y - indicatorHeightHalf),
+        end = Offset(x = indicatorOffset.x, y = indicatorOffset.y + indicatorHeightHalf),
         strokeWidth = indicatorSize.width
     )
 }
@@ -354,13 +377,13 @@ private fun DrawScope.drawEndSliderLabel(
 private fun MNXSliderPreview() {
     MNXTheme {
         val number = remember {
-            mutableFloatStateOf(2200f)
+            mutableFloatStateOf(2500f)
         }
 
         MNXSlider(
             value = number.floatValue,
             onValueChange = { number.floatValue = it },
-            currentValue = 1700f,
+            currentValue = 1743f,
             valueRange = 800f..3000f
         )
     }

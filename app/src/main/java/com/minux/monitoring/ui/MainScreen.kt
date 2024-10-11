@@ -13,10 +13,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.minux.monitoring.core.designsystem.component.MNXTopAppBar
 import com.minux.monitoring.core.designsystem.icon.MNXIcons
+import com.minux.monitoring.core.designsystem.theme.MNXTheme
 import com.minux.monitoring.ui.navigation.NavigationDrawerItem
 import com.minux.monitoring.ui.navigation.graph.MainNavGraph
 import kotlinx.coroutines.launch
@@ -25,14 +27,14 @@ import kotlinx.coroutines.launch
 fun MainScreen(navController: NavHostController = rememberNavController()) {
     val coroutineScope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackBarHostState = remember { SnackbarHostState() }
 
     Scaffold(
         topBar = {
             MNXTopAppBar(
                 titleIcon = painterResource(id = MNXIcons.Logo),
                 navigationIcon = painterResource(id = MNXIcons.Menu),
-                onNavigationIconClick = {
+                onNavigationClick = {
                     coroutineScope.launch {
                         drawerState.open()
                     }
@@ -40,7 +42,7 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
             )
         },
         snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
+            SnackbarHost(hostState = snackBarHostState)
         }
     ) { scaffoldPadding ->
         AppNavigationDrawer(
@@ -55,9 +57,17 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
             ) {
                 MainNavGraph(
                     navController = navController,
-                    snackbarHostState = snackbarHostState
+                    snackBarHostState = snackBarHostState
                 )
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun MainScreenPreview() {
+    MNXTheme {
+        MainScreen()
     }
 }

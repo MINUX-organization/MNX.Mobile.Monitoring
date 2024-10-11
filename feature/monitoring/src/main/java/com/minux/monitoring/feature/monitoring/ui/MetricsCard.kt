@@ -1,5 +1,6 @@
 package com.minux.monitoring.feature.monitoring.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,8 +25,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.minux.monitoring.core.designsystem.component.MNXBorderedCard
 import com.minux.monitoring.core.designsystem.component.MNXCard
-import com.minux.monitoring.core.designsystem.component.MNXCardGroup
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
 import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
 
@@ -43,8 +44,11 @@ internal fun MetricsCard(
     rejected: AnnotatedString,
     modifier: Modifier = Modifier
 ) {
-    MNXCardGroup(modifier = modifier) {
-        Column {
+    MNXBorderedCard(modifier = modifier) {
+        Column(
+            modifier = Modifier
+                .background(color = MaterialTheme.colorScheme.background)
+        ) {
             MNXCard(modifier = Modifier.fillMaxWidth()) {
                 Box(
                     modifier = Modifier.padding(8.dp),
@@ -131,7 +135,7 @@ private fun MetricsValueCard(
 
 @Preview
 @Composable
-fun MetricsCardPreview() {
+internal fun MetricsCardPreview() {
     MNXTheme {
         Surface(color = MaterialTheme.colorScheme.background) {
             MetricsCard(

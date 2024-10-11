@@ -1,5 +1,6 @@
 package com.minux.monitoring.feature.monitoring.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,24 +21,27 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.minux.monitoring.core.designsystem.component.GridItems
-import com.minux.monitoring.core.designsystem.component.MNXCard
-import com.minux.monitoring.core.designsystem.component.MNXCardGroup
-import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
 import com.minux.monitoring.core.data.model.metrics.CoinStatisticsDetail
-import com.minux.monitoring.core.ui.FlightSheetGridHeader
+import com.minux.monitoring.core.designsystem.component.GridItems
+import com.minux.monitoring.core.designsystem.component.MNXBorderedCard
+import com.minux.monitoring.core.designsystem.component.MNXCard
+import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
+import com.minux.monitoring.core.ui.CoinStatisticsGridHeader
 import com.minux.monitoring.feature.monitoring.commonTextStyle
 
 @Composable
-internal fun CoinsStatisticsGrid(
+internal fun CoinStatisticsGrid(
     headers: List<String>,
     coinsStatistics: List<CoinStatisticsDetail>,
     modifier: Modifier = Modifier,
     placeHolderText: String
 ) {
-    MNXCardGroup(modifier = modifier) {
-        Column {
-            FlightSheetGridHeader(
+    MNXBorderedCard(modifier = modifier) {
+        Column(
+            modifier = Modifier
+                .background(color = MaterialTheme.colorScheme.background)
+        ) {
+            CoinStatisticsGridHeader(
                 contentPadding = PaddingValues(vertical = 3.dp),
                 headers = headers
             )
@@ -70,7 +74,7 @@ internal fun CoinsStatisticsGrid(
             } else {
                 GridItems(
                     columns = GridCells.Fixed(headers.count()),
-                    data = coinsStatistics
+                    items = coinsStatistics
                 ) {
                     coinStatisticsGridItems(
                         modifier = Modifier.padding(top = 6.dp),

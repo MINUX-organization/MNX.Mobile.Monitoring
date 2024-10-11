@@ -29,15 +29,14 @@ import androidx.compose.ui.unit.sp
 import com.minux.monitoring.core.data.model.cryptocurrency.Cryptocurrency
 import com.minux.monitoring.core.data.model.cryptocurrency.CryptocurrencyInputParam
 import com.minux.monitoring.core.data.model.cryptocurrency.CryptocurrencyRemoveParam
+import com.minux.monitoring.core.designsystem.component.MNXDropDownMenu
+import com.minux.monitoring.core.designsystem.component.MNXTextField
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
+import com.minux.monitoring.core.designsystem.theme.MNXTypography
 import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
-import com.minux.monitoring.core.ui.AddNewCryptoAssetCard
-import com.minux.monitoring.core.ui.CryptoAssetDropDownMenu
-import com.minux.monitoring.core.ui.CryptoAssetFilters
 import com.minux.monitoring.core.ui.CryptoAssetGrid
-import com.minux.monitoring.core.ui.CryptoAssetTextField
-import com.minux.monitoring.core.ui.CryptoAssetTextFieldTitle
-import com.minux.monitoring.core.ui.CryptoAssetTitle
+import com.minux.monitoring.core.ui.NewCryptoAssetCardWithAddButton
+import com.minux.monitoring.core.ui.SearchAndSortBar
 import com.minux.monitoring.feature.cryptos.ui.CryptosStatePreviewParameterProvider
 
 @Composable
@@ -47,9 +46,12 @@ internal fun CryptosScreen(
     onEvent: (CryptosEvent) -> Unit
 ) {
     Column(modifier = modifier) {
-        CryptoAssetTitle(
-            modifier = Modifier.fillMaxWidth(),
-            text = "Cryptos"
+        Text(
+            text = "Cryptos",
+            style = MNXTypography.headlineMedium.copy(
+                color = MaterialTheme.colorScheme.onPrimary,
+                fontFamily = grillSansMtFamily
+            )
         )
 
         AddNewCoinCard(
@@ -58,29 +60,36 @@ internal fun CryptosScreen(
             onAddCryptocurrency = { onEvent(it) }
         )
 
-        CryptosFilters()
+        CryptosFilters(modifier = Modifier.padding(top = 48.dp))
 
         CryptoAssetGrid(
             headers = listOf("Name", "Full Name", "Algorithm", String()),
-            cryptoAssets = cryptosState.cryptos,
-            gridItems = { item, itemPadding ->
-                cryptosGridItems(
-                    item = item,
-                    itemPadding = itemPadding,
-                    onRemoveCryptocurrency = {
-                        onEvent(
-                            CryptosEvent.RemoveCryptocurrency(
-                                CryptocurrencyRemoveParam(
-                                    cryptocurrencyId = item.id
-                                )
+            cryptoAssetItems = cryptosState.cryptos,
+            modifier = Modifier.padding(top = 8.dp)
+        ) { item, itemPadding ->
+            cryptosGridItems(
+                item = item,
+                itemPadding = itemPadding,
+                onRemoveCryptocurrency = {
+                    onEvent(
+                        CryptosEvent.RemoveCryptocurrency(
+                            CryptocurrencyRemoveParam(
+                                cryptocurrencyId = item.id
                             )
                         )
-                    }
-                )
-            }
-        )
+                    )
+                }
+            )
+        }
     }
 }
+
+private val cryptosTextStyle = TextStyle(
+    fontSize = 16.sp,
+    fontFamily = grillSansMtFamily,
+    fontWeight = FontWeight.Normal,
+    lineHeight = 18.sp
+)
 
 @Composable
 private fun AddNewCoinCard(
@@ -88,61 +97,94 @@ private fun AddNewCoinCard(
     cryptoAlgorithms: List<String>,
     onAddCryptocurrency: (CryptosEvent.AddCryptocurrency) -> Unit,
 ) {
-    val nameText = remember {
+    val shortName = remember {
         mutableStateOf("")
     }
 
-    val fullNameText = remember {
+    val fullName = remember {
         mutableStateOf("")
     }
 
-    val algorithmText = remember {
+    val cryptoAlgorithm = remember {
         mutableStateOf(
             if (cryptoAlgorithms.isEmpty())
-                String()
+                ""
             else
                 cryptoAlgorithms.first()
         )
     }
 
-    AddNewCryptoAssetCard(
-        modifier = modifier,
+    NewCryptoAssetCardWithAddButton(
         title = "Add new coin",
-        onAddButtonClick = {
+        onAddClick = {
             onAddCryptocurrency(
                 CryptosEvent.AddCryptocurrency(
                     CryptocurrencyInputParam(
-                        shortName = nameText.value,
-                        fullName = fullNameText.value,
-                        algorithm = algorithmText.value
+                        shortName = shortName.value,
+                        fullName = fullName.value,
+                        algorithm = cryptoAlgorithm.value
                     )
                 )
             )
-        }
+        },
+        modifier = modifier
     ) {
-        CryptoAssetTextFieldTitle(text = "Name")
-        CryptoAssetTextField(
-            text = nameText,
-            hintText = "BTC"
+        Text(
+            text = "Name",
+            color = MaterialTheme.colorScheme.onPrimary,
+            modifier = Modifier.padding(
+                start = 2.dp,
+                top = 12.dp
+            ),
+            style = cryptosTextStyle
         )
 
-        CryptoAssetTextFieldTitle(text = "Full name")
-        CryptoAssetTextField(
-            text = fullNameText,
-            hintText = "Bitcoin"
+        MNXTextField(
+            value = shortName.value,
+            onValueChange = { shortName.value = it },
+            modifier = Modifier.fillMaxWidth(),
+            hint = "BTC"
         )
 
-        CryptoAssetTextFieldTitle(text = "Algorithm")
-        CryptoAssetDropDownMenu(
-            items = cryptoAlgorithms,
-            selectedItem = algorithmText
+        Text(
+            text = "Full name",
+            color = MaterialTheme.colorScheme.onPrimary,
+            modifier = Modifier.padding(
+                start = 2.dp,
+                top = 12.dp
+            ),
+            style = cryptosTextStyle
+        )
+
+        MNXTextField(
+            value = fullName.value,
+            onValueChange = { fullName.value = it },
+            modifier = Modifier.fillMaxWidth(),
+            hint = "Bitcoin"
+        )
+
+        Text(
+            text = "Algorithm",
+            color = MaterialTheme.colorScheme.onPrimary,
+            modifier = Modifier.padding(
+                start = 2.dp,
+                top = 12.dp
+            ),
+            style = cryptosTextStyle
+        )
+
+        MNXDropDownMenu(
+            menuItems = cryptoAlgorithms,
+            selectedMenuItem = cryptoAlgorithm.value,
+            onSelectedMenuItemChange = { cryptoAlgorithm.value = it },
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }
 
 @Composable
-private fun CryptosFilters() {
-    val selectedSortItem = remember {
+private fun CryptosFilters(modifier: Modifier = Modifier) {
+    val selectedSortOption = remember {
         mutableStateOf("Sort by")
     }
 
@@ -150,10 +192,13 @@ private fun CryptosFilters() {
         mutableStateOf("")
     }
 
-    CryptoAssetFilters(
-        sortItems = listOf("Option 1", "Option 2"),
-        selectedSortItem = selectedSortItem,
-        searchText = searchText
+    SearchAndSortBar(
+        sortOptions = listOf("Option 1", "Option 2"),
+        selectedSortOption = selectedSortOption.value,
+        onSelectedSortOptionChange = { selectedSortOption.value = it },
+        searchQuery = searchText.value,
+        onSearchQueryChange = { searchText.value = it },
+        modifier = modifier
     )
 }
 

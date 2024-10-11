@@ -14,7 +14,7 @@ import com.minux.monitoring.ui.navigation.MNXNavigationActions
 @Composable
 fun AppNavGraph() {
     val navController = rememberNavController()
-    val navigationActions = remember(key1 = navController) {
+    val navigationActions = remember(navController) {
         MNXNavigationActions(navController)
     }
     
