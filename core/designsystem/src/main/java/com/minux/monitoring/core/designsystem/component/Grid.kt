@@ -7,26 +7,22 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
 
 @Composable
-fun GridHeader(
+inline fun GridHeader(
     columns: GridCells,
     headers: List<String>,
     modifier: Modifier = Modifier,
-    headersStyle: TextStyle = TextStyle()
+    crossinline content: @Composable (header: String) -> Unit
 ) {
     LazyVerticalGrid(
         columns = columns,
         modifier = modifier
     ) {
-        items(headers) { header ->
-            Text(
-                text = header,
-                style = headersStyle
-            )
+        items(headers) {
+            content(it)
         }
     }
 }
@@ -55,7 +51,9 @@ private fun GridHeaderPreview() {
         GridHeader(
             columns = GridCells.Fixed(5),
             headers = listOf("Sample 1", "Sample 2")
-        )
+        ) { header ->
+            Text(text = header)
+        }
     }
 }
 

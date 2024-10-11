@@ -17,9 +17,12 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
@@ -34,12 +37,15 @@ import com.minux.monitoring.core.data.model.rig.RigDynamicData
 import com.minux.monitoring.core.designsystem.component.GridItems
 import com.minux.monitoring.core.designsystem.component.MNXExpandableCard
 import com.minux.monitoring.core.designsystem.icon.MNXIcons
-import com.minux.monitoring.core.designsystem.theme.BorderSide
-import com.minux.monitoring.core.designsystem.theme.BorderSides
+import com.minux.monitoring.core.designsystem.modifier.BorderSide
+import com.minux.monitoring.core.designsystem.modifier.BorderSides
+import com.minux.monitoring.core.designsystem.modifier.flipScale
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
-import com.minux.monitoring.core.ui.FlightSheetGridHeader
-import com.minux.monitoring.core.ui.RigIsOnlineIndicator
-import com.minux.monitoring.core.ui.RigParameters
+import com.minux.monitoring.core.ui.CoinStatisticsGridHeader
+import com.minux.monitoring.core.ui.DeviceIconIndicatorItemModel
+import com.minux.monitoring.core.ui.DeviceIndicators
+import com.minux.monitoring.core.ui.DeviceTextIndicatorItemModel
+import com.minux.monitoring.core.ui.IsOnlineIndicator
 import com.minux.monitoring.feature.monitoring.MonitoringEvent
 import com.minux.monitoring.feature.monitoring.RigMiningStatus
 import com.minux.monitoring.feature.monitoring.RigPowerState
@@ -56,7 +62,13 @@ internal fun RigStateCard(
     onRigCommandEvent: (MonitoringEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val isExpanded = remember {
+        mutableStateOf(false)
+    }
+
     MNXExpandableCard(
+        expanded = isExpanded.value,
+        onExpandedChange = { isExpanded.value = it },
         modifier = modifier,
         borderSides = BorderSides(
             start = BorderSide.Start(width = 3.dp),
@@ -68,7 +80,7 @@ internal fun RigStateCard(
             horizontal = 7.dp,
             vertical = 5.dp
         ),
-        content = { iconCardStateModifier ->
+        content = {
             Row(
                 modifier = Modifier
                     .padding(horizontal = 8.dp)
@@ -90,7 +102,7 @@ internal fun RigStateCard(
                 )
 
                 Icon(
-                    modifier = iconCardStateModifier,
+                    modifier = Modifier.flipScale(state = isExpanded.value),
                     painter = painterResource(id = MNXIcons.DropDown),
                     tint = MaterialTheme.colorScheme.onPrimary,
                     contentDescription = null
@@ -147,7 +159,7 @@ private fun RigStateCardContent(
                 MaterialTheme.colorScheme.secondary
             }
 
-            RigIsOnlineIndicator(
+            IsOnlineIndicator(
                 modifier = Modifier
                     .size(16.dp)
                     .offset(x = 8.dp),
@@ -155,29 +167,38 @@ private fun RigStateCardContent(
             )
         }
 
-        RigParameters(
-            modifier = Modifier.padding(start = 20.dp, top = 8.dp),
-            parameters = mapOf(
-                "TEMP" to buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.secondary)) {
-                        append(temperature.toString())
+        DeviceIndicators(
+            indicators = listOf(
+                DeviceTextIndicatorItemModel(
+                    name = "TEMP",
+                    value = buildAnnotatedString {
+                        withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.secondary)) {
+                            append(temperature.toString())
+                        }
+                        append(" ")
+                        append("°C")
                     }
-                    append(" ")
-                    append("°C")
-                },
-                "FAN" to buildAnnotatedString { append("$fanSpeed %") },
-                "PWR" to buildAnnotatedString {
-                    append(power.value.toString())
-                    append(" ")
-                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                        append(power.measureUnit)
+                ),
+                DeviceTextIndicatorItemModel(
+                    name = "FAN",
+                    value = AnnotatedString(text = "$fanSpeed %")
+                ),
+                DeviceTextIndicatorItemModel(
+                    name = "PWR",
+                    value = buildAnnotatedString {
+                        append(power.value.toString())
+                        append(" ")
+                        withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
+                            append(power.measureUnit)
+                        }
                     }
-                },
-                "SIGNAL" to buildAnnotatedString {
-                    append("${connectionSpeed.value} ${connectionSpeed.measureUnit}")
-                }
+                ),
+                DeviceIconIndicatorItemModel(
+                    icon = painterResource(id = MNXIcons.Wifi),
+                    value = AnnotatedString(text = "${connectionSpeed.value} ${connectionSpeed.measureUnit}")
+                )
             ),
-            icons = mapOf("SIGNAL" to painterResource(id = MNXIcons.Wifi))
+            modifier = Modifier.padding(start = 20.dp, top = 8.dp)
         )
     }
 }
@@ -194,7 +215,7 @@ private fun RigStateCardExpandableContent(
     snackbarHostState: SnackbarHostState,
     onRigCommandEvent: (MonitoringEvent) -> Unit
 ) {
-    FlightSheetGridHeader(
+    CoinStatisticsGridHeader(
         modifier = Modifier
             .heightIn(max = 150.dp)
             .padding(
@@ -206,15 +227,15 @@ private fun RigStateCardExpandableContent(
     )
 
     GridItems(
+        columns = GridCells.Fixed(headers.count()),
+        items = flightSheet,
         modifier = Modifier
             .heightIn(max = 150.dp)
             .padding(
                 start = 12.dp,
                 top = 4.dp,
                 end = 12.dp
-            ),
-        columns = GridCells.Fixed(headers.count()),
-        data = flightSheet
+            )
     ) {
         rigFlightSheetGridItems(flightSheet = it)
     }

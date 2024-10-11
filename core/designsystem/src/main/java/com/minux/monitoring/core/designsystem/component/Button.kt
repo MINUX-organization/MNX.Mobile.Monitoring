@@ -7,8 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -19,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
 
@@ -43,7 +43,6 @@ fun MNXButton(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MNXBorderedButton(
     onClick: () -> Unit,
@@ -53,7 +52,7 @@ fun MNXBorderedButton(
     contentPadding: PaddingValues = PaddingValues(horizontal = 12.dp),
     content: @Composable RowScope.() -> Unit
 ) {
-    CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
+    CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
         val shape = RectangleShape
 
         Button(

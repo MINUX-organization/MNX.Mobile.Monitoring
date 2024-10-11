@@ -11,7 +11,7 @@ import com.minux.monitoring.feature.monitoring.MonitoringViewModel
 
 @Composable
 internal fun MonitoringRoute(
-    snackbarHostState: SnackbarHostState,
+    snackBarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
     viewModel: MonitoringViewModel = hiltViewModel()
 ) {
@@ -20,7 +20,7 @@ internal fun MonitoringRoute(
     MonitoringScreen(
         modifier = modifier,
         monitoringUiState = state,
-        snackbarHostState = snackbarHostState,
+        snackBarHostState = snackBarHostState,
         onEvent = viewModel::onEvent
     )
 }

@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.minux.monitoring.core.designsystem.component.MNXButton
+import com.minux.monitoring.core.designsystem.component.MNXBorderedButton
 import com.minux.monitoring.feature.monitoring.RigMiningStatus
 import com.minux.monitoring.feature.monitoring.RigPowerState
 import com.minux.monitoring.feature.monitoring.commonTextStyle
@@ -243,11 +243,11 @@ private fun RigControlButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
 ) {
-    MNXButton(
+    MNXBorderedButton(
+        onClick = onClick,
         modifier = Modifier
             .height(40.dp)
             .then(modifier),
-        onClick = onClick,
         enabled = enabled,
         color = color
     ) {

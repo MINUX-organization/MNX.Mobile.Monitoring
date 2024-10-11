@@ -8,9 +8,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableIntStateOf
@@ -18,26 +22,31 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.minux.monitoring.core.designsystem.component.MNXDrawerHeader
 import com.minux.monitoring.core.designsystem.component.MNXDrawerSheet
 import com.minux.monitoring.core.designsystem.component.MNXNavigationDrawerItem
-import com.minux.monitoring.core.designsystem.theme.BorderSide
-import com.minux.monitoring.core.designsystem.theme.BorderSides
+import com.minux.monitoring.core.designsystem.icon.MNXIcons
+import com.minux.monitoring.core.designsystem.modifier.BorderSide
+import com.minux.monitoring.core.designsystem.modifier.BorderSides
+import com.minux.monitoring.core.designsystem.modifier.selectiveBorder
+import com.minux.monitoring.core.designsystem.theme.MNXTheme
 import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
-import com.minux.monitoring.core.designsystem.theme.selectiveBorder
 import com.minux.monitoring.ui.navigation.NavigationDrawerItem
 import kotlinx.coroutines.launch
 
 @Composable
 fun AppNavigationDrawer(
-    modifier: Modifier = Modifier,
     drawerState: DrawerState,
     drawerItems: List<NavigationDrawerItem>,
     onNavigationDrawerItemClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
     CompositionLocalProvider(value = LocalLayoutDirection provides LayoutDirection.Rtl) {
@@ -76,9 +85,8 @@ private fun NavigationDrawerContent(
                 modifier = Modifier
                     .fillMaxSize()
                     .selectiveBorder(
-                        width = 1.dp,
                         color = MaterialTheme.colorScheme.primary,
-                        sides = BorderSides(start = BorderSide.Start())
+                        sides = BorderSides(start = BorderSide.Start(1.dp))
                     )
             )
         }
@@ -127,42 +135,82 @@ private fun NavigationDrawerItems(
     }
 
     items.forEachIndexed { index, item ->
-        var borderSides = BorderSides(
-            start = BorderSide.Start(),
-            end = BorderSide.End()
+        val borderSides = BorderSides(
+            start = BorderSide.Start(1.dp),
+            end = BorderSide.End(1.dp)
         )
 
-        when {
-            index - selectedIndex.intValue <= -1 -> {
-                borderSides = borderSides.copy(
-                    top = BorderSide.Top()
-                )
-            }
-
-            index == selectedIndex.intValue -> {
-                borderSides = borderSides.copy(
-                    top = BorderSide.Top(),
-                    bottom = BorderSide.Bottom()
-                )
-            }
-
-            index - selectedIndex.intValue >= 1 -> {
-                borderSides = borderSides.copy(
-                    bottom = BorderSide.Bottom()
-                )
-            }
-        }
-
         MNXNavigationDrawerItem(
-            modifier = Modifier.fillMaxWidth(),
-            text = item.title,
+            label = {
+                Text(
+                    text = item.title,
+                    modifier = Modifier.fillMaxWidth(),
+                    fontFamily = grillSansMtFamily,
+                    textAlign = TextAlign.Center
+                )
+            },
             selected = selectedIndex.intValue == index,
-            borderSides = borderSides,
             onClick = {
                 coroutineScope.launch {
                     selectedIndex.intValue = index
                     onNavigationDrawerItemClick(item.route)
                     drawerState.close()
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            borderSides = borderSides.getByPosition(
+                index = index,
+                selectedIndex = selectedIndex.intValue
+            ),
+        )
+    }
+}
+
+private fun BorderSides.getByPosition(index: Int, selectedIndex: Int): BorderSides {
+    return when {
+        index - selectedIndex <= -1 -> {
+            copy(top = BorderSide.Top(1.dp))
+        }
+
+        index == selectedIndex -> {
+            copy(
+                top = BorderSide.Top(1.dp),
+                bottom = BorderSide.Bottom(1.dp)
+            )
+        }
+
+        index - selectedIndex >= 1 -> {
+            copy(bottom = BorderSide.Bottom(1.dp))
+        }
+
+        else -> this
+    }
+}
+
+@Preview
+@Composable
+fun AppNavigationDrawerPreview() {
+    MNXTheme {
+        val drawerState = rememberDrawerState(initialValue = DrawerValue.Open)
+        val coroutineScope = rememberCoroutineScope()
+
+        AppNavigationDrawer(
+            drawerState = drawerState,
+            drawerItems = NavigationDrawerItem.entries,
+            onNavigationDrawerItemClick = {},
+            content = {
+                IconButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            drawerState.open()
+                        }
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(id = MNXIcons.Menu),
+                        contentDescription = "Drawer menu",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
                 }
             }
         )

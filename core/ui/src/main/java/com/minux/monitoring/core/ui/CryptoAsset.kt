@@ -139,22 +139,23 @@ fun <T> CryptoAssetGrid(
 @Composable
 private fun CryptoAssetGridHeader(headers: List<String>) {
     GridHeader(
-        modifier = Modifier
-            .padding(
-                paddingValues = PaddingValues(
-                    horizontal = 10.dp,
-                    vertical = 8.dp
-                )
-            ),
         columns = GridCells.Fixed(headers.count()),
         headers = headers,
-        headersStyle = TextStyle(
-            color = MaterialTheme.colorScheme.primary,
-            fontSize = 16.sp,
-            fontFamily = grillSansMtFamily,
-            fontWeight = FontWeight.Normal
+        modifier = Modifier.padding(
+            horizontal = 10.dp,
+            vertical = 8.dp
         )
-    )
+    ) {
+        Text(
+            text = it,
+            style = TextStyle(
+                color = MaterialTheme.colorScheme.primary,
+                fontSize = 16.sp,
+                fontFamily = grillSansMtFamily,
+                fontWeight = FontWeight.Normal
+            )
+        )
+    }
 }
 
 @Composable

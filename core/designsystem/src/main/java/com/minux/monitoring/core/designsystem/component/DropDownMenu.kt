@@ -14,6 +14,7 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -54,16 +55,12 @@ fun MNXDropDownMenu(
 
     ExposedDropdownMenuBox(
         expanded = isExpanded.value,
-        onExpandedChange = {
-            isExpanded.value = !isExpanded.value
-        }
+        onExpandedChange = { isExpanded.value = it }
     ) {
         MNXTextField(
             value = selectedMenuItem,
             onValueChange = { onSelectedMenuItemChange(it) },
-            modifier = Modifier
-                .then(modifier)
-                .menuAnchor(),
+            modifier = modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable),
             readOnly = true,
             shape = shape,
             suffix = {
@@ -82,9 +79,7 @@ fun MNXDropDownMenu(
         DropdownMenu(
             modifier = Modifier.exposedDropdownSize(),
             expanded = isExpanded.value,
-            onDismissRequest = {
-                isExpanded.value = false
-            }
+            onDismissRequest = { isExpanded.value = false }
         ) {
             menuItems.forEachIndexed { index, text ->
                 DropdownMenuItem(

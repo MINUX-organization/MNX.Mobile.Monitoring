@@ -3,6 +3,7 @@ package com.minux.monitoring.core.ui
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
@@ -31,11 +32,15 @@ fun CoinStatisticsGridHeader(
 
     MNXCard(modifier = modifier) {
         GridHeader(
-            modifier = Modifier.padding(paddingValues = contentPadding),
             columns = GridCells.Fixed(headers.count()),
             headers = headers,
-            headersStyle = headerStyle
-        )
+            modifier = Modifier.padding(paddingValues = contentPadding)
+        ) {
+            Text(
+                text = it,
+                style = headerStyle
+            )
+        }
     }
 }
 
