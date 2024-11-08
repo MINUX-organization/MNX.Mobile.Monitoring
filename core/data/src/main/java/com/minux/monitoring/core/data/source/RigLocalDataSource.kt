@@ -1,7 +1,7 @@
 package com.minux.monitoring.core.data.source
 
 import android.content.Context
-import com.minux.monitoring.core.network.service.NetworkScanService
+import com.minux.monitoring.core.network.impl.service.NetworkScanService
 import kotlinx.coroutines.flow.Flow
 
 class RigLocalDataSource(private val context: Context) {

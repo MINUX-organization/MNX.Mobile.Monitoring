@@ -1,4 +1,4 @@
-package com.minux.monitoring.core.network.signalr
+package com.minux.monitoring.core.network.impl.signalr
 
 import com.microsoft.signalr.HubConnection
 import com.microsoft.signalr.HubConnectionState
@@ -11,28 +11,30 @@ import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
 
-internal inline fun <reified T> HubConnection.onReceive(method: String) = callbackFlow<Result<T>> {
-    val compositeDisposable = CompositeDisposable()
+internal fun <T> HubConnection.onReceive(method: String, param: Class<T>) = callbackFlow<Result<T>> {
+    onClosed {
+        start()
+    }
 
-    val subscription = on(method, {
+    val receiveCall: (T) -> Unit = {
         trySend(Result.success(it))
-    }, T::class.java)
+    }
+
+    val subscription = on(method, receiveCall, param)
 
     val connection = start()
     val disposable = connection.doOnError {
         trySend(Result.failure(it))
     }.subscribe()
 
-    compositeDisposable.add(disposable)
-
     awaitClose {
         stop()
         subscription.unsubscribe()
-        compositeDisposable.dispose()
+        disposable.dispose()
     }
 }.buffer(onBufferOverflow = BufferOverflow.DROP_OLDEST).flowOn(Dispatchers.IO)
 
-internal fun <T> HubConnection.onSend(method: String, data: T) = callbackFlow<Result<Unit>> {
+internal fun <T> HubConnection.onSend(method: String, vararg data: T) = callbackFlow<Result<Unit>> {
     val compositeDisposable = CompositeDisposable()
 
     fun tryInvoke(): Disposable {
@@ -44,6 +46,10 @@ internal fun <T> HubConnection.onSend(method: String, data: T) = callbackFlow<Re
                 trySend(Result.failure(it))
             }
             .subscribe()
+    }
+
+    onClosed {
+        start()
     }
 
     when (connectionState!!) {

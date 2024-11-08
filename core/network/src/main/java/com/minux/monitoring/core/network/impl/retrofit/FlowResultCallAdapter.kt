@@ -1,6 +1,5 @@
-package com.minux.monitoring.core.network.retrofit
+package com.minux.monitoring.core.network.impl.retrofit
 
-import com.minux.monitoring.core.network.model.exception.AppExceptionDto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -9,6 +8,7 @@ import kotlinx.coroutines.flow.flowOn
 import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Callback
+import retrofit2.HttpException
 import retrofit2.Response
 import java.lang.reflect.Type
 
@@ -23,18 +23,9 @@ internal class FlowResultCallAdapter<T>(private val responseType: Type) : CallAd
                         Result.success(value = response.body() ?: Unit as T)
                     )
                 } else {
-                    when (response.code()) {
-                        400 -> trySend(
-                            Result.failure(
-                                exception = AppExceptionDto.BadRequestExceptionDto(
-                                    data = response.errorBody() as List<String>
-                                )
-                            )
-                        )
-                        401 -> trySend(
-                            Result.failure(exception = AppExceptionDto.UnauthorizedExceptionDto)
-                        )
-                    }
+                    trySend(
+                        Result.failure(HttpException(response))
+                    )
                 }
             }
 
