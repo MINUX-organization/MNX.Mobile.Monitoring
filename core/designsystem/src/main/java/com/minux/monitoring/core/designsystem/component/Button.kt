@@ -4,9 +4,14 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -94,6 +99,27 @@ fun MNXTextButton(
     )
 }
 
+@Composable
+fun MNXFloatingActionButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    FloatingActionButton(
+        onClick = onClick,
+        modifier = modifier
+            .border(
+                width = 0.5.dp,
+                color = MaterialTheme.colorScheme.primary,
+                shape = RoundedCornerShape(12.dp)
+            )
+            .padding(3.dp),
+        shape = RoundedCornerShape(10.dp),
+        containerColor = MaterialTheme.colorScheme.primary,
+        content = content
+    )
+}
+
 @Preview
 @Composable
 private fun MNXButtonPreview() {
@@ -123,6 +149,24 @@ private fun MNXTextButtonPreview() {
     MNXTheme {
         MNXTextButton(onClick = {}) {
             Text(text = "Text")
+        }
+    }
+}
+
+
+@Preview
+@Composable
+private fun MNXFloatingActionButtonPreview() {
+    MNXTheme {
+        MNXFloatingActionButton(
+            onClick = {},
+            modifier = Modifier.padding(4.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Edit,
+                contentDescription = "Add",
+                modifier = Modifier.size(28.dp)
+            )
         }
     }
 }
