@@ -5,9 +5,8 @@ import com.minux.monitoring.core.network.impl.retrofit.FlowResultCallAdapterFact
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import javax.inject.Inject
 
-internal class HttpClientImpl @Inject constructor(private val okHttpClient: OkHttpClient) : HttpClient {
+internal class HttpClientImpl(private val okHttpClient: OkHttpClient) : HttpClient {
     private val baseUrl = "https://something.com/api/"
 
     override fun getApiClient(): Retrofit {
