@@ -12,6 +12,9 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
             }
 
             dependencies {
+                "implementation" (project(":injector"))
+                "implementation" (project(":injector-compose"))
+
                 "implementation" (project(":core:ui"))
                 "implementation" (project(":core:designsystem"))
 

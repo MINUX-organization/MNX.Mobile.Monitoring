@@ -36,6 +36,8 @@
             <option value="$PROJECT_DIR$/feature/pools" />
             <option value="$PROJECT_DIR$/feature/sign" />
             <option value="$PROJECT_DIR$/feature/wallets" />
+            <option value="$PROJECT_DIR$/injector" />
+            <option value="$PROJECT_DIR$/injector-compose" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />
