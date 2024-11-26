@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.minux.monitoring.android.library)
-    alias(libs.plugins.minux.monitoring.android.hilt)
+    alias(libs.plugins.minux.monitoring.android.dagger)
 }
 
 android {

@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.minux.monitoring.android.library)
-    alias(libs.plugins.minux.monitoring.android.hilt)
+    alias(libs.plugins.minux.monitoring.android.dagger)
 }
 
 android {
@@ -26,6 +26,7 @@ dependencies {
     implementation(libs.okhttp.logging)
     implementation(libs.retrofit.core)
     implementation(libs.retrofit.converter.gson)
+    implementation(libs.kotlinx.coroutines.android)
     implementation(libs.signalr)
 
     testImplementation(libs.junit)

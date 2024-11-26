@@ -15,12 +15,11 @@ androidxNavigation = "2.8.1"
 androidxComposeBom = "2024.09.02"
 androidxComposeConstraintLayout = "1.0.1"
 androidxComposeCompiler = "1.5.10"
-androidxHiltNavigationCompose = "1.2.0"
 androidxLifecycle = "2.8.6"
 androidxTestJUnit = "1.2.1"
 androidxTestEspressoCore = "3.6.1"
 jUnit = "4.13.2"
-hilt = "2.50"
+dagger = "2.52"
 okhttp = "4.12.0"
 retrofit = "2.11.0"
 signalr = "8.0.2"
@@ -40,14 +39,13 @@ androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "u
 androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-compose-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "androidxComposeConstraintLayout" }
-androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidxHiltNavigationCompose" }
 androidx-lifecycle-runtimeCompose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidxLifecycle" }
 androidx-lifecycle-viewModelCompose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "androidxLifecycle" }
 androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestJUnit" }
 androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidxTestEspressoCore" }
 junit = { group = "junit", name = "junit", version.ref = "jUnit" }
-hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
-hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
+dagger = { group = "com.google.dagger", name = "dagger", version.ref = "dagger" }
+dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", version.ref = "dagger" }
 okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
@@ -67,12 +65,11 @@ android-application = { id = "com.android.application", version.ref = "androidGr
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 
 # Convention plugins
 minux-monitoring-android-application = { id = "minux.monitoring.android.application", version = "unspecified" }
 minux-monitoring-android-application-compose = { id = "minux.monitoring.android.application.compose", version = "unspecified" }
 minux-monitoring-android-library = { id = "minux.monitoring.android.library", version = "unspecified" }
 minux-monitoring-android-library-compose = { id = "minux.monitoring.android.library.compose", version = "unspecified" }
-minux-monitoring-android-hilt = { id = "minux.monitoring.android.hilt", version = "unspecified" }
+minux-monitoring-android-dagger = { id = "minux.monitoring.android.dagger", version = "unspecified" }
 minux-monitoring-android-feature = { id = "minux.monitoring.android.feature", version = "unspecified" }

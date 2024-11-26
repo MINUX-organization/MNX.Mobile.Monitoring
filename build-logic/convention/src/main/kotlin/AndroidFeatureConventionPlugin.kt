@@ -8,16 +8,15 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
         with(target) {
             with(pluginManager) {
                 apply("minux.monitoring.android.library")
-                apply("minux.monitoring.android.hilt")
+                apply("minux.monitoring.android.dagger")
             }
 
             dependencies {
-                add("implementation", project(":core:ui"))
-                add("implementation", project(":core:designsystem"))
+                "implementation" (project(":core:ui"))
+                "implementation" (project(":core:designsystem"))
 
-                add("implementation", libs.findBundle("android.compose.lifecycle").get())
-                add("implementation", libs.findLibrary("androidx.navigation.compose").get())
-                add("implementation", libs.findLibrary("androidx.hilt.navigation.compose").get())
+                "implementation" (libs.findBundle("android.compose.lifecycle").get())
+                "implementation" (libs.findLibrary("androidx.navigation.compose").get())
             }
         }
     }

@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.minux.monitoring.android.application)
     alias(libs.plugins.minux.monitoring.android.application.compose)
-    alias(libs.plugins.minux.monitoring.android.hilt)
+    alias(libs.plugins.minux.monitoring.android.dagger)
 }
 
 android {
@@ -42,7 +42,6 @@ dependencies {
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.hilt.navigation.compose)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.junit)

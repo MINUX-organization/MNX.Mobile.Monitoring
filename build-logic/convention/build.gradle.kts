@@ -13,22 +13,27 @@ gradlePlugin {
             id = "minux.monitoring.android.application"
             implementationClass = "AndroidApplicationConventionPlugin"
         }
+
         register("androidApplicationCompose") {
             id = "minux.monitoring.android.application.compose"
             implementationClass = "AndroidApplicationComposeConventionPlugin"
         }
+
         register("androidLibrary") {
             id = "minux.monitoring.android.library"
             implementationClass = "AndroidLibraryConventionPlugin"
         }
+
         register("androidLibraryCompose") {
             id = "minux.monitoring.android.library.compose"
             implementationClass = "AndroidLibraryComposeConventionPlugin"
         }
-        register("androidHilt") {
-            id = "minux.monitoring.android.hilt"
-            implementationClass = "AndroidHiltConventionPlugin"
+
+        register("androidDagger") {
+            id = "minux.monitoring.android.dagger"
+            implementationClass = "AndroidDaggerConventionPlugin"
         }
+
         register("androidFeature") {
             id = "minux.monitoring.android.feature"
             implementationClass = "AndroidFeatureConventionPlugin"
