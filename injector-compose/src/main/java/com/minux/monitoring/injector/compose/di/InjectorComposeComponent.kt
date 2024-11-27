@@ -9,7 +9,7 @@ import javax.inject.Singleton
     modules = [InjectorComposeModule::class]
 )
 @Singleton
-interface InjectorComposeComponent : InjectorComposeApi {
+internal interface InjectorComposeComponent : InjectorComposeApi {
 
     @Component.Factory
     interface Factory {

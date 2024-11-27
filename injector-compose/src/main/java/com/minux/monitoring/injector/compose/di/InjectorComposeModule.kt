@@ -8,7 +8,7 @@ import dagger.Module
 import javax.inject.Singleton
 
 @Module
-interface InjectorComposeModule {
+internal interface InjectorComposeModule {
 
     @Binds
     @Singleton
