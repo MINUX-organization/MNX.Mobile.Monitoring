@@ -12,14 +12,9 @@ internal fun Project.configureAndroidCompose(
             compose = true
         }
 
-        composeOptions {
-            kotlinCompilerExtensionVersion = libs.findVersion("androidxComposeCompiler")
-                .getStrVersion()
-        }
-
         dependencies {
             val bom = libs.findLibrary("androidx-compose-bom").get()
-            add("implementation", platform(bom))
+            "implementation" (platform(bom))
         }
     }
 }

@@ -15,8 +15,3 @@ internal fun Optional<VersionConstraint>.getVersion(): Int {
         .toString()
         .toInt()
 }
-
-internal fun Optional<VersionConstraint>.getStrVersion(): String {
-    return get()
-        .toString()
-}
