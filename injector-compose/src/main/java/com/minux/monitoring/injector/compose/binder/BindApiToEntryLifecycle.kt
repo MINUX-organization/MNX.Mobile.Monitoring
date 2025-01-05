@@ -10,7 +10,7 @@ import com.minux.monitoring.injector.ComponentHolder
 @Composable
 inline fun <reified Holder : ComponentHolder<out BaseApi, out BaseDependencies>> BindApiToEntryLifecycle(
     holder: Holder,
-    entry: NavBackStackEntry,
+    navEntry: NavBackStackEntry,
     content: @Composable () -> Unit
 ) {
     val api = remember { holder.fetchApi() }
@@ -19,10 +19,10 @@ inline fun <reified Holder : ComponentHolder<out BaseApi, out BaseDependencies>>
         ClassCastException("$api isn't implemented in BinderBaseApiToLifecycle")
     }.run {
         val lifecycleEventObserver = remember {
-            binderBaseApi.bind(entryId = entry.id)
+            binderBaseApi.bind(entryId = navEntry.id)
         }
 
-        entry.lifecycle.addObserver(lifecycleEventObserver)
+        navEntry.lifecycle.addObserver(lifecycleEventObserver)
 
         content()
     }

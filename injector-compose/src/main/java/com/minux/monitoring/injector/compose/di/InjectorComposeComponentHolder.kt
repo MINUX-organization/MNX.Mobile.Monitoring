@@ -13,7 +13,7 @@ object InjectorComposeComponentHolder : ComponentHolder<InjectorComposeApi, Inje
                 InjectorComposeComponent.get(dependencies = injectorComposeDependencies)
             }
 
-    override val dependencyProvider: (() -> InjectorComposeDependencies)?
+    override var dependencyProvider: (() -> InjectorComposeDependencies)?
         by componentHolderDelegate::dependencyProvider
 
     override fun fetchApi(): InjectorComposeApi = componentHolderDelegate.fetchApi()
