@@ -34,13 +34,13 @@ abstract class DependencyHolderWithTwoApi<Dependencies : BaseDependencies, First
         get() = block(this, firstApi, secondApi)
 }
 
-abstract class DependencyHolderWithThreeApi<Dependencies : BaseDependencies, FirstApi : BaseApi, SecondApi : BaseApi, ThreeApi : BaseApi>(
+abstract class DependencyHolderWithThreeApi<Dependencies : BaseDependencies, FirstApi : BaseApi, SecondApi : BaseApi, ThirdApi : BaseApi>(
     private val firstApi : FirstApi,
     private val secondApi : SecondApi,
-    private val threeApi : ThreeApi
+    private val thirdApi : ThirdApi
 ) : BaseDependencyHolder<Dependencies> {
-    abstract val block: (BaseDependencyHolder<Dependencies>, FirstApi, SecondApi, ThreeApi) -> Dependencies
+    abstract val block: (BaseDependencyHolder<Dependencies>, FirstApi, SecondApi, ThirdApi) -> Dependencies
 
     override val dependencies: Dependencies
-        get() = block(this, firstApi, secondApi, threeApi)
+        get() = block(this, firstApi, secondApi, thirdApi)
 }
