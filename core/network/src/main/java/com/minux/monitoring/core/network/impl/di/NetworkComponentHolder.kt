@@ -10,7 +10,7 @@ object NetworkComponentHolder : ComponentHolder<NetworkApi, NetworkDependencies>
                 NetworkComponent.get(dependencies = networkDependencies)
             }
 
-    override val dependencyProvider: (() -> NetworkDependencies)?
+    override var dependencyProvider: (() -> NetworkDependencies)?
         by componentHolderDelegate::dependencyProvider
 
     override fun fetchApi(): NetworkApi = componentHolderDelegate.fetchApi()
