@@ -39,7 +39,6 @@ import com.minux.monitoring.core.designsystem.component.MNXTextFieldDefaults.cur
 import com.minux.monitoring.core.designsystem.component.MNXTextFieldDefaults.textColor
 import com.minux.monitoring.core.designsystem.icon.MNXIcons
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
-import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -225,7 +224,6 @@ private fun MNXTextFieldPreview() {
                 value = text.value,
                 onValueChange = { text.value = it },
                 modifier = Modifier.padding(top = 10.dp),
-                textStyle = TextStyle(fontFamily = grillSansMtFamily),
                 placeholder = { Text(text = "Search" ) },
                 prefix = {
                     Icon(

@@ -14,8 +14,10 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -30,7 +32,8 @@ import com.minux.monitoring.core.designsystem.component.MNXBorderedButton
 import com.minux.monitoring.core.designsystem.component.MNXCard
 import com.minux.monitoring.core.designsystem.component.MNXTextField
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
-import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
+import com.minux.monitoring.core.designsystem.theme.MNXTypography
+import com.minux.monitoring.core.designsystem.theme.gillSansMtFamily
 
 /**
  * Color for CryptoAsset components.
@@ -45,7 +48,7 @@ private val cryptoAssetColor = Color(0x33000000)
 
 @Composable
 fun NewCryptoAssetCardWithAddButton(
-    title: String,
+    title: @Composable () -> Unit,
     onAddClick: () -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit
@@ -67,15 +70,18 @@ fun NewCryptoAssetCardWithAddButton(
                     ),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text(
+                Column(
                     modifier = Modifier.fillMaxWidth(),
-                    text = title,
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    fontSize = 20.sp,
-                    fontFamily = grillSansMtFamily,
-                    fontWeight = FontWeight.Normal
-                )
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    ProvideTextStyle(
+                        value = TextStyle(
+                            textAlign = TextAlign.Center,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        ),
+                        content = title
+                    )
+                }
 
                 content()
             }
@@ -90,9 +96,7 @@ fun NewCryptoAssetCardWithAddButton(
             ) {
                 Text(
                     text = "Add",
-                    fontSize = 16.sp,
-                    fontFamily = grillSansMtFamily,
-                    fontWeight = FontWeight.Normal
+                    fontSize = 16.sp
                 )
             }
         }
@@ -109,6 +113,7 @@ fun <T> CryptoAssetGrid(
     cryptoAssetItems: List<T>,
     modifier: Modifier = Modifier,
     columnsCount: Int = headers.count(),
+    headersContent: @Composable (header: String) -> Unit = { Text(text = it) },
     itemsContent: LazyGridScope.(item: T, itemPadding: PaddingValues) -> Unit
 ) {
     MNXCard(
@@ -120,7 +125,10 @@ fun <T> CryptoAssetGrid(
         )
     ) {
         Column {
-            CryptoAssetGridHeader(headers = headers)
+            CryptoAssetGridHeader(
+                headers = headers,
+                content = headersContent
+            )
 
             HorizontalDivider(
                 thickness = 1.dp,
@@ -137,7 +145,10 @@ fun <T> CryptoAssetGrid(
 }
 
 @Composable
-private fun CryptoAssetGridHeader(headers: List<String>) {
+private fun CryptoAssetGridHeader(
+    headers: List<String>,
+    content: @Composable (header: String) -> Unit
+) {
     GridHeader(
         columns = GridCells.Fixed(headers.count()),
         headers = headers,
@@ -146,15 +157,9 @@ private fun CryptoAssetGridHeader(headers: List<String>) {
             vertical = 8.dp
         )
     ) {
-        Text(
-            text = it,
-            style = TextStyle(
-                color = MaterialTheme.colorScheme.primary,
-                fontSize = 16.sp,
-                fontFamily = grillSansMtFamily,
-                fontWeight = FontWeight.Normal
-            )
-        )
+        ProvideTextStyle(value = TextStyle(color = MaterialTheme.colorScheme.primary)) {
+            content(it)
+        }
     }
 }
 
@@ -176,7 +181,7 @@ private inline fun <T> CryptoAssetGridItems(
         )
     }
 
-    val itemPadding = PaddingValues(vertical = 6.dp)
+    val itemPadding = PaddingValues(vertical = 4.dp)
 
     GridItems(
         modifier = Modifier.padding(paddingValues = contentPadding),
@@ -192,7 +197,7 @@ private inline fun <T> CryptoAssetGridItems(
 internal fun NewCryptoAssetCardWithAddButtonPreview() {
     MNXTheme {
         NewCryptoAssetCardWithAddButton(
-            title = "Sample",
+            title = { Text(text = "Sample") },
             onAddClick = {}
         ) {
             Text(
@@ -200,7 +205,7 @@ internal fun NewCryptoAssetCardWithAddButtonPreview() {
                 style = TextStyle(
                     color = MaterialTheme.colorScheme.onPrimary,
                     fontSize = 16.sp,
-                    fontFamily = grillSansMtFamily,
+                    fontFamily = gillSansMtFamily,
                     fontWeight = FontWeight.Normal
                 )
             )
@@ -230,11 +235,8 @@ internal fun CryptoAssetGridPreview() {
                      Text(
                          text = item.first,
                          modifier = Modifier.padding(paddingValues = itemPadding),
-                         style = TextStyle(
-                             color = MaterialTheme.colorScheme.onPrimary,
-                             fontSize = 16.sp,
-                             fontFamily = grillSansMtFamily,
-                             fontWeight = FontWeight.Normal
+                         style = MNXTypography.bodyLarge.copy(
+                             color = MaterialTheme.colorScheme.onPrimary
                          )
                      )
                  }

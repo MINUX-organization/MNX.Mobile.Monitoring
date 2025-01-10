@@ -21,9 +21,7 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 @Composable
-fun MNXTheme(
-    content: @Composable () -> Unit
-) {
+fun MNXTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = DarkColorScheme,
         typography = MNXTypography,
