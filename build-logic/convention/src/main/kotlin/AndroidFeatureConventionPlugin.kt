@@ -16,7 +16,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                 "implementation" (project(":injector-compose"))
 
                 "implementation" (project(":core:ui"))
-                "implementation" (project(":core:designsystem"))
+                "implementation" (project(":core:base"))
 
                 "implementation" (libs.findBundle("android.compose.lifecycle").get())
                 "implementation" (libs.findLibrary("androidx.navigation.compose").get())

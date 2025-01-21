@@ -1,10 +1,9 @@
 plugins {
     alias(libs.plugins.minux.monitoring.android.library)
-    alias(libs.plugins.minux.monitoring.android.dagger)
 }
 
 android {
-    namespace = "com.minux.monitoring.core.data"
+    namespace = "com.minux.monitoring.core.base"
 
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -23,12 +22,5 @@ android {
 }
 
 dependencies {
-    api(project(":core:network"))
-
-    api(libs.timber)
-    api(libs.kotlinx.coroutines.android)
-
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.junit)
-    androidTestImplementation(libs.androidx.test.espresso.core)
+    implementation(libs.androidx.lifecycle.viewModelCompose)
 }
