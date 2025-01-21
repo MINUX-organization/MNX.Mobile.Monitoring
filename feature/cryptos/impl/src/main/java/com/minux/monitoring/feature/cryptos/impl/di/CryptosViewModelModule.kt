@@ -1,9 +1,9 @@
 package com.minux.monitoring.feature.cryptos.impl.di
 
 import androidx.lifecycle.ViewModel
-import com.minux.monitoring.feature.cryptos.impl.presentation.ui.cryptos.CryptosViewModel
-import com.minux.monitoring.feature.cryptos.impl.presentation.ui.pools.PoolsViewModel
-import com.minux.monitoring.feature.cryptos.impl.presentation.ui.wallets.WalletsViewModel
+import com.minux.monitoring.feature.cryptos.impl.cryptos.presentation.ui.CryptosViewModel
+import com.minux.monitoring.feature.cryptos.impl.pools.presentation.ui.PoolsViewModel
+import com.minux.monitoring.feature.cryptos.impl.wallets.presentation.ui.WalletsViewModel
 import com.minux.monitoring.injector.viewmodel.ViewModelFactoryModule
 import com.minux.monitoring.injector.viewmodel.ViewModelKey
 import dagger.Binds

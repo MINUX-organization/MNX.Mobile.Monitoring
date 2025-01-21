@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.minux.monitoring.android.feature.api)
+    alias(libs.plugins.minux.monitoring.android.library.compose)
 }
 
 android {
