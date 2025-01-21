@@ -17,7 +17,11 @@ private val DarkColorScheme = darkColorScheme(
     tertiary = Green50,
     onTertiary = Color.White,
     background = DarkBlue10,
-    onBackground = Color.White
+    onBackground = Color.White,
+    error = Red50,
+    onError = Color.White,
+    errorContainer = DarkBlue30,
+    onErrorContainer = HalfTransparentWhite
 )
 
 @Composable

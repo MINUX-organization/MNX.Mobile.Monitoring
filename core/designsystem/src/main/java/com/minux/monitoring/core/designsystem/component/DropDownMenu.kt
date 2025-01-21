@@ -33,79 +33,12 @@ import com.minux.monitoring.core.designsystem.theme.MNXTypography
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MNXDropDownMenu(
-    menuItems: List<String>,
-    selectedMenuItem: String,
-    onSelectedMenuItemChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    shape: Shape = RoundedCornerShape(4.dp),
-    iconPadding: Dp = 10.dp,
-    contentPadding: PaddingValues = PaddingValues(
-        start = 10.dp,
-        top = 7.dp,
-        end = 9.dp,
-        bottom = 7.dp
-    )
-) {
-    val isExpanded = remember {
-        mutableStateOf(false)
-    }
-
-    ExposedDropdownMenuBox(
-        expanded = isExpanded.value,
-        onExpandedChange = { isExpanded.value = it }
-    ) {
-        MNXTextField(
-            value = selectedMenuItem,
-            onValueChange = { onSelectedMenuItemChange(it) },
-            modifier = modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable),
-            readOnly = true,
-            shape = shape,
-            suffix = {
-                Icon(
-                    modifier = Modifier
-                        .flipScale(state = isExpanded.value)
-                        .padding(start = iconPadding),
-                    painter = painterResource(id = MNXIcons.DropDown),
-                    tint = MaterialTheme.colorScheme.primary,
-                    contentDescription = null
-                )
-            },
-            contentPadding = contentPadding
-        )
-
-        DropdownMenu(
-            modifier = Modifier.exposedDropdownSize(),
-            expanded = isExpanded.value,
-            onDismissRequest = { isExpanded.value = false }
-        ) {
-            menuItems.forEachIndexed { index, text ->
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = text,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
-                            style = MNXTypography.bodyLarge
-                        )
-                    },
-                    onClick = {
-                        onSelectedMenuItemChange(menuItems[index])
-                        isExpanded.value = false
-                    },
-                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
-                )
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
 fun <T> MNXDropDownMenu(
     menuItems: List<T>,
     selectedMenuItem: T,
     onSelectedMenuItemChange: (T) -> Unit,
     modifier: Modifier = Modifier,
+    label: @Composable (() -> Unit)? = null,
     shape: Shape = RoundedCornerShape(4.dp),
     iconPadding: Dp = 10.dp,
     contentPadding: PaddingValues = PaddingValues(
@@ -128,6 +61,7 @@ fun <T> MNXDropDownMenu(
             onValueChange = {},
             modifier = modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable),
             readOnly = true,
+            label = label,
             shape = shape,
             suffix = {
                 Icon(

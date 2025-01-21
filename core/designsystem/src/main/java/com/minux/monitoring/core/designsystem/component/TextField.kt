@@ -1,5 +1,6 @@
 package com.minux.monitoring.core.designsystem.component
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
@@ -35,6 +36,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.minux.monitoring.core.designsystem.component.MNXTextFieldDefaults.cursorColor
 import com.minux.monitoring.core.designsystem.component.MNXTextFieldDefaults.textColor
 import com.minux.monitoring.core.designsystem.icon.MNXIcons
@@ -48,9 +50,12 @@ fun MNXTextField(
     modifier: Modifier = Modifier,
     readOnly: Boolean = false,
     textStyle: TextStyle = LocalTextStyle.current,
+    label: @Composable (() -> Unit)? = null,
     placeholder: @Composable (() -> Unit)? = null,
     prefix: @Composable (() -> Unit)? = null,
     suffix: @Composable (() -> Unit)? = null,
+    supportingText: @Composable (() -> Unit)? = null,
+    isError: Boolean = false,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
@@ -60,9 +65,7 @@ fun MNXTextField(
     contentPadding: PaddingValues = PaddingValues(8.dp)
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-
     val enabled = true
-    val isError = false
 
     val textColor = textStyle.color
         .takeOrElse {
@@ -72,46 +75,68 @@ fun MNXTextField(
 
     val mergedTextStyle = textStyle.merge(TextStyle(color = textColor))
 
-    BasicTextField(
-        value = value,
-        onValueChange = onValueChange,
-        modifier = modifier
-            .border(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.primary,
-                shape = shape
-            ),
-        enabled = enabled,
-        readOnly = readOnly,
-        textStyle = mergedTextStyle,
-        keyboardOptions = keyboardOptions,
-        keyboardActions = keyboardActions,
-        singleLine = singleLine,
-        visualTransformation = visualTransformation,
-        interactionSource = interactionSource,
-        cursorBrush = SolidColor(colors.cursorColor(isError)),
-        decorationBox = { innerTextField ->
-            TextFieldDefaults.DecorationBox(
-                value = value,
-                innerTextField = innerTextField,
-                enabled = enabled,
-                singleLine = singleLine,
-                visualTransformation = visualTransformation,
-                interactionSource = interactionSource,
-                isError = isError,
-                placeholder = {
-                    ProvideTextStyle(textStyle) {
-                        placeholder?.invoke()
-                    }
-                },
-                prefix = prefix,
-                suffix = suffix,
-                shape = shape,
-                colors = colors,
-                contentPadding = contentPadding
+    Column(modifier = Modifier.animateContentSize()) {
+        label?.let {
+            ProvideTextStyle(
+                value = textStyle.copy(color = MaterialTheme.colorScheme.onBackground),
+                content = it
             )
         }
-    )
+
+        BasicTextField(
+            value = value,
+            onValueChange = onValueChange,
+            modifier = modifier
+                .border(
+                    width = 1.dp,
+                    color = if (!isError)
+                        MaterialTheme.colorScheme.primary
+                    else
+                        MaterialTheme.colorScheme.error,
+                    shape = shape
+                ),
+            enabled = enabled,
+            readOnly = readOnly,
+            textStyle = mergedTextStyle,
+            keyboardOptions = keyboardOptions,
+            keyboardActions = keyboardActions,
+            singleLine = singleLine,
+            visualTransformation = visualTransformation,
+            interactionSource = interactionSource,
+            cursorBrush = SolidColor(colors.cursorColor(isError)),
+            decorationBox = { innerTextField ->
+                TextFieldDefaults.DecorationBox(
+                    value = value,
+                    innerTextField = innerTextField,
+                    enabled = enabled,
+                    singleLine = singleLine,
+                    visualTransformation = visualTransformation,
+                    interactionSource = interactionSource,
+                    isError = isError,
+                    placeholder = {
+                        ProvideTextStyle(textStyle) {
+                            placeholder?.invoke()
+                        }
+                    },
+                    prefix = prefix,
+                    suffix = suffix,
+                    shape = shape,
+                    colors = colors,
+                    contentPadding = contentPadding
+                )
+            }
+        )
+
+        if (isError && supportingText != null) {
+            ProvideTextStyle(
+                value = textStyle.copy(
+                    color = MaterialTheme.colorScheme.error,
+                    fontSize = 14.sp
+                ),
+                content = supportingText
+            )
+        }
+    }
 }
 
 object MNXTextFieldDefaults {
@@ -121,26 +146,26 @@ object MNXTextFieldDefaults {
         focusedTextColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
         unfocusedTextColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
         disabledTextColor: Color = Color.Unspecified,
-        errorTextColor: Color = Color.Unspecified,
+        errorTextColor: Color = MaterialTheme.colorScheme.onErrorContainer,
         focusedContainerColor: Color = MaterialTheme.colorScheme.primaryContainer,
         unfocusedContainerColor: Color = MaterialTheme.colorScheme.primaryContainer,
         disabledContainerColor: Color = Color.Unspecified,
-        errorContainerColor: Color = Color.Unspecified,
+        errorContainerColor: Color = MaterialTheme.colorScheme.errorContainer,
         cursorColor: Color = MaterialTheme.colorScheme.primary,
-        errorCursorColor: Color = Color.Unspecified,
+        errorCursorColor: Color = MaterialTheme.colorScheme.error,
         selectionColors: TextSelectionColors = LocalTextSelectionColors.current,
         focusedPlaceholderColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
         unfocusedPlaceholderColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
         disabledPlaceholderColor: Color = Color.Unspecified,
-        errorPlaceholderColor: Color = Color.Unspecified,
-        focusedPrefixColor: Color = Color.Unspecified,
-        unfocusedPrefixColor: Color = Color.Unspecified,
+        errorPlaceholderColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
+        focusedPrefixColor: Color = MaterialTheme.colorScheme.primary,
+        unfocusedPrefixColor: Color = MaterialTheme.colorScheme.primary,
         disabledPrefixColor: Color = Color.Unspecified,
-        errorPrefixColor: Color = Color.Unspecified,
-        focusedSuffixColor: Color = Color.Unspecified,
-        unfocusedSuffixColor: Color = Color.Unspecified,
+        errorPrefixColor: Color = MaterialTheme.colorScheme.error,
+        focusedSuffixColor: Color = MaterialTheme.colorScheme.primary,
+        unfocusedSuffixColor: Color = MaterialTheme.colorScheme.primary,
         disabledSuffixColor: Color = Color.Unspecified,
-        errorSuffixColor: Color = Color.Unspecified,
+        errorSuffixColor: Color = MaterialTheme.colorScheme.error,
     ) = TextFieldColors(
             focusedTextColor = focusedTextColor,
             unfocusedTextColor = unfocusedTextColor,
@@ -223,7 +248,15 @@ private fun MNXTextFieldPreview() {
             MNXTextField(
                 value = text.value,
                 onValueChange = { text.value = it },
-                modifier = Modifier.padding(top = 10.dp),
+                label = {
+                    Text(
+                        text = "Sample",
+                        modifier = Modifier.padding(
+                            top = 10.dp,
+                            bottom = 2.dp
+                        )
+                    )
+                },
                 placeholder = { Text(text = "Search" ) },
                 prefix = {
                     Icon(
@@ -232,6 +265,8 @@ private fun MNXTextFieldPreview() {
                         contentDescription = "Search"
                     )
                 },
+                supportingText = { Text(text = "Sample") },
+                isError = true,
                 shape = RectangleShape,
                 contentPadding = PaddingValues(
                     horizontal = 6.dp,

@@ -61,7 +61,7 @@ fun MNXDrawerHeader(
                 alignment = Alignment.CenterEnd
             )
             .selectiveBorder(
-                sides = BorderSides(start = BorderSide.Start(width = 1.dp)),
+                sides = BorderSides(end = BorderSide.End(width = 1.dp)),
                 color = MaterialTheme.colorScheme.primary
             )
             .padding(paddingValues = contentPadding),
