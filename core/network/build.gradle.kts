@@ -41,6 +41,8 @@ dependencies {
 
     api(libs.retrofit.core)
     api(libs.kotlinx.coroutines.android)
+    testApi(libs.kotlinx.coroutines.test)
+    testApi(libs.turbine)
 
     implementation(libs.okhttp.logging)
     implementation(libs.kotlinx.serialization.json)
@@ -49,5 +51,6 @@ dependencies {
     implementation(libs.signalr)
     implementation(libs.androidx.dataStore)
 
-    testImplementation(libs.junit)
+    testImplementation(libs.bundles.test)
+    androidTestImplementation(libs.bundles.android.test)
 }

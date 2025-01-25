@@ -21,6 +21,10 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                 "implementation" (libs.findBundle("android.compose.lifecycle").get())
                 "implementation" (libs.findLibrary("androidx.navigation.compose").get())
                 "implementation" (libs.findLibrary("kotlinx.serialization.json").get())
+
+                "testImplementation" (libs.findBundle("test").get())
+                "androidTestImplementation" (libs.findBundle("android.test").get())
+                "androidTestImplementation" (libs.findBundle("android.compose.ui.test").get())
             }
         }
     }
