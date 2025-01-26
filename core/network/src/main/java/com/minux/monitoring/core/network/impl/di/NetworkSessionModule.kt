@@ -39,7 +39,7 @@ internal class NetworkSessionModule {
         cryptoManager: CryptoManager
     ): DataStore<TokensDto> {
         return DataStoreFactory.create(
-            produceFile = { File(context.filesDir, "datastore/tokens.pb") },
+            produceFile = { File(context.filesDir, "tokens.pb") },
             serializer = TokensSerializer(cryptoManager = cryptoManager)
         )
     }

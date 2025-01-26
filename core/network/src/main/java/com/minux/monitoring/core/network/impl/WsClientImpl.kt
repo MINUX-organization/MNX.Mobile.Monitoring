@@ -10,20 +10,20 @@ import com.minux.monitoring.core.network.impl.session.SessionManagerImpl
 import com.minux.monitoring.core.network.impl.signalr.onReceive
 import com.minux.monitoring.core.network.impl.signalr.onSend
 import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.mapLatest
 
-internal class WsClientImpl(private val sessionManager: SessionManager) : WsClient() {
+internal class WsClientImpl(sessionManager: SessionManager) : WsClient() {
 
-    override fun createConnection(hubEndpoint: String): HubConnection {
-        return runBlocking {
-            val accessToken = (sessionManager as SessionManagerImpl).getAccessToken()
+    private val _accessToken = (sessionManager as SessionManagerImpl).getAccessToken()
 
-            HubConnectionBuilder.create(BuildConfig.API_BASE_URL + hubEndpoint)
-                .withAccessTokenProvider(Single.defer { Single.just(accessToken) })
-                .withTransport(TransportEnum.WEBSOCKETS)
-                .build()
-        }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun createConnection(hubEndpoint: String): Flow<HubConnection> = _accessToken.mapLatest {
+        return@mapLatest HubConnectionBuilder.create(BuildConfig.API_BASE_URL + hubEndpoint)
+            .withAccessTokenProvider(Single.defer { Single.just(it) })
+            .withTransport(TransportEnum.WEBSOCKETS)
+            .build()
     }
 
     override fun <T> onReceive(connection: HubConnection, method: String, param: Class<T>): Flow<Result<T>> {

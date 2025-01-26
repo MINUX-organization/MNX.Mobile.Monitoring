@@ -4,7 +4,7 @@ import com.microsoft.signalr.HubConnection
 import kotlinx.coroutines.flow.Flow
 
 abstract class WsClient {
-    abstract fun createConnection(hubEndpoint: String): HubConnection
+    abstract fun createConnection(hubEndpoint: String): Flow<HubConnection>
 
     inline fun <reified T> onReceive(connection: HubConnection, method: String) =
         onReceive(connection, method, T::class.java)

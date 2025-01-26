@@ -22,7 +22,7 @@ internal class TokensSerializer(private val cryptoManager: CryptoManager) : Seri
         return try {
             val decryptedBytes = cryptoManager.decrypt(
                 keyAlias = BuildConfig.CIPHER_KEY_ALIAS,
-                bytes = input.use { it.readBytes() }
+                bytes = input.readBytes()
             )
 
             val tokensByteArray = decryptedBytes ?: return defaultValue
@@ -49,7 +49,7 @@ internal class TokensSerializer(private val cryptoManager: CryptoManager) : Seri
         )
 
         withContext(Dispatchers.IO) {
-            output.use { it.write(encryptedBytes) }
+            output.write(encryptedBytes)
         }
     }
 }
