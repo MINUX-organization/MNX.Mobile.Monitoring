@@ -1,6 +1,13 @@
 <resources>
-    <!-- Base application theme. -->
     <style name="Base.Theme.MNX" parent="android:Theme.Material.Light.NoActionBar" />
 
-    <style name="Theme.MNX" parent="Base.Theme.MNX" />
+    <style name="Theme.MNX" parent="Base.Theme.MNX">
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="Theme.MNX.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="windowSplashScreenBackground">@color/ic_launcher_background_tint</item>
+        <item name="postSplashScreenTheme">@style/Theme.MNX</item>
+    </style>
 </resources>

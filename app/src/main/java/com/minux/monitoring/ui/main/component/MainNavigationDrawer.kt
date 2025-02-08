@@ -1,4 +1,4 @@
-package com.minux.monitoring.ui
+package com.minux.monitoring.ui.main.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
@@ -16,19 +18,14 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.minux.monitoring.core.designsystem.component.MNXDrawerHeader
 import com.minux.monitoring.core.designsystem.component.MNXDrawerSheet
 import com.minux.monitoring.core.designsystem.component.MNXNavigationDrawerItem
@@ -37,87 +34,82 @@ import com.minux.monitoring.core.designsystem.modifier.BorderSide
 import com.minux.monitoring.core.designsystem.modifier.BorderSides
 import com.minux.monitoring.core.designsystem.modifier.selectiveBorder
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
-import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
-import com.minux.monitoring.ui.navigation.NavigationDrawerItem
+import com.minux.monitoring.core.designsystem.theme.MNXTypography
+import com.minux.monitoring.ui.main.navigation.MainFlowRoute
 import kotlinx.coroutines.launch
 
 @Composable
-fun AppNavigationDrawer(
+internal fun MainNavigationDrawer(
     drawerState: DrawerState,
     drawerItems: List<NavigationDrawerItem>,
-    onNavigationDrawerItemClick: (String) -> Unit,
+    onNavigationDrawerItemClick: (MainFlowRoute) -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
-    CompositionLocalProvider(value = LocalLayoutDirection provides LayoutDirection.Rtl) {
-        ModalNavigationDrawer(
-            modifier = modifier,
-            drawerState = drawerState,
-            drawerContent = {
-                NavigationDrawerContent(
-                    drawerState = drawerState,
-                    items = drawerItems,
-                    onNavigationDrawerItemClick = onNavigationDrawerItemClick
-                )
-            },
-            content = content
-        )
-    }
+    ModalNavigationDrawer(
+        modifier = modifier,
+        drawerState = drawerState,
+        drawerContent = {
+            NavigationDrawerContent(
+                drawerState = drawerState,
+                items = drawerItems,
+                onNavigationDrawerItemClick = onNavigationDrawerItemClick
+            )
+        },
+        content = content
+    )
 }
 
 @Composable
 private fun NavigationDrawerContent(
     drawerState: DrawerState,
     items: List<NavigationDrawerItem>,
-    onNavigationDrawerItemClick: (String) -> Unit
+    onNavigationDrawerItemClick: (MainFlowRoute) -> Unit
 ) {
-    CompositionLocalProvider(value = LocalLayoutDirection provides LayoutDirection.Ltr) {
-        MNXDrawerSheet(modifier = Modifier.width(280.dp)) {
-            NavigationDrawerHeader()
+    MNXDrawerSheet(modifier = Modifier.width(280.dp)) {
+        NavigationDrawerHeader(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(180.dp)
+        )
 
-            NavigationDrawerItems(
-                drawerState = drawerState,
-                items = items,
-                onNavigationDrawerItemClick = onNavigationDrawerItemClick
-            )
+        NavigationDrawerItems(
+            drawerState = drawerState,
+            navItems = items,
+            onNavigationDrawerItemClick = onNavigationDrawerItemClick,
+            modifier = Modifier.fillMaxWidth()
+        )
 
-            Spacer(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .selectiveBorder(
-                        color = MaterialTheme.colorScheme.primary,
-                        sides = BorderSides(start = BorderSide.Start(1.dp))
-                    )
-            )
-        }
+        Spacer(
+            modifier = Modifier
+                .fillMaxSize()
+                .selectiveBorder(
+                    color = MaterialTheme.colorScheme.primary,
+                    sides = BorderSides(end = BorderSide.End(1.dp))
+                )
+        )
     }
 }
 
 @Composable
-private fun NavigationDrawerHeader() {
+private fun NavigationDrawerHeader(modifier: Modifier = Modifier) {
     MNXDrawerHeader(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(180.dp),
+        modifier = modifier,
         verticalArrangement = Arrangement.Bottom,
         contentPadding = PaddingValues(
-            start = 10.dp,
-            bottom = 16.dp
+            start = 8.dp,
+            bottom = 10.dp
         )
     ) {
         Text(
             text = "Minux User #1",
             color = MaterialTheme.colorScheme.onPrimary,
-            fontSize = 20.sp,
-            fontFamily = grillSansMtFamily,
-            fontWeight = FontWeight.Normal
+            style = MNXTypography.titleMedium
         )
 
         Text(
             text = "minux.studio@minux.com",
-            fontSize = 20.sp,
-            fontFamily = grillSansMtFamily,
-            fontWeight = FontWeight.Normal
+            style = MNXTypography.titleSmall
         )
     }
 }
@@ -125,8 +117,9 @@ private fun NavigationDrawerHeader() {
 @Composable
 private fun NavigationDrawerItems(
     drawerState: DrawerState,
-    items: List<NavigationDrawerItem>,
-    onNavigationDrawerItemClick: (String) -> Unit,
+    navItems: List<NavigationDrawerItem>,
+    onNavigationDrawerItemClick: (MainFlowRoute) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -134,35 +127,43 @@ private fun NavigationDrawerItems(
         mutableIntStateOf(0)
     }
 
-    items.forEachIndexed { index, item ->
+    val itemBorderSides = remember(selectedIndex.intValue) {
         val borderSides = BorderSides(
             start = BorderSide.Start(1.dp),
             end = BorderSide.End(1.dp)
         )
 
-        MNXNavigationDrawerItem(
-            label = {
-                Text(
-                    text = item.title,
-                    modifier = Modifier.fillMaxWidth(),
-                    fontFamily = grillSansMtFamily,
-                    textAlign = TextAlign.Center
-                )
-            },
-            selected = selectedIndex.intValue == index,
-            onClick = {
-                coroutineScope.launch {
-                    selectedIndex.intValue = index
-                    onNavigationDrawerItemClick(item.route)
-                    drawerState.close()
-                }
-            },
-            modifier = Modifier.fillMaxWidth(),
-            borderSides = borderSides.getByPosition(
-                index = index,
+        List(navItems.size) { navIndex ->
+            borderSides.getByPosition(
+                index = navIndex,
                 selectedIndex = selectedIndex.intValue
-            ),
-        )
+            )
+        }
+    }
+
+    LazyColumn(modifier = modifier) {
+        itemsIndexed(navItems, key = { _, item -> item.name }) { index, item ->
+            MNXNavigationDrawerItem(
+                label = {
+                    Text(
+                        text = item.title,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                        style = MNXTypography.titleSmall
+                    )
+                },
+                selected = selectedIndex.intValue == index,
+                onClick = {
+                    coroutineScope.launch {
+                        selectedIndex.intValue = index
+                        drawerState.close()
+                        onNavigationDrawerItemClick(item.route)
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                borderSides = itemBorderSides[index],
+            )
+        }
     }
 }
 
@@ -194,7 +195,7 @@ fun AppNavigationDrawerPreview() {
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Open)
         val coroutineScope = rememberCoroutineScope()
 
-        AppNavigationDrawer(
+        MainNavigationDrawer(
             drawerState = drawerState,
             drawerItems = NavigationDrawerItem.entries,
             onNavigationDrawerItemClick = {},

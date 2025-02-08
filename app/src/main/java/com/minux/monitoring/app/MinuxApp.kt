@@ -1,13 +1,18 @@
 package com.minux.monitoring.app
 
 import android.app.Application
-import dagger.hilt.android.HiltAndroidApp
+import com.minux.monitoring.app.di.AppComponentHolder
+import com.minux.monitoring.app.di.DaggerDi
 import timber.log.Timber
 
-@HiltAndroidApp
 class MinuxApp : Application() {
+    internal val appComponent by lazy { AppComponentHolder.fetchComponent() }
+
     override fun onCreate() {
         super.onCreate()
+
+        DaggerDi.initDependencyProviders(application = this)
+        registerActivityLifecycleCallbacks(appComponent.activityLifecycleCallbacks)
 
         Timber.plant(Timber.DebugTree())
     }
