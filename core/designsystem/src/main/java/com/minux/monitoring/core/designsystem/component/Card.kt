@@ -25,19 +25,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.minux.monitoring.core.designsystem.icon.MNXIcons
 import com.minux.monitoring.core.designsystem.modifier.BorderSide
 import com.minux.monitoring.core.designsystem.modifier.BorderSides
 import com.minux.monitoring.core.designsystem.modifier.flipScale
 import com.minux.monitoring.core.designsystem.modifier.selectiveBorder
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
-import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
+import com.minux.monitoring.core.designsystem.theme.MNXTypography
 
 @Composable
 fun MNXCard(
@@ -140,11 +138,9 @@ private fun MNXCardPreview() {
             ) {
                 Row(horizontalArrangement = Arrangement.Center) {
                     Text(
-                        modifier = Modifier.padding(8.dp),
                         text = "Text",
-                        fontSize = 20.sp,
-                        fontFamily = grillSansMtFamily,
-                        fontWeight = FontWeight.Normal
+                        modifier = Modifier.padding(8.dp),
+                        style = MNXTypography.titleMedium
                     )
                 }
             }
@@ -159,11 +155,9 @@ private fun MNXCardPreview() {
             ) {
                 Row(horizontalArrangement = Arrangement.Center) {
                     Text(
-                        modifier = Modifier.padding(8.dp),
                         text = "Text",
-                        fontSize = 20.sp,
-                        fontFamily = grillSansMtFamily,
-                        fontWeight = FontWeight.Normal
+                        modifier = Modifier.padding(8.dp),
+                        style = MNXTypography.titleMedium
                     )
                 }
             }
@@ -179,12 +173,10 @@ private fun MNXBorderedCardPreview() {
             Column {
                 MNXCard(modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        modifier = Modifier.padding(8.dp),
                         text = "Text",
+                        modifier = Modifier.padding(8.dp),
                         textAlign = TextAlign.Center,
-                        fontSize = 20.sp,
-                        fontFamily = grillSansMtFamily,
-                        fontWeight = FontWeight.Normal
+                        style = MNXTypography.titleMedium
                     )
                 }
 
@@ -194,12 +186,10 @@ private fun MNXBorderedCardPreview() {
                         .padding(top = 6.dp)
                 ) {
                     Text(
-                        modifier = Modifier.padding(8.dp),
                         text = "Text",
+                        modifier = Modifier.padding(8.dp),
                         textAlign = TextAlign.Center,
-                        fontSize = 20.sp,
-                        fontFamily = grillSansMtFamily,
-                        fontWeight = FontWeight.Normal
+                        style = MNXTypography.titleMedium
                     )
                 }
             }
@@ -231,12 +221,7 @@ private fun MNXExpandableCardPreview() {
             ),
             content = {
                 Row(
-                    modifier = Modifier.padding(
-                        start = 8.dp,
-                        top = 10.dp,
-                        end = 8.dp,
-                        bottom = 6.dp
-                    ),
+                    modifier = Modifier.padding(6.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(modifier = Modifier.weight(1f)) {

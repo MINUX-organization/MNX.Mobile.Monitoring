@@ -1,13 +1,15 @@
 pluginManagement {
-    includeBuild("build-logic")
+
     repositories {
         google()
         mavenCentral()
         gradlePluginPortal()
     }
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+
     repositories {
         google()
         mavenCentral()
@@ -15,13 +17,19 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "MinuxMonitoring"
+
+includeBuild("build-logic")
+
 include(":app")
-include(":feature:sign")
-include(":feature:monitoring")
-include(":feature:cryptos")
-include(":feature:wallets")
-include(":feature:pools")
-include(":core:data")
-include(":core:designsystem")
+include(":injector")
+include(":injector-compose")
 include(":core:network")
+include(":core:designsystem")
 include(":core:ui")
+include(":feature:auth:api")
+include(":feature:auth:impl")
+include(":feature:monitoring:api")
+include(":feature:monitoring:impl")
+include(":feature:cryptos:api")
+include(":feature:cryptos:impl")
+include(":core:base")

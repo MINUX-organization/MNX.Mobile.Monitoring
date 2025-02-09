@@ -27,7 +27,6 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextMeasurer
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
@@ -35,10 +34,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
+import com.minux.monitoring.core.designsystem.theme.MNXTypography
 import com.minux.monitoring.core.designsystem.theme.TurquoiseHorizontalGradient
-import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -263,10 +261,8 @@ private fun DrawScope.drawSliderLabels(
     )
 }
 
-private val labelStyle = TextStyle(
+private val labelStyle = MNXTypography.bodyLarge.copy(
     color = Color.White,
-    fontSize = 16.sp,
-    fontFamily = grillSansMtFamily,
     textAlign = TextAlign.Center
 )
 

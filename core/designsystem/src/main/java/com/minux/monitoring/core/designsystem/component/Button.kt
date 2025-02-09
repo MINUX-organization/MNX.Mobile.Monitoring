@@ -3,6 +3,7 @@ package com.minux.monitoring.core.designsystem.component
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -83,12 +84,12 @@ fun MNXTextButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    contentPadding: PaddingValues = PaddingValues(),
+    contentPadding: PaddingValues = PaddingValues(horizontal = 4.dp),
     content: @Composable RowScope.() -> Unit
 ) {
     TextButton(
         onClick = onClick,
-        modifier = modifier,
+        modifier = modifier.defaultMinSize(minWidth = 20.dp),
         enabled = enabled,
         shape = RoundedCornerShape(6.dp),
         colors = ButtonDefaults.textButtonColors(

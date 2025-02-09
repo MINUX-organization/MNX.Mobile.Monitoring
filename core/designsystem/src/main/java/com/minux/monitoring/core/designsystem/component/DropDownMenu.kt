@@ -23,23 +23,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.minux.monitoring.core.designsystem.icon.MNXIcons
 import com.minux.monitoring.core.designsystem.modifier.flipScale
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
-import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
+import com.minux.monitoring.core.designsystem.theme.MNXTypography
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MNXDropDownMenu(
-    menuItems: List<String>,
-    selectedMenuItem: String,
-    onSelectedMenuItemChange: (String) -> Unit,
+fun <T> MNXDropDownMenu(
+    menuItems: List<T>,
+    selectedMenuItem: T,
+    onSelectedMenuItemChange: (T) -> Unit,
     modifier: Modifier = Modifier,
+    label: @Composable (() -> Unit)? = null,
     shape: Shape = RoundedCornerShape(4.dp),
     iconPadding: Dp = 10.dp,
     contentPadding: PaddingValues = PaddingValues(
@@ -58,10 +57,11 @@ fun MNXDropDownMenu(
         onExpandedChange = { isExpanded.value = it }
     ) {
         MNXTextField(
-            value = selectedMenuItem,
-            onValueChange = { onSelectedMenuItemChange(it) },
+            value = selectedMenuItem.toString(),
+            onValueChange = {},
             modifier = modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable),
             readOnly = true,
+            label = label,
             shape = shape,
             suffix = {
                 Icon(
@@ -81,15 +81,13 @@ fun MNXDropDownMenu(
             expanded = isExpanded.value,
             onDismissRequest = { isExpanded.value = false }
         ) {
-            menuItems.forEachIndexed { index, text ->
+            menuItems.forEachIndexed { index, item ->
                 DropdownMenuItem(
                     text = {
                         Text(
-                            text = text,
+                            text = item.toString(),
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
-                            fontSize = 16.sp,
-                            fontFamily = grillSansMtFamily,
-                            fontWeight = FontWeight.Normal
+                            style = MNXTypography.bodyLarge
                         )
                     },
                     onClick = {

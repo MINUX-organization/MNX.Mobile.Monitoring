@@ -1,6 +1,7 @@
 package com.minux.monitoring.core.designsystem.component
 
-import androidx.compose.foundation.layout.offset
+import androidx.annotation.DrawableRes
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -9,13 +10,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.vector.DefaultScaleX
+import androidx.compose.ui.graphics.vector.DefaultScaleY
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.minux.monitoring.core.designsystem.icon.MNXIcons
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
@@ -23,28 +23,35 @@ import com.minux.monitoring.core.designsystem.theme.MNXTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MNXTopAppBar(
-    titleIcon: Painter,
-    navigationIcon: Painter,
+    @DrawableRes titleIconDrawableId: Int,
+    @DrawableRes navigationIconDrawableId: Int,
     onNavigationClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     CenterAlignedTopAppBar(
         title = {
             Icon(
+                painter = painterResource(id = titleIconDrawableId),
+                contentDescription = "Minux",
                 modifier = Modifier
                     .width(250.dp)
-                    .offset(y = 1.5.dp),
-                painter = titleIcon,
+                    .padding(
+                        start = 4.dp,
+                        top = 2.5.dp
+                    ),
                 tint = MaterialTheme.colorScheme.primary,
-                contentDescription = "Minux"
             )
         },
         modifier = modifier,
         navigationIcon = {
             IconButton(onClick = onNavigationClick) {
                 Icon(
-                    painter = navigationIcon,
+                    painter = painterResource(id = navigationIconDrawableId),
                     contentDescription = "Menu",
+                    modifier = Modifier.scale(
+                        scaleX = -DefaultScaleX,
+                        scaleY = DefaultScaleY
+                    ),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
@@ -59,12 +66,10 @@ fun MNXTopAppBar(
 @Composable
 private fun MNXTopAppBarPreview() {
     MNXTheme {
-        CompositionLocalProvider(value = LocalLayoutDirection provides LayoutDirection.Rtl) {
-            MNXTopAppBar(
-                titleIcon = painterResource(id = MNXIcons.Logo),
-                navigationIcon = painterResource(id = MNXIcons.Menu),
-                onNavigationClick = {}
-            )
-        }
+        MNXTopAppBar(
+            titleIconDrawableId = MNXIcons.Logo,
+            navigationIconDrawableId = MNXIcons.Menu,
+            onNavigationClick = {}
+        )
     }
 }

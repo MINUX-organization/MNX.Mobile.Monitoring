@@ -18,13 +18,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.minux.monitoring.core.designsystem.icon.MNXIcons
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
-import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
+import com.minux.monitoring.core.designsystem.theme.MNXTypography
 
 @Composable
 fun MNXCheckBox(
@@ -81,11 +79,8 @@ private fun MNXCheckBoxPreview() {
             label = {
                 Text(
                     text = "Sample",
-                    style = TextStyle(
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = 16.sp,
-                        fontFamily = grillSansMtFamily
-                    )
+                    color = MaterialTheme.colorScheme.onBackground,
+                    style = MNXTypography.bodyLarge
                 )
             }
         )

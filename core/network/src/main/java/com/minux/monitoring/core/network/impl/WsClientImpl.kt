@@ -3,18 +3,25 @@ package com.minux.monitoring.core.network.impl
 import com.microsoft.signalr.HubConnection
 import com.microsoft.signalr.HubConnectionBuilder
 import com.microsoft.signalr.TransportEnum
+import com.minux.monitoring.core.network.BuildConfig
 import com.minux.monitoring.core.network.api.WsClient
+import com.minux.monitoring.core.network.api.session.SessionManager
+import com.minux.monitoring.core.network.impl.session.SessionManagerImpl
 import com.minux.monitoring.core.network.impl.signalr.onReceive
 import com.minux.monitoring.core.network.impl.signalr.onSend
 import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.mapLatest
 
-internal class WsClientImpl : WsClient() {
-    private val baseUrl = "ws://something.com/hubs/"
+internal class WsClientImpl(sessionManager: SessionManager) : WsClient() {
 
-    override fun createConnection(hubEndpoint: String, accessToken: String): HubConnection {
-        return HubConnectionBuilder.create(baseUrl + hubEndpoint)
-            .withAccessTokenProvider(Single.defer { Single.just(accessToken) })
+    private val _accessToken = (sessionManager as SessionManagerImpl).getAccessToken()
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun createConnection(hubEndpoint: String): Flow<HubConnection> = _accessToken.mapLatest {
+        return@mapLatest HubConnectionBuilder.create(BuildConfig.API_BASE_URL + hubEndpoint)
+            .withAccessTokenProvider(Single.defer { Single.just(it) })
             .withTransport(TransportEnum.WEBSOCKETS)
             .build()
     }

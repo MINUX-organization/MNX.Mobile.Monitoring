@@ -17,6 +17,8 @@ internal class FlowResultCallAdapter<T>(private val responseType: Type) : CallAd
 
     override fun adapt(call: Call<T>) = callbackFlow {
         call.enqueue(object : Callback<T> {
+
+            @Suppress("UNCHECKED_CAST")
             override fun onResponse(call: Call<T>, response: Response<T>) {
                 if (response.isSuccessful) {
                     trySend(

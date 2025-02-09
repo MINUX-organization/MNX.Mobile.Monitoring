@@ -1,7 +1,8 @@
 plugins {
     alias(libs.plugins.minux.monitoring.android.application)
     alias(libs.plugins.minux.monitoring.android.application.compose)
-    alias(libs.plugins.minux.monitoring.android.hilt)
+    alias(libs.plugins.minux.monitoring.android.dagger)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -24,27 +25,25 @@ android {
             )
         }
     }
-
-    buildFeatures {
-        viewBinding = true
-    }
 }
 
 dependencies {
-    implementation(project(":feature:sign"))
-    implementation(project(":feature:monitoring"))
-    implementation(project(":feature:cryptos"))
-    implementation(project(":feature:wallets"))
-    implementation(project(":feature:pools"))
+    implementation(project(":injector"))
+    implementation(project(":injector-compose"))
 
+    implementation(project(":core:network"))
     implementation(project(":core:ui"))
-    implementation(project(":core:data"))
+    implementation(project(":core:base"))
+
+    implementation(project(":feature:auth:api"))
+    implementation(project(":feature:auth:impl"))
+
+    implementation(project(":feature:cryptos:api"))
+    implementation(project(":feature:cryptos:impl"))
 
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.hilt.navigation.compose)
-
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.junit)
-    androidTestImplementation(libs.androidx.test.espresso.core)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.timber)
 }

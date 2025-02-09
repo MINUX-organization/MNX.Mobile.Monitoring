@@ -7,7 +7,6 @@ android {
     namespace = "com.minux.monitoring.core.ui"
 
     defaultConfig {
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
 
@@ -24,8 +23,4 @@ android {
 
 dependencies {
     api(project(":core:designsystem"))
-
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.junit)
-    androidTestImplementation(libs.androidx.test.espresso.core)
 }
