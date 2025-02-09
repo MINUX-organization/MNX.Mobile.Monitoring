@@ -26,17 +26,13 @@ import com.minux.monitoring.core.designsystem.component.MNXTextField
 import com.minux.monitoring.core.designsystem.icon.MNXIcons
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
 import com.minux.monitoring.core.designsystem.theme.MNXTypography
-import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
 
 @Composable
 fun FiltersButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val titleStyle = MNXTypography.headlineMedium.copy(
-        fontFamily = grillSansMtFamily,
-        color = MaterialTheme.colorScheme.onPrimary
-    )
+    val titleStyle = MNXTypography.headlineMedium.copy(color = MaterialTheme.colorScheme.onPrimary)
 
     MNXTextButton(
         onClick = onClick,
@@ -86,7 +82,8 @@ fun SearchAndSortBar(
             onQueryChange = onSearchQueryChange,
             modifier = Modifier
                 .width(240.dp)
-                .wrapContentWidth(align = Alignment.End)
+                .wrapContentWidth(align = Alignment.End),
+            placeholder = { Text(text = "Search") }
         )
     }
 }
@@ -118,13 +115,13 @@ fun SearchTextField(
     query: String,
     onQueryChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    hint: String = "Search",
+    placeholder: (@Composable () -> Unit)? = null,
 ) {
     MNXTextField(
         value = query,
         onValueChange = { onQueryChange(it) },
         modifier = modifier,
-        hint = hint,
+        placeholder = placeholder,
         shape = RectangleShape,
         prefix = {
             Icon(
@@ -206,7 +203,8 @@ internal fun SearchTextFieldPreview() {
         SearchTextField(
             query = searchQuery.value,
             onQueryChange = { searchQuery.value = it },
-            modifier = Modifier.width(200.dp)
+            modifier = Modifier.width(200.dp),
+            placeholder = { Text(text = "Type anywhere") }
         )
     }
 }

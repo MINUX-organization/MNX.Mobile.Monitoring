@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.minux.monitoring.android.library)
-    alias(libs.plugins.minux.monitoring.android.hilt)
+    alias(libs.plugins.minux.monitoring.android.dagger)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.secrets)
 }
 
 android {
@@ -20,13 +22,35 @@ android {
             )
         }
     }
+
+    buildFeatures {
+        buildConfig = true
+    }
+}
+
+secrets {
+    propertiesFileName = "secrets.properties"
+
+    defaultPropertiesFileName = "secrets.defaults.properties"
+
+    ignoreList.add("sdk.*")
 }
 
 dependencies {
-    implementation(libs.okhttp.logging)
-    implementation(libs.retrofit.core)
-    implementation(libs.retrofit.converter.gson)
-    implementation(libs.signalr)
+    implementation(project(":injector"))
 
-    testImplementation(libs.junit)
+    api(libs.retrofit.core)
+    api(libs.kotlinx.coroutines.android)
+    testApi(libs.kotlinx.coroutines.test)
+    testApi(libs.turbine)
+
+    implementation(libs.okhttp.logging)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.serialization.protobuf)
+    implementation(libs.retrofit.kotlin.serialization)
+    implementation(libs.signalr)
+    implementation(libs.androidx.dataStore)
+
+    testImplementation(libs.bundles.test)
+    androidTestImplementation(libs.bundles.android.test)
 }

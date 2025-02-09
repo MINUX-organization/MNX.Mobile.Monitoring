@@ -25,19 +25,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.minux.monitoring.core.designsystem.icon.MNXIcons
 import com.minux.monitoring.core.designsystem.modifier.BorderSide
 import com.minux.monitoring.core.designsystem.modifier.BorderSides
 import com.minux.monitoring.core.designsystem.modifier.flipScale
 import com.minux.monitoring.core.designsystem.modifier.selectiveBorder
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
-import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
+import com.minux.monitoring.core.designsystem.theme.MNXTypography
 
 @Composable
 fun MNXCard(
@@ -77,18 +75,16 @@ fun MNXBorderedCard(
 
 @Composable
 fun MNXExpandableCard(
+    expanded: Boolean,
+    onExpandedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.background,
     borderWidth: Dp? = null,
     borderSides: BorderSides? = null,
     contentPadding: PaddingValues = PaddingValues(),
-    content: @Composable (isExpanded: Boolean) -> Unit,
+    content: @Composable () -> Unit,
     expandableContent: @Composable ColumnScope.() -> Unit
 ) {
-    val isExpanded = remember {
-        mutableStateOf(false)
-    }
-    
     val borderModifier = when {
         borderSides == null && borderWidth != null -> {
             Modifier.border(
@@ -117,14 +113,11 @@ fun MNXExpandableCard(
             MNXCard(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable {
-                        isExpanded.value = !isExpanded.value
-                    }
-            ) {
-                content(isExpanded.value)
-            }
+                    .clickable { onExpandedChange(!expanded) },
+                content = content
+            )
 
-            if (isExpanded.value) {
+            if (expanded) {
                 expandableContent()
             }
         }
@@ -145,11 +138,9 @@ private fun MNXCardPreview() {
             ) {
                 Row(horizontalArrangement = Arrangement.Center) {
                     Text(
-                        modifier = Modifier.padding(8.dp),
                         text = "Text",
-                        fontSize = 20.sp,
-                        fontFamily = grillSansMtFamily,
-                        fontWeight = FontWeight.Normal
+                        modifier = Modifier.padding(8.dp),
+                        style = MNXTypography.titleMedium
                     )
                 }
             }
@@ -164,11 +155,9 @@ private fun MNXCardPreview() {
             ) {
                 Row(horizontalArrangement = Arrangement.Center) {
                     Text(
-                        modifier = Modifier.padding(8.dp),
                         text = "Text",
-                        fontSize = 20.sp,
-                        fontFamily = grillSansMtFamily,
-                        fontWeight = FontWeight.Normal
+                        modifier = Modifier.padding(8.dp),
+                        style = MNXTypography.titleMedium
                     )
                 }
             }
@@ -184,12 +173,10 @@ private fun MNXBorderedCardPreview() {
             Column {
                 MNXCard(modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        modifier = Modifier.padding(8.dp),
                         text = "Text",
+                        modifier = Modifier.padding(8.dp),
                         textAlign = TextAlign.Center,
-                        fontSize = 20.sp,
-                        fontFamily = grillSansMtFamily,
-                        fontWeight = FontWeight.Normal
+                        style = MNXTypography.titleMedium
                     )
                 }
 
@@ -199,12 +186,10 @@ private fun MNXBorderedCardPreview() {
                         .padding(top = 6.dp)
                 ) {
                     Text(
-                        modifier = Modifier.padding(8.dp),
                         text = "Text",
+                        modifier = Modifier.padding(8.dp),
                         textAlign = TextAlign.Center,
-                        fontSize = 20.sp,
-                        fontFamily = grillSansMtFamily,
-                        fontWeight = FontWeight.Normal
+                        style = MNXTypography.titleMedium
                     )
                 }
             }
@@ -216,7 +201,13 @@ private fun MNXBorderedCardPreview() {
 @Composable
 private fun MNXExpandableCardPreview() {
     MNXTheme {
+        val isExpanded = remember {
+            mutableStateOf(true)
+        }
+
         MNXExpandableCard(
+            expanded = isExpanded.value,
+            onExpandedChange = { isExpanded.value = it },
             modifier = Modifier.fillMaxWidth(),
             borderSides = BorderSides(
                 start = BorderSide.Start(width = 3.dp),
@@ -228,16 +219,9 @@ private fun MNXExpandableCardPreview() {
                 horizontal = 7.dp,
                 vertical = 5.dp
             ),
-            content = { isExpanded ->
+            content = {
                 Row(
-                    modifier = Modifier.padding(
-                        paddingValues = PaddingValues(
-                            start = 8.dp,
-                            top = 10.dp,
-                            end = 8.dp,
-                            bottom = 6.dp
-                        )
-                    ),
+                    modifier = Modifier.padding(6.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
@@ -249,7 +233,7 @@ private fun MNXExpandableCardPreview() {
                     Icon(
                         painter = painterResource(id = MNXIcons.DropDown),
                         contentDescription = null,
-                        modifier = Modifier.flipScale(state = isExpanded),
+                        modifier = Modifier.flipScale(state = isExpanded.value),
                         tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }

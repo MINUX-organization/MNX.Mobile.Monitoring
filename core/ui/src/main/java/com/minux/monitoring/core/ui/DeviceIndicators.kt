@@ -1,5 +1,6 @@
 package com.minux.monitoring.core.ui
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,21 +19,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.minux.monitoring.core.designsystem.icon.MNXIcons
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
-import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
+import com.minux.monitoring.core.designsystem.theme.MNXTypography
 
 @Composable
 fun DeviceIndicators(
@@ -72,16 +69,10 @@ class DeviceTextIndicatorItemModel(
 ) : DeviceIndicatorItem
 
 class DeviceIconIndicatorItemModel(
-    val icon: Painter,
+    @DrawableRes val iconDrawableId: Int,
     override val value: AnnotatedString
 ) : DeviceIndicatorItem
 
-
-private val deviceIndicatorsTextStyle = TextStyle(
-    fontSize = 16.sp,
-    fontWeight = FontWeight.Normal,
-    fontFamily = grillSansMtFamily,
-)
 
 @Composable
 fun DeviceTextIndicatorItem(
@@ -102,7 +93,7 @@ fun DeviceTextIndicatorItem(
                 text = model.name,
                 modifier = Modifier.padding(horizontal = 4.dp),
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
-                style = deviceIndicatorsTextStyle
+                style = MNXTypography.bodyLarge
             )
         }
     }
@@ -118,7 +109,7 @@ fun DeviceIconIndicatorItem(
         modifier = modifier
     ) {
         Image(
-            painter = model.icon,
+            painter = painterResource(id = model.iconDrawableId),
             contentDescription = null,
             modifier = Modifier.height(18.dp),
             contentScale = ContentScale.Crop
@@ -144,7 +135,7 @@ private fun DeviceIndicatorItem(
                 .padding(top = 6.dp)
                 .padding(horizontal = 4.dp),
             color = MaterialTheme.colorScheme.onPrimary,
-            style = deviceIndicatorsTextStyle
+            style = MNXTypography.bodyLarge
         )
     }
 }
@@ -170,7 +161,7 @@ internal fun DeviceIndicatorsPreview() {
                         }
                     ),
                     DeviceIconIndicatorItemModel(
-                        icon = painterResource(id = MNXIcons.Wifi),
+                        iconDrawableId = MNXIcons.Wifi,
                         value = AnnotatedString(text = "W4")
                     )
                 ),

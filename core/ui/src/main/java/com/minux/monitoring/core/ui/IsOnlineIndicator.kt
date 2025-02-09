@@ -15,7 +15,11 @@ fun IsOnlineIndicator(
     color: Color,
     modifier: Modifier = Modifier
 ) {
-    Canvas(modifier = modifier.size(16.dp)) {
+    Canvas(
+        modifier = Modifier
+            .size(16.dp)
+            .then(modifier)
+    ) {
         drawCircle(color = color)
     }
 }

@@ -10,27 +10,37 @@ dependencies {
 gradlePlugin {
     plugins {
         register("androidApplication") {
-            id = "minux.monitoring.android.application"
+            id = libs.plugins.minux.monitoring.android.application.asProvider().get().pluginId
             implementationClass = "AndroidApplicationConventionPlugin"
         }
+
         register("androidApplicationCompose") {
-            id = "minux.monitoring.android.application.compose"
+            id = libs.plugins.minux.monitoring.android.application.compose.get().pluginId
             implementationClass = "AndroidApplicationComposeConventionPlugin"
         }
+
         register("androidLibrary") {
-            id = "minux.monitoring.android.library"
+            id = libs.plugins.minux.monitoring.android.library.asProvider().get().pluginId
             implementationClass = "AndroidLibraryConventionPlugin"
         }
+
         register("androidLibraryCompose") {
-            id = "minux.monitoring.android.library.compose"
+            id = libs.plugins.minux.monitoring.android.library.compose.get().pluginId
             implementationClass = "AndroidLibraryComposeConventionPlugin"
         }
-        register("androidHilt") {
-            id = "minux.monitoring.android.hilt"
-            implementationClass = "AndroidHiltConventionPlugin"
+
+        register("androidDagger") {
+            id = libs.plugins.minux.monitoring.android.dagger.get().pluginId
+            implementationClass = "AndroidDaggerConventionPlugin"
         }
+
+        register("androidFeatureApi") {
+            id = libs.plugins.minux.monitoring.android.feature.api.get().pluginId
+            implementationClass = "AndroidFeatureApiConventionPlugin"
+        }
+
         register("androidFeature") {
-            id = "minux.monitoring.android.feature"
+            id = libs.plugins.minux.monitoring.android.feature.asProvider().get().pluginId
             implementationClass = "AndroidFeatureConventionPlugin"
         }
     }
