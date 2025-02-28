@@ -8,6 +8,7 @@ projectVersionCode = "1"
 
 androidGradlePlugin = "8.8.0"
 androidxComposeBom = "2025.01.00"
+androidxConstraintLayoutCompose = "1.1.1"
 androidxCore = "1.15.0"
 androidxCoreSplashscreen = "1.0.1"
 androidxDataStore = "1.1.2"
@@ -41,6 +42,7 @@ androidx-compose-ui-test = { group = "androidx.compose.ui", name = "ui-test-juni
 androidx-compose-ui-testManifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-constraintlayout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "androidxConstraintLayoutCompose" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidxCoreSplashscreen" }
 androidx-dataStore = { group = "androidx.datastore", name = "datastore", version.ref = "androidxDataStore" }
@@ -74,7 +76,7 @@ kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-pl
 test = ["junit", "mockk", "truth", "robolectric"]
 android-test = ["androidx-test-runner", "androidx-test-ext", "truth"]
 android-compose-lifecycle = ["androidx-lifecycle-runtimeCompose", "androidx-lifecycle-viewModelCompose"]
-android-compose-ui = ["androidx-compose-ui", "androidx-compose-ui-graphics", "androidx-compose-runtime", "androidx-compose-material3"]
+android-compose-ui = ["androidx-compose-ui", "androidx-compose-ui-graphics", "androidx-compose-runtime", "androidx-compose-material3", "androidx-constraintlayout-compose"]
 android-compose-ui-test = ["androidx-compose-ui-test", "androidx-compose-ui-testManifest"]
 
 [plugins]
@@ -87,10 +89,10 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets" }
 
 # Convention plugins
-minux-monitoring-android-application = { id = "minux.monitoring.android.application", version = "unspecified" }
-minux-monitoring-android-application-compose = { id = "minux.monitoring.android.application.compose", version = "unspecified" }
-minux-monitoring-android-dagger = { id = "minux.monitoring.android.dagger", version = "unspecified" }
-minux-monitoring-android-feature = { id = "minux.monitoring.android.feature", version = "unspecified" }
-minux-monitoring-android-feature-api = { id = "minux.monitoring.android.feature.api", version = "unspecified" }
-minux-monitoring-android-library = { id = "minux.monitoring.android.library", version = "unspecified" }
-minux-monitoring-android-library-compose = { id = "minux.monitoring.android.library.compose", version = "unspecified" }
+minux-monitoring-android-application = { id = "minux.monitoring.android.application" }
+minux-monitoring-android-application-compose = { id = "minux.monitoring.android.application.compose" }
+minux-monitoring-android-dagger = { id = "minux.monitoring.android.dagger" }
+minux-monitoring-android-feature = { id = "minux.monitoring.android.feature" }
+minux-monitoring-android-feature-api = { id = "minux.monitoring.android.feature.api" }
+minux-monitoring-android-library = { id = "minux.monitoring.android.library" }
+minux-monitoring-android-library-compose = { id = "minux.monitoring.android.library.compose" }

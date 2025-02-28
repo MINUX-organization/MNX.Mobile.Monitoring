@@ -35,9 +35,11 @@
             <option value="$PROJECT_DIR$/feature/auth/api" />
             <option value="$PROJECT_DIR$/feature/auth/impl" />
             <option value="$PROJECT_DIR$/feature/cryptos" />
-            <option value="$PROJECT_DIR$/feature/devices" />
             <option value="$PROJECT_DIR$/feature/cryptos/api" />
             <option value="$PROJECT_DIR$/feature/cryptos/impl" />
+            <option value="$PROJECT_DIR$/feature/devices" />
+            <option value="$PROJECT_DIR$/feature/devices/api" />
+            <option value="$PROJECT_DIR$/feature/devices/impl" />
             <option value="$PROJECT_DIR$/feature/monitoring" />
             <option value="$PROJECT_DIR$/feature/monitoring/api" />
             <option value="$PROJECT_DIR$/feature/monitoring/impl" />
