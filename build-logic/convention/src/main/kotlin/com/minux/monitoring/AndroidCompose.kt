@@ -12,13 +12,19 @@ internal fun Project.configureAndroidCompose(
             compose = true
         }
 
-        composeOptions {
-            kotlinCompilerExtensionVersion = libs.findVersion("androidxComposeCompiler").get().toString()
-        }
-
         dependencies {
             val bom = libs.findLibrary("androidx-compose-bom").get()
-            add("implementation", platform(bom))
+            "implementation" (platform(bom))
+            "androidTestImplementation" (platform(bom))
+
+            "implementation" (libs.findLibrary("androidx-compose-ui-tooling-preview").get())
+            "debugImplementation" (libs.findLibrary("androidx-compose-ui-tooling").get())
+        }
+
+        testOptions {
+            unitTests {
+                isIncludeAndroidResources = true
+            }
         }
     }
 }

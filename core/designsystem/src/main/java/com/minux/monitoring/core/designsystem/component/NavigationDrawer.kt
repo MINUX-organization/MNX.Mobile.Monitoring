@@ -20,19 +20,17 @@ import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.minux.monitoring.core.designsystem.icon.MNXIcons
 import com.minux.monitoring.core.designsystem.modifier.BorderSide
 import com.minux.monitoring.core.designsystem.modifier.BorderSides
 import com.minux.monitoring.core.designsystem.modifier.selectiveBorder
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
+import com.minux.monitoring.core.designsystem.theme.MNXTypography
 import com.minux.monitoring.core.designsystem.theme.OrangeVerticalGradient
 import com.minux.monitoring.core.designsystem.theme.TurquoiseRadialGradient
-import com.minux.monitoring.core.designsystem.theme.grillSansMtFamily
 
 @Composable
 fun MNXDrawerSheet(
@@ -63,9 +61,7 @@ fun MNXDrawerHeader(
                 alignment = Alignment.CenterEnd
             )
             .selectiveBorder(
-                sides = BorderSides(
-                    start = BorderSide.Start(width = 1.dp)
-                ),
+                sides = BorderSides(end = BorderSide.End(width = 1.dp)),
                 color = MaterialTheme.colorScheme.primary
             )
             .padding(paddingValues = contentPadding),
@@ -144,17 +140,13 @@ private fun MNXDrawerHeaderPreview() {
             Text(
                 text = "Minux User #1",
                 color = MaterialTheme.colorScheme.onPrimary,
-                fontSize = 20.sp,
-                fontFamily = grillSansMtFamily,
-                fontWeight = FontWeight.Normal
+                style = MNXTypography.titleMedium
             )
 
             Text(
                 text = "minux.studio@minux.com",
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
-                fontSize = 20.sp,
-                fontFamily = grillSansMtFamily,
-                fontWeight = FontWeight.Normal
+                style = MNXTypography.titleMedium
             )
         }
     }
@@ -168,12 +160,10 @@ private fun MNXNavigationDrawerItemPreview() {
             MNXNavigationDrawerItem(
                 label = {
                     Text(
-                        modifier = Modifier.fillMaxWidth(),
                         text = "Text",
+                        modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
-                        fontSize = 16.sp,
-                        fontFamily = grillSansMtFamily,
-                        fontWeight = FontWeight.Normal
+                        style = MNXTypography.bodyLarge
                     )
                 },
                 selected = true,
@@ -189,9 +179,7 @@ private fun MNXNavigationDrawerItemPreview() {
                 label = {
                     Text(
                         text = "Text",
-                        fontSize = 16.sp,
-                        fontFamily = grillSansMtFamily,
-                        fontWeight = FontWeight.Normal
+                        style = MNXTypography.bodyLarge
                     )
                 },
                 selected = false,

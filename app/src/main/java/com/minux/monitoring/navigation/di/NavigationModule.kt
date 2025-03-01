@@ -1,0 +1,25 @@
+package com.minux.monitoring.navigation.di
+
+import com.minux.monitoring.feature.auth.api.AuthFeatureMediator
+import com.minux.monitoring.feature.cryptos.api.CryptosFeatureMediator
+import com.minux.monitoring.navigation.AuthFeatureMediatorProxy
+import com.minux.monitoring.navigation.CryptosFeatureMediatorProxy
+import dagger.Binds
+import dagger.Module
+import javax.inject.Singleton
+
+@Module
+internal interface NavigationModule {
+
+    @Binds
+    @Singleton
+    fun bindAuthFeatureMediator(
+        authFeatureMediatorProxy: AuthFeatureMediatorProxy
+    ): AuthFeatureMediator
+
+    @Binds
+    @Singleton
+    fun bindCryptosFeatureMediator(
+        cryptosFeatureMediatorProxy: CryptosFeatureMediatorProxy
+    ): CryptosFeatureMediator
+}

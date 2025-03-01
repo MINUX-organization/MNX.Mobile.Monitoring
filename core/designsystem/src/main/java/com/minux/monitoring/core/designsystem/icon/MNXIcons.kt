@@ -18,5 +18,6 @@ object MNXIcons {
     @DrawableRes val Search = drawable.ic_search
     @DrawableRes val Settings = drawable.ic_settings
     @DrawableRes val Show = drawable.ic_show
+    @DrawableRes val Triangles = drawable.bg_triangles
     @DrawableRes val Wifi = drawable.ic_wifi
 }
