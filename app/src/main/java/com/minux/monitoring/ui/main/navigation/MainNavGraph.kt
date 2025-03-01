@@ -19,7 +19,7 @@ internal fun MainNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = MainFlowRoute.Monitoring
+        startDestination = MainFlowRoute.Devices.CPUs
     ) {
         composable<MainFlowRoute.Monitoring> {
             Box(
@@ -28,6 +28,16 @@ internal fun MainNavGraph(
             ) {
                 Text(text = "Under construction...")
             }
+        }
+
+        composable<MainFlowRoute.Devices.CPUs> { entry ->
+            navigationApi.devicesFeatureMediator
+                .AddCpusScreen(entry = entry)
+        }
+
+        composable<MainFlowRoute.Devices.GPUs> { entry ->
+            navigationApi.devicesFeatureMediator
+                .AddGpuFlowScreen(entry = entry, onShowSnackBar = onShowSnackBar)
         }
 
         composable<MainFlowRoute.Cryptos> { entry ->

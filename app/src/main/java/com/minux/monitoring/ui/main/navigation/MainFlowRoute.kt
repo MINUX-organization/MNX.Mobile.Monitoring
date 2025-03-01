@@ -6,6 +6,14 @@ internal sealed interface MainFlowRoute {
     @Serializable
     data object Monitoring : MainFlowRoute
 
+    sealed interface Devices : MainFlowRoute {
+        @Serializable
+        data object CPUs : Devices
+
+        @Serializable
+        data object GPUs : Devices
+    }
+
     @Serializable
     data object Cryptos : MainFlowRoute
 

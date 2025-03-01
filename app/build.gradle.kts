@@ -38,6 +38,9 @@ dependencies {
     implementation(project(":feature:auth:api"))
     implementation(project(":feature:auth:impl"))
 
+    implementation(project(":feature:devices:api"))
+    implementation(project(":feature:devices:impl"))
+
     implementation(project(":feature:cryptos:api"))
     implementation(project(":feature:cryptos:impl"))
 
