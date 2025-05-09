@@ -7,14 +7,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
@@ -66,24 +64,20 @@ fun SearchAndSortBar(
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
+        SearchTextField(
+            query = searchQuery,
+            onQueryChange = onSearchQueryChange,
+            modifier = Modifier.weight(1f),
+            placeholder = { Text(text = "Search") }
+        )
+
         SortDropDownMenu(
             options = sortOptions,
             selectedOption = selectedSortOption,
             onSelectedOptionChange = onSelectedSortOptionChange,
-            modifier = Modifier
-                .width(230.dp)
-                .wrapContentWidth(align = Alignment.Start)
-        )
-
-        SearchTextField(
-            query = searchQuery,
-            onQueryChange = onSearchQueryChange,
-            modifier = Modifier
-                .width(240.dp)
-                .wrapContentWidth(align = Alignment.End),
-            placeholder = { Text(text = "Search") }
+            modifier = Modifier.width(120.dp)
         )
     }
 }
@@ -115,20 +109,21 @@ fun SearchTextField(
     query: String,
     onQueryChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     placeholder: (@Composable () -> Unit)? = null,
 ) {
     MNXTextField(
         value = query,
-        onValueChange = { onQueryChange(it) },
+        onValueChange = onQueryChange,
         modifier = modifier,
+        enabled = enabled,
         placeholder = placeholder,
         shape = RectangleShape,
         prefix = {
             Icon(
-                modifier = Modifier.padding(end = 4.dp),
                 painter = painterResource(id = MNXIcons.Search),
-                tint = MaterialTheme.colorScheme.primary,
-                contentDescription = "Search"
+                contentDescription = "Search",
+                modifier = Modifier.padding(end = 4.dp)
             )
         },
         contentPadding = PaddingValues(

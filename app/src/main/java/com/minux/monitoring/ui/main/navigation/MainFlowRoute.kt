@@ -14,4 +14,7 @@ internal sealed interface MainFlowRoute {
 
     @Serializable
     data object Pools : MainFlowRoute
+
+    @Serializable
+    data object Presets : MainFlowRoute
 }

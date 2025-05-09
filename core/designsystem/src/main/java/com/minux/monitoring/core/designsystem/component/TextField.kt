@@ -6,6 +6,9 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -48,6 +51,7 @@ fun MNXTextField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     readOnly: Boolean = false,
     textStyle: TextStyle = LocalTextStyle.current,
     label: @Composable (() -> Unit)? = null,
@@ -65,7 +69,6 @@ fun MNXTextField(
     contentPadding: PaddingValues = PaddingValues(8.dp)
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    val enabled = true
 
     val textColor = textStyle.color
         .takeOrElse {
@@ -75,7 +78,7 @@ fun MNXTextField(
 
     val mergedTextStyle = textStyle.merge(TextStyle(color = textColor))
 
-    Column(modifier = Modifier.animateContentSize()) {
+    Column(modifier = modifier.animateContentSize()) {
         label?.let {
             ProvideTextStyle(
                 value = textStyle.copy(color = MaterialTheme.colorScheme.onBackground),
@@ -86,13 +89,17 @@ fun MNXTextField(
         BasicTextField(
             value = value,
             onValueChange = onValueChange,
-            modifier = modifier
+            modifier = Modifier
+                .fillMaxWidth()
                 .border(
                     width = 1.dp,
-                    color = if (!isError)
-                        MaterialTheme.colorScheme.primary
-                    else
-                        MaterialTheme.colorScheme.error,
+                    color = when {
+                        !isError && enabled -> MaterialTheme.colorScheme.primary
+
+                        !enabled -> MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+
+                        else -> MaterialTheme.colorScheme.error
+                    },
                     shape = shape
                 ),
             enabled = enabled,
@@ -143,37 +150,37 @@ object MNXTextFieldDefaults {
 
     @Composable
     fun colors(
-        focusedTextColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
-        unfocusedTextColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
-        disabledTextColor: Color = Color.Unspecified,
+        focusedTextColor: Color = MaterialTheme.colorScheme.onPrimary,
+        unfocusedTextColor: Color = MaterialTheme.colorScheme.onPrimary,
+        disabledTextColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
         errorTextColor: Color = MaterialTheme.colorScheme.onErrorContainer,
         focusedContainerColor: Color = MaterialTheme.colorScheme.primaryContainer,
         unfocusedContainerColor: Color = MaterialTheme.colorScheme.primaryContainer,
-        disabledContainerColor: Color = Color.Unspecified,
+        disabledContainerColor: Color = MaterialTheme.colorScheme.primaryContainer,
         errorContainerColor: Color = MaterialTheme.colorScheme.errorContainer,
         cursorColor: Color = MaterialTheme.colorScheme.primary,
         errorCursorColor: Color = MaterialTheme.colorScheme.error,
         selectionColors: TextSelectionColors = LocalTextSelectionColors.current,
         focusedPlaceholderColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
         unfocusedPlaceholderColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
-        disabledPlaceholderColor: Color = Color.Unspecified,
+        disabledPlaceholderColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
         errorPlaceholderColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
         focusedPrefixColor: Color = MaterialTheme.colorScheme.primary,
         unfocusedPrefixColor: Color = MaterialTheme.colorScheme.primary,
-        disabledPrefixColor: Color = Color.Unspecified,
+        disabledPrefixColor: Color = MaterialTheme.colorScheme.primary,
         errorPrefixColor: Color = MaterialTheme.colorScheme.error,
         focusedSuffixColor: Color = MaterialTheme.colorScheme.primary,
         unfocusedSuffixColor: Color = MaterialTheme.colorScheme.primary,
-        disabledSuffixColor: Color = Color.Unspecified,
+        disabledSuffixColor: Color = MaterialTheme.colorScheme.primary,
         errorSuffixColor: Color = MaterialTheme.colorScheme.error,
     ) = TextFieldColors(
             focusedTextColor = focusedTextColor,
             unfocusedTextColor = unfocusedTextColor,
-            disabledTextColor = disabledTextColor,
+            disabledTextColor = disabledTextColor.copy(alpha = 0.25f),
             errorTextColor = errorTextColor,
             focusedContainerColor = focusedContainerColor,
             unfocusedContainerColor = unfocusedContainerColor,
-            disabledContainerColor = disabledContainerColor,
+            disabledContainerColor = disabledContainerColor.copy(alpha = 0.5f),
             errorContainerColor = errorContainerColor,
             cursorColor = cursorColor,
             errorCursorColor = errorCursorColor,
@@ -196,7 +203,7 @@ object MNXTextFieldDefaults {
             errorLabelColor = Color.Unspecified,
             focusedPlaceholderColor = focusedPlaceholderColor,
             unfocusedPlaceholderColor = unfocusedPlaceholderColor,
-            disabledPlaceholderColor = disabledPlaceholderColor,
+            disabledPlaceholderColor = disabledPlaceholderColor.copy(alpha = 0.25f),
             errorPlaceholderColor = errorPlaceholderColor,
             focusedSupportingTextColor = Color.Unspecified,
             unfocusedSupportingTextColor = Color.Unspecified,
@@ -204,11 +211,11 @@ object MNXTextFieldDefaults {
             errorSupportingTextColor = Color.Unspecified,
             focusedPrefixColor = focusedPrefixColor,
             unfocusedPrefixColor = unfocusedPrefixColor,
-            disabledPrefixColor = disabledPrefixColor,
+            disabledPrefixColor = disabledPrefixColor.copy(alpha = 0.5f),
             errorPrefixColor = errorPrefixColor,
             focusedSuffixColor = focusedSuffixColor,
             unfocusedSuffixColor = unfocusedSuffixColor,
-            disabledSuffixColor = disabledSuffixColor,
+            disabledSuffixColor = disabledSuffixColor.copy(alpha = 0.5f),
             errorSuffixColor = errorSuffixColor,
         )
 
@@ -242,12 +249,23 @@ private fun MNXTextFieldPreview() {
             MNXTextField(
                 value = text.value,
                 onValueChange = { text.value = it },
+                enabled = true,
+                placeholder = { Text(text = "Login" ) }
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            MNXTextField(
+                value = text.value,
+                onValueChange = { text.value = it },
+                enabled = false,
                 placeholder = { Text(text = "Login" ) }
             )
 
             MNXTextField(
                 value = text.value,
                 onValueChange = { text.value = it },
+                enabled = false,
                 label = {
                     Text(
                         text = "Sample",

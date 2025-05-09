@@ -17,5 +17,9 @@ internal enum class NavigationDrawerItem(
     Pools(
         route = MainFlowRoute.Pools,
         title = "Pools"
+    ),
+    Presets(
+        route = MainFlowRoute.Presets,
+        title = "Presets"
     )
 }
