@@ -43,6 +43,9 @@
             <option value="$PROJECT_DIR$/feature/monitoring" />
             <option value="$PROJECT_DIR$/feature/monitoring/api" />
             <option value="$PROJECT_DIR$/feature/monitoring/impl" />
+            <option value="$PROJECT_DIR$/feature/presets" />
+            <option value="$PROJECT_DIR$/feature/presets/api" />
+            <option value="$PROJECT_DIR$/feature/presets/impl" />
             <option value="$PROJECT_DIR$/injector" />
             <option value="$PROJECT_DIR$/injector-compose" />
           </set>

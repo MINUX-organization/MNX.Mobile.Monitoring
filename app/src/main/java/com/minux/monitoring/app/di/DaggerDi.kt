@@ -12,6 +12,8 @@ import com.minux.monitoring.feature.cryptos.impl.di.CryptosComponentHolder
 import com.minux.monitoring.feature.cryptos.impl.di.CryptosDependencies
 import com.minux.monitoring.feature.devices.impl.di.DevicesComponentHolder
 import com.minux.monitoring.feature.devices.impl.di.DevicesDependencies
+import com.minux.monitoring.feature.presets.impl.di.PresetsComponentHolder
+import com.minux.monitoring.feature.presets.impl.di.PresetsDependencies
 import com.minux.monitoring.injector.BaseDependencies
 import com.minux.monitoring.injector.BaseDependencyHolder
 import com.minux.monitoring.injector.DependencyHolder
@@ -144,6 +146,26 @@ internal object DaggerDi {
 
             CryptosDependencyHolder { dependencyHolder, injectorComposeApi, networkApi ->
                 object : CryptosDependencies {
+                    override val binderBaseApi: BinderBaseApi
+                        get() = injectorComposeApi.binderBaseApi
+                    override val httpClient: HttpClient
+                        get() = networkApi.httpClient
+                    override val dependencyHolder: BaseDependencyHolder<out BaseDependencies>
+                        get() = dependencyHolder
+                }
+            }.dependencies
+        }
+
+        PresetsComponentHolder.dependencyProvider = {
+            class PresetsDependencyHolder(
+                override val block: (BaseDependencyHolder<PresetsDependencies>, InjectorComposeApi, NetworkApi) -> PresetsDependencies
+            ) : DependencyHolderWithTwoApi<PresetsDependencies, InjectorComposeApi, NetworkApi>(
+                firstApi = InjectorComposeComponentHolder.fetchApi(),
+                secondApi = NetworkComponentHolder.fetchApi()
+            )
+
+            PresetsDependencyHolder { dependencyHolder, injectorComposeApi, networkApi ->
+                object : PresetsDependencies {
                     override val binderBaseApi: BinderBaseApi
                         get() = injectorComposeApi.binderBaseApi
                     override val httpClient: HttpClient

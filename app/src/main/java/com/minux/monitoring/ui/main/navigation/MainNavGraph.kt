@@ -54,5 +54,10 @@ internal fun MainNavGraph(
             navigationApi.cryptosFeatureMediator
                 .AddPoolsScreen(entry = entry, onShowSnackBar = onShowSnackBar)
         }
+
+        composable<MainFlowRoute.Presets> { entry ->
+            navigationApi.presetsFeatureMediator
+                .AddPresetsFlowScreen(entry = entry, onShowSnackBar = onShowSnackBar)
+        }
     }
 }

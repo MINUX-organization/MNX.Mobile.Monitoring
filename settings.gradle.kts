@@ -1,13 +1,15 @@
 pluginManagement {
-    includeBuild("build-logic")
+
     repositories {
         google()
         mavenCentral()
         gradlePluginPortal()
     }
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+
     repositories {
         google()
         mavenCentral()
@@ -28,8 +30,10 @@ include(":feature:auth:api")
 include(":feature:auth:impl")
 include(":feature:monitoring:api")
 include(":feature:monitoring:impl")
-include(":feature:devices:api")
-include(":feature:devices:impl")
 include(":feature:cryptos:api")
 include(":feature:cryptos:impl")
+include(":feature:devices:api")
+include(":feature:devices:impl")
+include(":feature:presets:api")
+include(":feature:presets:impl")
 include(":core:base")

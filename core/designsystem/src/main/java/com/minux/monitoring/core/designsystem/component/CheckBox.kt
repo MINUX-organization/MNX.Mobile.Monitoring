@@ -2,8 +2,10 @@ package com.minux.monitoring.core.designsystem.component
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.toggleable
@@ -28,8 +30,9 @@ import com.minux.monitoring.core.designsystem.theme.MNXTypography
 fun MNXCheckBox(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
-    label: @Composable () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    label: (@Composable () -> Unit)? = null,
+    labelPosition: CheckBoxLabelPosition = CheckBoxLabelPosition.Start
 ) {
     Row(
         modifier = modifier.toggleable(
@@ -39,9 +42,13 @@ fun MNXCheckBox(
         ),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        label()
+        label?.let {
+            if (labelPosition == CheckBoxLabelPosition.Start) {
+                it()
 
-        Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+            }
+        }
 
         Box(
             modifier = Modifier
@@ -62,27 +69,57 @@ fun MNXCheckBox(
                 )
             }
         }
+
+        label?.let {
+            if (labelPosition == CheckBoxLabelPosition.End) {
+                Spacer(modifier = Modifier.width(8.dp))
+
+                it()
+            }
+        }
     }
+}
+
+enum class CheckBoxLabelPosition {
+    Start,
+    End
 }
 
 @Preview
 @Composable
 private fun MNXCheckBoxPreview() {
     MNXTheme {
-        val isChecked = remember {
-            mutableStateOf(true)
-        }
-
-        MNXCheckBox(
-            checked = isChecked.value,
-            onCheckedChange = { isChecked.value = it },
-            label = {
-                Text(
-                    text = "Sample",
-                    color = MaterialTheme.colorScheme.onBackground,
-                    style = MNXTypography.bodyLarge
-                )
+        Column {
+            val isChecked = remember {
+                mutableStateOf(true)
             }
-        )
+
+            MNXCheckBox(
+                checked = isChecked.value,
+                onCheckedChange = { isChecked.value = it },
+                label = {
+                    Text(
+                        text = "Sample",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        style = MNXTypography.bodyLarge
+                    )
+                }
+            )
+            
+            Spacer(modifier = Modifier.height(16.dp))
+
+            MNXCheckBox(
+                checked = isChecked.value,
+                onCheckedChange = { isChecked.value = it },
+                label = {
+                    Text(
+                        text = "Sample",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        style = MNXTypography.bodyLarge
+                    )
+                },
+                labelPosition = CheckBoxLabelPosition.End
+            )
+        }
     }
 }

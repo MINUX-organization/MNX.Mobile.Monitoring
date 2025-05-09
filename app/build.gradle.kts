@@ -44,6 +44,9 @@ dependencies {
     implementation(project(":feature:cryptos:api"))
     implementation(project(":feature:cryptos:impl"))
 
+    implementation(project(":feature:presets:api"))
+    implementation(project(":feature:presets:impl"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.navigation.compose)

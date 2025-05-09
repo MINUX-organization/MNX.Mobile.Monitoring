@@ -38,6 +38,7 @@ fun <T> MNXDropDownMenu(
     selectedMenuItem: T,
     onSelectedMenuItemChange: (T) -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     label: @Composable (() -> Unit)? = null,
     shape: Shape = RoundedCornerShape(4.dp),
     iconPadding: Dp = 10.dp,
@@ -54,23 +55,23 @@ fun <T> MNXDropDownMenu(
 
     ExposedDropdownMenuBox(
         expanded = isExpanded.value,
-        onExpandedChange = { isExpanded.value = it }
+        onExpandedChange = { if (enabled) isExpanded.value = it }
     ) {
         MNXTextField(
             value = selectedMenuItem.toString(),
             onValueChange = {},
             modifier = modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable),
+            enabled = enabled,
             readOnly = true,
             label = label,
             shape = shape,
             suffix = {
                 Icon(
+                    painter = painterResource(id = MNXIcons.DropDown),
+                    contentDescription = null,
                     modifier = Modifier
                         .flipScale(state = isExpanded.value)
-                        .padding(start = iconPadding),
-                    painter = painterResource(id = MNXIcons.DropDown),
-                    tint = MaterialTheme.colorScheme.primary,
-                    contentDescription = null
+                        .padding(start = iconPadding)
                 )
             },
             contentPadding = contentPadding
@@ -124,6 +125,7 @@ private fun MNXDropDownMenuPreview() {
                 selectedMenuItem = selectedItem.value,
                 onSelectedMenuItemChange = { selectedItem.value = it },
                 modifier = Modifier.padding(top = 10.dp),
+                enabled = false,
                 shape = RectangleShape,
                 contentPadding = PaddingValues(
                     start = 10.dp,
