@@ -57,7 +57,7 @@ val MNXTypography = Typography(
     ),
     titleLarge = TextStyle(
         fontFamily = gillSansMtFamily,
-        fontWeight = FontWeight.Bold,
+        fontWeight = FontWeight.Normal,
         fontSize = 22.sp,
         lineHeight = 28.sp,
         letterSpacing = 0.sp,

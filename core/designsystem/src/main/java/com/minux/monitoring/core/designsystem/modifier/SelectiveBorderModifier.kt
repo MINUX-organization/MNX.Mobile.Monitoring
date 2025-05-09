@@ -18,8 +18,9 @@ fun Modifier.selectiveBorder(
         bottom = BorderSide.Bottom(width = 1.dp)
     ),
     color: Color
-) = then(
-    clip(RectangleShape)
+): Modifier {
+    return this then Modifier
+        .clip(RectangleShape)
         .drawWithContent {
             drawContent()
 
@@ -28,7 +29,7 @@ fun Modifier.selectiveBorder(
                 color = color
             )
         }
-)
+}
 
 private fun ContentDrawScope.drawBorderSides(
     sides: List<BorderSide?>,
