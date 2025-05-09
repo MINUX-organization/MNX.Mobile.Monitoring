@@ -23,6 +23,6 @@ android {
 }
 
 dependencies {
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.junit)
+    implementation(project(":feature:presets:api"))
+    implementation(project(":core:network"))
 }

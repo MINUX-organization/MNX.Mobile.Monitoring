@@ -1,19 +1,22 @@
 package com.minux.monitoring.feature.presets.impl.presentation.ui.presets.component
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import com.minux.monitoring.feature.presets.impl.presentation.model.DevicePresetItemModel
-import com.minux.monitoring.feature.presets.impl.presentation.ui.presets.component.gpu.GPUPresetItemPreviewParameterProvider
+import com.minux.monitoring.feature.presets.impl.presentation.model.DevicePresetGroupItemModel
 
-internal class DevicePresetItemPreviewParameterProvider : PreviewParameterProvider<DevicePresetItemModel> {
+internal class DevicePresetItemPreviewParameterProvider : PreviewParameterProvider<DevicePresetGroupItemModel> {
 
-    override val values: Sequence<DevicePresetItemModel> = sequenceOf(
-        DevicePresetItemModel(
+    override val values: Sequence<DevicePresetGroupItemModel> = sequenceOf(
+        DevicePresetGroupItemModel(
             name = "Nvidia RTX 3070",
-            presets = GPUPresetItemPreviewParameterProvider().values.toList()
+            presets = PresetItemPreviewParameterProvider().values.toList()
         ),
-        DevicePresetItemModel(
+        DevicePresetGroupItemModel(
+            name = null,
+            presets = PresetItemPreviewParameterProvider().values.toList()
+        ),
+        DevicePresetGroupItemModel(
             name = "Nvidia RTX 3080 Ti",
-            presets = GPUPresetItemPreviewParameterProvider().values.toList()
+            presets = PresetItemPreviewParameterProvider().values.toList()
         )
     )
 }
