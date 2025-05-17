@@ -69,7 +69,10 @@ internal class PresetsViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.Default) {
             if (query.isEmpty()) {
                 if (uiState.presetGroups != uiState.filteredPresetGroups)
-                    uiState = uiState.copy(filteredPresetGroups = uiState.presetGroups)
+                    uiState = uiState.copy(
+                        searchQuery = query,
+                        filteredPresetGroups = uiState.presetGroups
+                    )
 
                 return@launch
             }
@@ -80,6 +83,7 @@ internal class PresetsViewModel @Inject constructor(
             }
 
             uiState = uiState.copy(
+                searchQuery = query,
                 filteredPresetGroups = filteredGroups
             )
         }

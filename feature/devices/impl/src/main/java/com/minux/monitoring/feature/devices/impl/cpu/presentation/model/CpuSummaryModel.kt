@@ -4,5 +4,6 @@ import com.minux.monitoring.feature.devices.impl.common.presentation.model.Devic
 
 internal class CpuSummaryModel(
     val index: Int?,
-    val name: DeviceNameModel
+    val name: DeviceNameModel,
+    val isOnline: Boolean
 )

@@ -7,6 +7,12 @@ internal class GpusUiStatePreviewParameterProvider : PreviewParameterProvider<Gp
     private val gpuItems = GpuItemPreviewParameterProvider().values.toList()
 
     override val values: Sequence<GpusUiState> = sequenceOf(
-        GpusUiState(gpus = gpuItems)
+        GpusUiState(gpus = gpuItems),
+        GpusUiState(
+            gpusIsLoading = false,
+            gpus = gpuItems,
+            filteredGpus = gpuItems
+        ),
+        GpusUiState(gpusIsLoading = false)
     )
 }

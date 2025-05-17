@@ -77,7 +77,7 @@ private fun LazyGridScope.deviceCoinStatisticsItems(
 ) {
     item {
         Text(
-            text = item.coin,
+            text = item.coin ?: "N/A",
             modifier = modifier,
             color = MaterialTheme.colorScheme.onPrimary,
             textAlign = TextAlign.Center

@@ -6,6 +6,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.minux.monitoring.feature.devices.impl.di.DevicesComponentHolder
 import com.minux.monitoring.feature.devices.impl.gpu.presentation.ui.GpusRoute
 import com.minux.monitoring.feature.devices.impl.gpu.presentation.ui.GpusViewModel
@@ -34,8 +35,17 @@ internal fun GpuFlowNavGraph(onShowSnackBar: (String) -> Unit) {
             }
         }
 
-        composable<GpuFlowRoute.Overclocking> { entry ->
-            // TODO: Add screen from presets feature via it
+        composable<GpuFlowRoute.Settings> { entry ->
+            val gpuInfo = entry.toRoute<GpuFlowRoute.Settings>()
+
+            component.presetsFeatureMediator
+                .AddPresetConfigurationScreen(
+                    entry = entry,
+                    deviceId = gpuInfo.gpuId,
+                    deviceName = gpuInfo.gpuName,
+                    onNavigateUp = navController::navigateUp,
+                    onShowSnackBar = onShowSnackBar
+                )
         }
     }
 }

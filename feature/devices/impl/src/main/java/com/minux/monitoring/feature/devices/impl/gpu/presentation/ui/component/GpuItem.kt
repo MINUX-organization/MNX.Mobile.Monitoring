@@ -1,13 +1,19 @@
 package com.minux.monitoring.feature.devices.impl.gpu.presentation.ui.component
 
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -17,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -31,10 +38,11 @@ import androidx.constraintlayout.compose.ConstraintLayoutScope
 import androidx.constraintlayout.compose.Dimension
 import com.minux.monitoring.core.designsystem.component.MNXExpandableCard
 import com.minux.monitoring.core.designsystem.icon.MNXIcons
-import com.minux.monitoring.core.designsystem.modifier.flipScale
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
+import com.minux.monitoring.core.designsystem.theme.MNXTypography
 import com.minux.monitoring.core.ui.DeviceIndicators
 import com.minux.monitoring.core.ui.DeviceTextIndicatorItemModel
+import com.minux.monitoring.core.ui.IsOnlineIndicator
 import com.minux.monitoring.feature.devices.impl.common.presentation.model.DeviceDetailsTab
 import com.minux.monitoring.feature.devices.impl.common.presentation.model.DeviceNameModel
 import com.minux.monitoring.feature.devices.impl.common.presentation.ui.DeviceCoinStatisticsGrid
@@ -43,7 +51,6 @@ import com.minux.monitoring.feature.devices.impl.gpu.presentation.model.GpuItemM
 import com.minux.monitoring.feature.devices.impl.gpu.presentation.model.summary.GpuIdentificationModel
 import com.minux.monitoring.feature.devices.impl.gpu.presentation.model.summary.GpuIndicatorsModel
 import com.minux.monitoring.feature.devices.impl.gpu.presentation.model.summary.GpuSummaryModel
-import com.minux.monitoring.feature.devices.impl.gpu.presentation.ui.component.tab.GpuMinersTab
 import com.minux.monitoring.feature.devices.impl.gpu.presentation.ui.component.tab.GpuMiningInfoTab
 import com.minux.monitoring.feature.devices.impl.gpu.presentation.ui.component.tab.GpuSoftwareVersionsTab
 import com.minux.monitoring.feature.devices.impl.gpu.presentation.ui.component.tab.GpuSpecificationsTab
@@ -71,10 +78,7 @@ internal fun GpuItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 10.dp)
-                    .padding(
-                        top = 4.dp,
-                        bottom = 12.dp
-                    )
+                    .padding(top = 4.dp, bottom = 12.dp)
             )
         }
     ) {
@@ -105,6 +109,9 @@ private fun GpuItemContent(
                 .constrainAs(gpuIndicators) {
                     start.linkTo(gpuName.start)
                     top.linkTo(gpuName.bottom)
+                    end.linkTo(parent.end)
+
+                    width = Dimension.fillToConstraints
                 }
                 .padding(top = 8.dp)
         )
@@ -114,7 +121,9 @@ private fun GpuItemContent(
             items = model.coins,
             modifier = Modifier
                 .constrainAs(gpuCoins) {
+                    start.linkTo(parent.start)
                     top.linkTo(gpuIndicators.bottom)
+                    end.linkTo(parent.end)
                 }
                 .heightIn(max = 400.dp)
                 .padding(top = 10.dp)
@@ -130,28 +139,27 @@ private fun ConstraintLayoutScope.GpuSummary(
     onSettingsClick: () -> Unit
 ) {
     val (identification, cardActions) = createRefs()
-    val summaryPadding = PaddingValues(top = 8.dp)
 
     GpuIdentification(
         model = model.identification,
         modifier = Modifier
             .constrainAs(identification) {
                 start.linkTo(parent.start)
-                top.linkTo(parent.top)
+                top.linkTo(parent.top, 5.dp)
             }
-            .padding(summaryPadding)
     )
 
     GpuName(
         model = model.name,
+        isOnline = model.isOnline,
         modifier = Modifier
             .constrainAs(gpuNameRef) {
-                start.linkTo(identification.end, margin = 12.dp)
+                start.linkTo(identification.end, 12.dp)
+                top.linkTo(parent.top, 8.dp)
                 end.linkTo(cardActions.start)
 
                 width = Dimension.fillToConstraints
             }
-            .padding(summaryPadding)
     )
 
     Row(
@@ -175,7 +183,7 @@ private fun ConstraintLayoutScope.GpuSummary(
             contentDescription = null,
             modifier = Modifier
                 .size(24.dp)
-                .flipScale(state = isExpanded),
+                .graphicsLayer(scaleY = if (isExpanded) -1f else 1f),
             tint = MaterialTheme.colorScheme.onPrimary
         )
     }
@@ -190,21 +198,10 @@ private fun GpuIdentification(
         Text(
             text = buildAnnotatedString {
                 withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                    append(text = "Index ")
-                }
-                append(text = model.index.toString())
-            },
-            color = MaterialTheme.colorScheme.onPrimary
-        )
-
-        Text(
-            text = buildAnnotatedString {
-                withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
                     append(text = "BUS ")
                 }
                 append(text = model.bus.toString())
             },
-            modifier = Modifier.padding(top = 4.dp),
             color = MaterialTheme.colorScheme.onPrimary
         )
     }
@@ -213,19 +210,76 @@ private fun GpuIdentification(
 @Composable
 private fun GpuName(
     model: DeviceNameModel,
+    isOnline: Boolean,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        Text(
-            text = model.deviceName ?: "N/A",
-            color = MaterialTheme.colorScheme.onPrimary
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            BoxWithConstraints {
+                Text(
+                    text = model.deviceName ?: "N/A",
+                    modifier = Modifier
+                        .widthIn(max = maxWidth * 0.9f)
+                        .basicMarquee(),
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    style = MNXTypography.bodyLarge
+                )
+            }
 
-        Text(
-            text = model.rigName ?: "N/A",
-            modifier = Modifier.padding(top = 4.dp),
-            color = MaterialTheme.colorScheme.primary
-        )
+            val indicatorColor = if (isOnline) {
+                MaterialTheme.colorScheme.tertiary
+            } else {
+                MaterialTheme.colorScheme.secondary
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            IsOnlineIndicator(color = indicatorColor)
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = "Flight sheet")
+
+            Text(
+                text = model.flightSheetName ?: "N/A",
+                modifier = Modifier.basicMarquee(),
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = "Preset")
+
+            Text(
+                text = model.presetName ?: "N/A",
+                modifier = Modifier.basicMarquee(),
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = "Rig")
+
+            Text(
+                text = model.rigName ?: "N/A",
+                modifier = Modifier.basicMarquee(),
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
     }
 }
 
@@ -263,7 +317,7 @@ private fun GpuIndicators(
                 value = buildAnnotatedString {
                     append(text = "${model.power} ")
                     withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                        append(text = model.powerUnit)
+                        append(text = "W")
                     }
                 }
             )
@@ -297,12 +351,6 @@ private fun GpuItemExpandableContent(model: GpuItemModel) {
             GpuSoftwareVersionsTab(
                 model = model.softwareVersions,
                 modifier = Modifier.padding(gpuDetailTabPadding)
-            )
-        },
-        DeviceDetailsTab(name = "Miners") {
-            GpuMinersTab(
-                minerItems = model.miners,
-                modifier = Modifier.heightIn(max = 200.dp)
             )
         }
     )

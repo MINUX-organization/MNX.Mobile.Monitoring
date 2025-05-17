@@ -22,21 +22,19 @@ internal class CpuItemPreviewParameterProvider : PreviewParameterProvider<CpuIte
                     index = 999,
                     name = DeviceNameModel(
                         deviceName = "AMD Ryzen 5 5600X",
-                        rigName = "Rig Name"
-                    )
+                        flightSheetName = "FlightSheet #1",
+                        presetName = "Preset #1",
+                        rigName = "Rig #1"
+                    ),
+                    isOnline = true
                 ),
                 indicators = CpuIndicatorsModel(
                     temperature = 81,
                     fanSpeed = 80,
-                    power = 324,
-                    powerUnit = "W"
+                    power = 324
                 ),
-                miningType = "Triple ETH Mining",
                 coins = deviceCoinStatisticsPreviewParameterProvider.values.toList(),
-                miningInfo = CpuMiningInfoModel(
-                    flightSheetName = "FlightSheet #1",
-                    minerName = "lolminer"
-                ),
+                miningInfo = CpuMiningInfoModel(minerName = "lolminer"),
                 specifications = CpuSpecificationsModel(
                     manufacturer = "AMD",
                     coresCount = 8,

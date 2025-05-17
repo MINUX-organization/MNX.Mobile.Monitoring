@@ -22,12 +22,6 @@ internal fun CpuMiningInfoTab(
         verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         DeviceTabDetail(
-            name = "Flight sheet",
-            value = AnnotatedString(text = model.flightSheetName ?: "N/A"),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        DeviceTabDetail(
             name = "Miner",
             value = AnnotatedString(text = model.minerName ?: "N/A"),
             modifier = Modifier.fillMaxWidth()
@@ -40,10 +34,7 @@ internal fun CpuMiningInfoTab(
 private fun GpuMiningInfoTabPreview() {
     MNXTheme {
         CpuMiningInfoTab(
-            model = CpuMiningInfoModel(
-                flightSheetName = "",
-                minerName = null
-            )
+            model = CpuMiningInfoModel(minerName = null)
         )
     }
 }

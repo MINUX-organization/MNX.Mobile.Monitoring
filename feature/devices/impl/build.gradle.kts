@@ -24,5 +24,6 @@ android {
 
 dependencies {
     implementation(project(":feature:devices:api"))
+    implementation(project(":feature:presets:api"))
     implementation(project(":core:network"))
 }

@@ -1,7 +1,6 @@
 package com.minux.monitoring.feature.devices.impl.gpu.presentation.ui.component
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import com.minux.monitoring.feature.devices.impl.common.presentation.model.DeviceMinerModel
 import com.minux.monitoring.feature.devices.impl.common.presentation.model.DeviceNameModel
 import com.minux.monitoring.feature.devices.impl.common.presentation.ui.DeviceCoinStatisticsPreviewParameterProvider
 import com.minux.monitoring.feature.devices.impl.gpu.presentation.model.GpuItemModel
@@ -27,28 +26,20 @@ internal class GpuItemPreviewParameterProvider : PreviewParameterProvider<GpuIte
                     ),
                     name = DeviceNameModel(
                         deviceName = "AMD Radeon RX 6800",
-                        rigName = "Rig Name",
-                    )
+                        flightSheetName = "FlightSheet #1",
+                        presetName = "Preset #1",
+                        rigName = "Rig #1",
+                    ),
+                    isOnline = true
                 ),
                 indicators = GpuIndicatorsModel(
                     memoryTemperature = 81,
                     coreTemperature = 81,
                     fanSpeed = 80,
                     power = 324,
-                    powerUnit = "W",
                 ),
                 coins = deviceCoinStatisticsPreviewParameterProvider.values.toList(),
-                miningInfo = GpuMiningInfoModel(
-                    coreClock = 1350,
-                    coreClockUnit = "Mhz",
-                    memoryClock = 7050,
-                    memoryClockUnit = "Mhz",
-                    criticalTemperature = 150,
-                    powerLimit = 150,
-                    powerLimitUnit = "Watt",
-                    flightSheetName = "FlightSheet #1",
-                    minerName = "lolminer"
-                ),
+                miningInfo = GpuMiningInfoModel(minerName = "lolminer"),
                 specifications = GpuSpecificationsModel(
                     manufacturer = "AMD",
                     vendor = "Gigabyte",
@@ -61,36 +52,6 @@ internal class GpuItemPreviewParameterProvider : PreviewParameterProvider<GpuIte
                     technologyType = "OpenCL",
                     technologyVersion = "3.0",
                     vBIOS = "94.06.2F.00.F5"
-                ),
-                miners = listOf(
-                    DeviceMinerModel(
-                        miner = "Srbminer",
-                        cardId = 2
-                    ),
-                    DeviceMinerModel(
-                        miner = "lolminer",
-                        cardId = 0
-                    ),
-                    DeviceMinerModel(
-                        miner = "lolminer",
-                        cardId = 0
-                    ),
-                    DeviceMinerModel(
-                        miner = "lolminer",
-                        cardId = 0
-                    ),
-                    DeviceMinerModel(
-                        miner = "lolminer",
-                        cardId = 0
-                    ),
-                    DeviceMinerModel(
-                        miner = "lolminer",
-                        cardId = 0
-                    ),
-                    DeviceMinerModel(
-                        miner = "lolminer",
-                        cardId = 0
-                    )
                 )
             )
         )

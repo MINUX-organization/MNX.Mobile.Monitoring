@@ -7,6 +7,12 @@ internal class CpusUiStatePreviewParameterProvider : PreviewParameterProvider<Cp
     private val cpuItems = CpuItemPreviewParameterProvider().values.toList()
 
     override val values: Sequence<CpusUiState> = sequenceOf(
-        CpusUiState(cpus = cpuItems)
+        CpusUiState(cpus = cpuItems),
+        CpusUiState(
+            cpusIsLoading = false,
+            cpus = cpuItems,
+            filteredCpus = cpuItems
+        ),
+        CpusUiState(cpusIsLoading = false)
     )
 }

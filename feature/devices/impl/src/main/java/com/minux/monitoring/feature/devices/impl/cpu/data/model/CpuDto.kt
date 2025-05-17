@@ -11,5 +11,7 @@ internal class CpuDto(
     val information: CpuInfoDto?,
     val rigName: String?,
     val flightSheetName: String?,
-    val minerName: String?
+    val presetName: String?,
+    val minerName: String?,
+    val isOnline: Boolean
 )

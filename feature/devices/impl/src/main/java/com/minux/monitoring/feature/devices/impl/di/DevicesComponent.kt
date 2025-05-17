@@ -2,6 +2,7 @@ package com.minux.monitoring.feature.devices.impl.di
 
 import androidx.lifecycle.ViewModelProvider
 import com.minux.monitoring.feature.devices.api.di.DevicesFeatureApi
+import com.minux.monitoring.feature.presets.api.PresetsFeatureMediator
 import dagger.Component
 import javax.inject.Singleton
 
@@ -13,6 +14,7 @@ import javax.inject.Singleton
 internal interface DevicesComponent : DevicesFeatureApi {
 
     val viewModelFactory: ViewModelProvider.Factory
+    val presetsFeatureMediator: PresetsFeatureMediator
 
     @Component.Factory
     interface Factory {

@@ -1,7 +1,6 @@
 package com.minux.monitoring.feature.devices.impl.cpu.presentation.mapper
 
 import com.minux.monitoring.feature.devices.impl.common.presentation.model.DeviceCoinStatisticsModel
-import com.minux.monitoring.feature.devices.impl.common.presentation.model.DeviceMinerModel
 import com.minux.monitoring.feature.devices.impl.common.presentation.model.DeviceNameModel
 import com.minux.monitoring.feature.devices.impl.cpu.data.model.CpuDto
 import com.minux.monitoring.feature.devices.impl.cpu.presentation.model.CpuCacheInfoModel
@@ -20,21 +19,19 @@ internal fun CpuDto.toCpuItemModel(
             index = pci?.id,
             name = DeviceNameModel(
                 deviceName = information?.name,
+                flightSheetName = flightSheetName,
+                presetName = presetName,
                 rigName = rigName
-            )
+            ),
+            isOnline = isOnline
         ),
         indicators = CpuIndicatorsModel(
             temperature = 0,
             fanSpeed = 0,
-            power = 0,
-            powerUnit = ""
+            power = 0
         ),
-        miningType = "",
         coins = coins,
-        miningInfo = CpuMiningInfoModel(
-            flightSheetName = flightSheetName,
-            minerName = minerName
-        ),
+        miningInfo = CpuMiningInfoModel(minerName = minerName),
         specifications = information?.let {
             CpuSpecificationsModel(
                 manufacturer = it.manufacturer,

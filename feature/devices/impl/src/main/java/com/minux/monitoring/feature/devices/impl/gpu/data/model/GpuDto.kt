@@ -12,5 +12,7 @@ internal class GpuDto(
     val rigName: String?,
     val driverVersion: String?,
     val flightSheetName: String?,
-    val minerName: String?
+    val presetName: String?,
+    val minerName: String?,
+    val isOnline: Boolean
 )

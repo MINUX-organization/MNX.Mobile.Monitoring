@@ -26,6 +26,8 @@ internal class PresetsFeatureMediatorImpl : PresetsFeatureMediator {
     @Composable
     override fun AddPresetConfigurationScreen(
         entry: NavBackStackEntry,
+        deviceId: String,
+        deviceName: String,
         onNavigateUp: () -> Unit,
         onShowSnackBar: (String) -> Unit
     ) {
@@ -40,8 +42,8 @@ internal class PresetsFeatureMediatorImpl : PresetsFeatureMediator {
             PresetConfigurationRoute(
                 viewModel = presetConfigurationViewModel,
                 configurationMode = ConfigurationMode.Overclock(
-                    deviceId = "Come from devices feature",
-                    deviceName = ""
+                    deviceId = deviceId,
+                    deviceName = deviceName
                 ),
                 onNavigateUp = onNavigateUp,
                 onShowSnackBar = onShowSnackBar

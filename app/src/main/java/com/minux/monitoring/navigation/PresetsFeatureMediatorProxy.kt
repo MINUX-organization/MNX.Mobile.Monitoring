@@ -18,6 +18,8 @@ class PresetsFeatureMediatorProxy @Inject constructor() : PresetsFeatureMediator
     @Composable
     override fun AddPresetConfigurationScreen(
         entry: NavBackStackEntry,
+        deviceId: String,
+        deviceName: String,
         onNavigateUp: () -> Unit,
         onShowSnackBar: (String) -> Unit
     ) {
@@ -25,6 +27,8 @@ class PresetsFeatureMediatorProxy @Inject constructor() : PresetsFeatureMediator
             .presetsFeatureMediator
             .AddPresetConfigurationScreen(
                 entry = entry,
+                deviceId = deviceId,
+                deviceName = deviceName,
                 onNavigateUp = onNavigateUp,
                 onShowSnackBar = onShowSnackBar
             )

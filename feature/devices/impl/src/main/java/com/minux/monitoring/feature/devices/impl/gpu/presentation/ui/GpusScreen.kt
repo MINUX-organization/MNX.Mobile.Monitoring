@@ -1,21 +1,22 @@
 package com.minux.monitoring.feature.devices.impl.gpu.presentation.ui
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -23,13 +24,16 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
 import com.minux.monitoring.core.designsystem.theme.MNXTypography
-import com.minux.monitoring.core.ui.FiltersButton
+import com.minux.monitoring.core.ui.SearchTextField
 import com.minux.monitoring.feature.devices.impl.gpu.presentation.navigation.GpuFlowRoute
-import com.minux.monitoring.feature.devices.impl.gpu.presentation.ui.component.GpuItem
+import com.minux.monitoring.feature.devices.impl.gpu.presentation.ui.component.Gpus
+import com.minux.monitoring.feature.devices.impl.gpu.presentation.ui.component.GpusError
+import com.minux.monitoring.feature.devices.impl.gpu.presentation.ui.component.GpusShimmer
 import com.minux.monitoring.feature.devices.impl.gpu.presentation.ui.component.GpusUiStatePreviewParameterProvider
 import com.minux.monitoring.feature.devices.impl.gpu.presentation.ui.model.GpusAction
 import com.minux.monitoring.feature.devices.impl.gpu.presentation.ui.model.GpusEvent
 import com.minux.monitoring.feature.devices.impl.gpu.presentation.ui.model.GpusUiState
+import kotlinx.coroutines.delay
 
 @Composable
 internal fun GpusRoute(
@@ -51,9 +55,12 @@ internal fun GpusRoute(
     )
 
     when (action) {
-        GpusAction.OpenGpuOverclockingScreen -> onNavigate(GpuFlowRoute.Overclocking)
+        is GpusAction.OpenGpuSettingsScreen -> {
+            val id = (action as GpusAction.OpenGpuSettingsScreen).id
+            val name = (action as GpusAction.OpenGpuSettingsScreen).name
 
-        GpusAction.OpenFiltersBottomSheet -> TODO()
+            onNavigate(GpuFlowRoute.Settings(gpuId = id, gpuName = name))
+        }
 
         null -> {}
     }
@@ -61,34 +68,71 @@ internal fun GpusRoute(
     if (action != null) viewModel.clearAction()
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun GpusScreen(
     gpusUiState: GpusUiState,
     onEvent: (GpusEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "GPUs",
-                style = MNXTypography.headlineMedium
-            )
+    LaunchedEffect(Unit) {
+        onEvent(GpusEvent.FetchGpus)
+    }
 
-            FiltersButton(onClick = { onEvent(GpusEvent.Filters) })
+    Column(modifier = modifier) {
+        Text(
+            text = "GPUs",
+            style = MNXTypography.headlineMedium
+        )
+
+        Spacer(modifier = Modifier.height(6.dp))
+
+        SearchTextField(
+            query = gpusUiState.searchQuery,
+            onQueryChange = { onEvent(GpusEvent.SearchQueryChanged(searchQuery = it)) },
+            enabled = !gpusUiState.gpusIsLoading && !gpusUiState.gpus.isNullOrEmpty(),
+            placeholder = { Text(text = "Search") }
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        val isRefreshing = remember { mutableStateOf(false) }
+
+        LaunchedEffect(isRefreshing.value) {
+            if (isRefreshing.value) {
+                onEvent(GpusEvent.FetchGpus)
+                delay(200)
+                isRefreshing.value = false
+            }
         }
 
-        Spacer(modifier = Modifier.height(4.dp))
+        PullToRefreshBox(
+            isRefreshing = isRefreshing.value,
+            onRefresh = { isRefreshing.value = true },
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            ) {
+                when {
+                    gpusUiState.gpusIsLoading -> GpusShimmer()
 
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(gpusUiState.gpus, key = { it.id }) {
-                GpuItem(
-                    model = it,
-                    onSettingsClick = { onEvent(GpusEvent.Settings) }
-                )
+                    gpusUiState.filteredGpus == null -> GpusError(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .weight(1f)
+                    )
+
+                    else -> Gpus(
+                        gpus = gpusUiState.filteredGpus,
+                        onSettingsClick = { gpuId, gpuName ->
+                            onEvent(GpusEvent.Settings(gpuId = gpuId, gpuName = gpuName))
+                        },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
         }
     }

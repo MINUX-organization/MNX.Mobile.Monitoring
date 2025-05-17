@@ -7,5 +7,8 @@ internal sealed interface GpuFlowRoute {
     data object Gpus : GpuFlowRoute
 
     @Serializable
-    data object Overclocking : GpuFlowRoute
+    class Settings(
+        val gpuId: String,
+        val gpuName: String
+    ) : GpuFlowRoute
 }
