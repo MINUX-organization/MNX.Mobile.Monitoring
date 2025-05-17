@@ -1,35 +1,50 @@
 package com.minux.monitoring.core.designsystem.component
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemColors
 import androidx.compose.material3.NavigationDrawerItemDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.minux.monitoring.core.designsystem.icon.MNXIcons
 import com.minux.monitoring.core.designsystem.modifier.BorderSide
 import com.minux.monitoring.core.designsystem.modifier.BorderSides
+import com.minux.monitoring.core.designsystem.modifier.flipScale
 import com.minux.monitoring.core.designsystem.modifier.selectiveBorder
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
 import com.minux.monitoring.core.designsystem.theme.MNXTypography
-import com.minux.monitoring.core.designsystem.theme.OrangeVerticalGradient
 import com.minux.monitoring.core.designsystem.theme.TurquoiseRadialGradient
 
 @Composable
@@ -77,37 +92,97 @@ fun MNXNavigationDrawerItem(
     selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    borderSides: BorderSides = BorderSides(),
+    prefix: (@Composable () -> Unit)? = null,
+    badge: (@Composable () -> Unit)? = null,
+    suffix: (@Composable () -> Unit)? = null,
+    colors: NavigationDrawerItemColors = NavigationDrawerItemDefaults.colors(
+        selectedTextColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        unselectedTextColor = MaterialTheme.colorScheme.onPrimary,
+        selectedContainerColor = Color.Transparent,
+        unselectedContainerColor = Color.Transparent
+    )
 ) {
-    val itemBackgroundModifier = if (selected) {
-        Modifier
-            .background(brush = OrangeVerticalGradient)
-            .selectiveBorder(
-                sides = borderSides,
-                color = MaterialTheme.colorScheme.onSecondaryContainer
-            )
-    } else {
-        Modifier
-            .background(color = MaterialTheme.colorScheme.primaryContainer)
-            .selectiveBorder(
-                sides = borderSides,
-                color = MaterialTheme.colorScheme.primary
-            )
-    }
-
-    NavigationDrawerItem(
-        label = label,
+    Surface(
         selected = selected,
         onClick = onClick,
-        modifier = modifier.then(itemBackgroundModifier),
+        modifier = modifier
+            .semantics { role = Role.Tab }
+            .heightIn(min = 56.dp)
+            .fillMaxWidth(),
         shape = RectangleShape,
-        colors = NavigationDrawerItemDefaults.colors(
-            selectedTextColor = MaterialTheme.colorScheme.onSecondaryContainer,
-            unselectedTextColor = MaterialTheme.colorScheme.onPrimary,
-            selectedContainerColor = Color.Transparent,
-            unselectedContainerColor = Color.Transparent
+        color = colors.containerColor(selected).value,
+        interactionSource = null,
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (prefix != null) {
+                val iconColor = colors.iconColor(selected).value
+                CompositionLocalProvider(LocalContentColor provides iconColor, content = prefix)
+                Spacer(Modifier.width(12.dp))
+            }
+
+            Box {
+                val labelColor = colors.textColor(selected).value
+                CompositionLocalProvider(LocalContentColor provides labelColor, content = label)
+            }
+
+            if (badge != null) {
+                Spacer(Modifier.width(12.dp))
+                val badgeColor = colors.badgeColor(selected).value
+                CompositionLocalProvider(LocalContentColor provides badgeColor, content = badge)
+            }
+
+            if (suffix != null) {
+                Spacer(Modifier.weight(1f))
+                val iconColor = colors.iconColor(selected).value
+                CompositionLocalProvider(LocalContentColor provides iconColor, content = suffix)
+            }
+        }
+    }
+}
+
+@Composable
+fun MNXNavigationDrawerGroupItem(
+    label: @Composable () -> Unit,
+    expanded: Boolean,
+    onClick: () -> Unit,
+    items: LazyListScope.() -> Unit,
+    modifier: Modifier = Modifier,
+    colors: NavigationDrawerItemColors = NavigationDrawerItemDefaults.colors(
+        selectedTextColor = MaterialTheme.colorScheme.primary,
+        unselectedTextColor = MaterialTheme.colorScheme.onPrimary,
+        selectedIconColor = MaterialTheme.colorScheme.primary,
+        unselectedIconColor = MaterialTheme.colorScheme.onPrimary,
+        selectedContainerColor = Color.Transparent,
+        unselectedContainerColor = Color.Transparent
+    ),
+) {
+    Column(modifier = Modifier.animateContentSize()) {
+        MNXNavigationDrawerItem(
+            label = label,
+            selected = expanded,
+            onClick = onClick,
+            modifier = modifier,
+            suffix = {
+                Icon(
+                    painter = painterResource(id = MNXIcons.DropDown),
+                    contentDescription = null,
+                    modifier = Modifier.flipScale(state = expanded)
+                )
+            },
+            colors = colors
         )
-    )
+
+        if (expanded) {
+            LazyColumn(
+                modifier = Modifier
+                    .heightIn(max = 200.dp),
+                content = items
+            )
+        }
+    }
 }
 
 @Preview
@@ -168,11 +243,7 @@ private fun MNXNavigationDrawerItemPreview() {
                 },
                 selected = true,
                 onClick = {},
-                modifier = Modifier.fillMaxWidth(),
-                borderSides = BorderSides(
-                    start = BorderSide.Start(width = 1.dp),
-                    end = BorderSide.End(width = 1.dp)
-                )
+                modifier = Modifier.fillMaxWidth()
             )
 
             MNXNavigationDrawerItem(
@@ -184,12 +255,46 @@ private fun MNXNavigationDrawerItemPreview() {
                 },
                 selected = false,
                 onClick = {},
-                modifier = Modifier.fillMaxWidth(),
-                borderSides = BorderSides(
-                    top = BorderSide.Top(width = 1.dp),
-                    bottom = BorderSide.Bottom(width = 1.dp)
-                )
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = MaterialTheme.colorScheme.primaryContainer)
             )
         }
+    }
+}
+
+@Preview
+@Composable
+private fun MNXNavigationDrawerGroupItemPreview() {
+    MNXTheme {
+        MNXNavigationDrawerGroupItem(
+            label = {
+                Text(
+                    text = "Text",
+                    style = MNXTypography.bodyLarge
+                )
+            },
+            expanded = true,
+            onClick = {},
+            items = {
+                items(2) {
+                    MNXNavigationDrawerItem(
+                        label = {
+                            Text(
+                                text = "Text",
+                                style = MNXTypography.bodyLarge
+                            )
+                        },
+                        selected = false,
+                        onClick = {},
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color = MaterialTheme.colorScheme.primaryContainer)
+        )
+
     }
 }

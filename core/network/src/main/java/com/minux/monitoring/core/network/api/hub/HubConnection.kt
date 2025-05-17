@@ -1,7 +1,8 @@
-package com.minux.monitoring.core.network.impl.signalr
+package com.minux.monitoring.core.network.api.hub
 
 import com.microsoft.signalr.HubConnection
 import com.microsoft.signalr.HubConnectionState
+import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.coroutines.Dispatchers
@@ -11,30 +12,60 @@ import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
 
-internal fun <T> HubConnection.onReceive(method: String, param: Class<T>) = callbackFlow<Result<T>> {
+inline fun <reified T> HubConnection.onReceive(method: String) = callbackFlow<Result<T>> {
+    var connection: Completable?
+
     onClosed {
-        start()
+        connection = start()
     }
+
+    connection = start()
+
+    val disposable = connection?.doOnError {
+        trySend(Result.failure(it))
+    }?.subscribe()
 
     val receiveCall: (T) -> Unit = {
         trySend(Result.success(it))
     }
 
-    val subscription = on(method, receiveCall, param)
-
-    val connection = start()
-    val disposable = connection.doOnError {
-        trySend(Result.failure(it))
-    }.subscribe()
+    val subscription = on(method, receiveCall, T::class.java)
 
     awaitClose {
         stop()
         subscription.unsubscribe()
-        disposable.dispose()
+        disposable?.dispose()
     }
 }.buffer(onBufferOverflow = BufferOverflow.DROP_OLDEST).flowOn(Dispatchers.IO)
 
-internal fun <T> HubConnection.onSend(method: String, vararg data: T) = callbackFlow<Result<Unit>> {
+inline fun <reified T> HubConnection.onReceiveStream(subscriptionType: String) = callbackFlow<Result<T>> {
+    var connection: Completable?
+
+    onClosed {
+        connection = start()
+    }
+
+    connection = start()
+
+    val compositeDisposable = CompositeDisposable()
+
+    if (connectionState == HubConnectionState.CONNECTED) {
+        val subscription = stream(T::class.java, "Subscribe", subscriptionType)
+            .subscribe(
+                { Result.success(value = it) },
+                { Result.failure<Throwable>(exception = it) }
+            )
+
+        compositeDisposable.add(subscription)
+    }
+
+    awaitClose {
+        stop()
+        compositeDisposable.dispose()
+    }
+}.buffer(onBufferOverflow = BufferOverflow.DROP_OLDEST).flowOn(Dispatchers.IO)
+
+fun <T> HubConnection.onSend(method: String, vararg data: T) = callbackFlow<Result<Unit>> {
     val compositeDisposable = CompositeDisposable()
 
     fun tryInvoke(): Disposable {
@@ -74,6 +105,8 @@ internal fun <T> HubConnection.onSend(method: String, vararg data: T) = callback
     }
 
     awaitClose {
+        if (connectionState != HubConnectionState.CONNECTED) return@awaitClose
+
         stop()
         compositeDisposable.dispose()
     }

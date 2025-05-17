@@ -1,5 +1,6 @@
 package com.minux.monitoring.ui.main.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -15,19 +17,23 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItemColors
+import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.minux.monitoring.core.designsystem.component.MNXDrawerHeader
 import com.minux.monitoring.core.designsystem.component.MNXDrawerSheet
+import com.minux.monitoring.core.designsystem.component.MNXNavigationDrawerGroupItem
 import com.minux.monitoring.core.designsystem.component.MNXNavigationDrawerItem
 import com.minux.monitoring.core.designsystem.icon.MNXIcons
 import com.minux.monitoring.core.designsystem.modifier.BorderSide
@@ -35,13 +41,15 @@ import com.minux.monitoring.core.designsystem.modifier.BorderSides
 import com.minux.monitoring.core.designsystem.modifier.selectiveBorder
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
 import com.minux.monitoring.core.designsystem.theme.MNXTypography
+import com.minux.monitoring.core.designsystem.theme.OrangeVerticalGradient
+import com.minux.monitoring.core.designsystem.theme.TurquoiseVerticalGradient
 import com.minux.monitoring.ui.main.navigation.MainFlowRoute
 import kotlinx.coroutines.launch
 
 @Composable
 internal fun MainNavigationDrawer(
     drawerState: DrawerState,
-    drawerItems: List<NavigationDrawerItem>,
+    drawerItems: List<NavigationDrawerItemModel>,
     onNavigationDrawerItemClick: (MainFlowRoute) -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
@@ -63,7 +71,7 @@ internal fun MainNavigationDrawer(
 @Composable
 private fun NavigationDrawerContent(
     drawerState: DrawerState,
-    items: List<NavigationDrawerItem>,
+    items: List<NavigationDrawerItemModel>,
     onNavigationDrawerItemClick: (MainFlowRoute) -> Unit
 ) {
     MNXDrawerSheet(modifier = Modifier.width(280.dp)) {
@@ -117,12 +125,10 @@ private fun NavigationDrawerHeader(modifier: Modifier = Modifier) {
 @Composable
 private fun NavigationDrawerItems(
     drawerState: DrawerState,
-    navItems: List<NavigationDrawerItem>,
+    navItems: List<NavigationDrawerItemModel>,
     onNavigationDrawerItemClick: (MainFlowRoute) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val coroutineScope = rememberCoroutineScope()
-
     val selectedIndex = remember {
         mutableIntStateOf(0)
     }
@@ -142,28 +148,240 @@ private fun NavigationDrawerItems(
     }
 
     LazyColumn(modifier = modifier) {
-        itemsIndexed(navItems, key = { _, item -> item.name }) { index, item ->
-            MNXNavigationDrawerItem(
-                label = {
-                    Text(
-                        text = item.title,
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        style = MNXTypography.titleSmall
-                    )
-                },
+        itemsIndexed(navItems, key = { _, item -> item.toString() }) { index, item ->
+            NavigationDrawerItem(
+                model = item,
                 selected = selectedIndex.intValue == index,
+                currentIndex = index,
+                onSelectedIndexChange = { selectedIndex.intValue = index },
                 onClick = {
-                    coroutineScope.launch {
-                        selectedIndex.intValue = index
-                        drawerState.close()
-                        onNavigationDrawerItemClick(item.route)
-                    }
+                    drawerState.close()
+                    onNavigationDrawerItemClick(it)
                 },
-                modifier = Modifier.fillMaxWidth(),
-                borderSides = itemBorderSides[index],
+                borderSides = itemBorderSides,
+                modifier = Modifier.fillMaxWidth()
             )
         }
+    }
+}
+
+private const val NO_INDEX = -1
+
+@Composable
+private fun NavigationDrawerItem(
+    model: NavigationDrawerItemModel,
+    selected: Boolean,
+    currentIndex: Int,
+    onSelectedIndexChange: (Int) -> Unit,
+    onClick: suspend (MainFlowRoute) -> Unit,
+    borderSides: List<BorderSides>,
+    modifier: Modifier = Modifier,
+) {
+    val coroutineScope = rememberCoroutineScope()
+
+    val itemColors = NavigationDrawerItemDefaults.colors(
+        selectedTextColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        unselectedTextColor = MaterialTheme.colorScheme.onPrimary,
+        selectedContainerColor = Color.Transparent,
+        unselectedContainerColor = Color.Transparent
+    )
+
+    when (model) {
+        is NavigationDrawerItemModel.Single -> {
+            SingleNavigationDrawerItem(
+                model = model,
+                selected = selected,
+                onClick = {
+                    coroutineScope.launch {
+                        onSelectedIndexChange(currentIndex)
+                        onClick(model.route)
+                    }
+                },
+                modifier = modifier
+                    .selectiveBorder(
+                        sides = borderSides[currentIndex],
+                        color = if (selected)
+                            itemColors.textColor(true).value
+                        else
+                            MaterialTheme.colorScheme.primary
+                    )
+            )
+        }
+
+        is NavigationDrawerItemModel.Group -> {
+            val selectedSubIndex = remember { mutableIntStateOf(0) }
+            val isExpanded = remember { mutableStateOf(false) }
+
+            val groupItemColors = if (!isExpanded.value && selectedSubIndex.intValue != NO_INDEX) {
+                NavigationDrawerItemDefaults.colors(
+                    unselectedTextColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    unselectedIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    unselectedContainerColor = Color.Transparent
+                )
+            } else {
+                NavigationDrawerItemDefaults.colors(
+                    selectedTextColor = MaterialTheme.colorScheme.onPrimary,
+                    unselectedTextColor = MaterialTheme.colorScheme.onPrimary,
+                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                    unselectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                    selectedContainerColor = Color.Transparent,
+                    unselectedContainerColor = Color.Transparent
+                )
+            }
+
+            val subItemBorderSides = remember(selectedSubIndex.intValue) {
+                val subBorderSides = BorderSides(
+                    start = BorderSide.Start(1.dp),
+                    end = BorderSide.End(1.dp)
+                )
+
+                List(model.items.size) { navSubIndex ->
+                    subBorderSides.getBySubPosition(
+                        index = navSubIndex,
+                        selectedIndex = selectedSubIndex.intValue,
+                        lastIndex = model.items.size - 1
+                    )
+                }
+            }
+
+            if (!selected) selectedSubIndex.intValue = NO_INDEX
+
+            GroupNavigationDrawerItem(
+                model = model,
+                selected = selectedSubIndex.intValue != NO_INDEX,
+                expanded = isExpanded.value,
+                onExpandedChange = { isExpanded.value = it },
+                items = {
+                    navigationDrawerSubItems(
+                        items = model.items,
+                        currentIndex = selectedSubIndex.intValue,
+                        onClick = { index, route ->
+                            coroutineScope.launch {
+                                onSelectedIndexChange(currentIndex)
+                                selectedSubIndex.intValue = index
+                                onClick(route)
+                            }
+                        },
+                        borderSides = subItemBorderSides,
+                        colors = itemColors
+                    )
+                },
+                colors = groupItemColors,
+                modifier = modifier.selectiveBorder(
+                    sides = borderSides[currentIndex].run {
+                        if (isExpanded.value) copy(bottom = null) else this
+                    },
+                    color = if (!isExpanded.value && selectedSubIndex.intValue != NO_INDEX)
+                        groupItemColors.textColor(true).value
+                    else
+                        MaterialTheme.colorScheme.primary
+                )
+            )
+        }
+    }
+}
+
+@Composable
+private fun SingleNavigationDrawerItem(
+    model: NavigationDrawerItemModel.Single,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val itemBackgroundModifier = if (selected) {
+        Modifier.background(brush = OrangeVerticalGradient)
+    } else {
+        Modifier.background(color = MaterialTheme.colorScheme.primaryContainer)
+    }
+
+    MNXNavigationDrawerItem(
+        label = {
+            Text(
+                text = model.title,
+                style = MNXTypography.bodyLarge
+            )
+        },
+        selected = selected,
+        onClick = onClick,
+        modifier = Modifier
+            .then(itemBackgroundModifier)
+            .then(modifier)
+    )
+}
+
+@Composable
+private fun GroupNavigationDrawerItem(
+    model: NavigationDrawerItemModel.Group,
+    selected: Boolean,
+    expanded: Boolean,
+    onExpandedChange: (Boolean) -> Unit,
+    items: LazyListScope.() -> Unit,
+    colors: NavigationDrawerItemColors,
+    modifier: Modifier = Modifier
+) {
+    val groupItemBackgroundModifier = when {
+        !expanded && selected -> Modifier.background(
+            brush = OrangeVerticalGradient
+        )
+
+        !expanded && !selected -> Modifier
+
+        else -> Modifier.background(brush = TurquoiseVerticalGradient)
+    }
+
+    MNXNavigationDrawerGroupItem(
+        label = {
+            Text(
+                text = model.title,
+                style = MNXTypography.bodyLarge
+            )
+        },
+        expanded = expanded,
+        onClick = { onExpandedChange(!expanded) },
+        items = items,
+        modifier = Modifier
+            .then(groupItemBackgroundModifier)
+            .then(modifier),
+        colors = colors
+    )
+}
+
+private fun LazyListScope.navigationDrawerSubItems(
+    items: List<NavigationDrawerItemModel.Single>,
+    currentIndex: Int,
+    onClick: (Int, MainFlowRoute) -> Unit,
+    borderSides: List<BorderSides>,
+    colors: NavigationDrawerItemColors
+) {
+    itemsIndexed(items, key = { _, subItem -> subItem.toString() }) { subIndex, subItem ->
+        val isSelected = currentIndex == subIndex
+
+        val itemGradientModifier = if (isSelected)
+            Modifier.background(brush = OrangeVerticalGradient)
+        else
+            Modifier
+
+        MNXNavigationDrawerItem(
+            label = {
+                Text(
+                    text = subItem.title,
+                    style = MNXTypography.bodyLarge
+                )
+            },
+            selected = isSelected,
+            onClick = { onClick(subIndex, subItem.route) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color = MaterialTheme.colorScheme.background)
+                .then(itemGradientModifier)
+                .selectiveBorder(
+                    sides = borderSides[subIndex],
+                    color = if (isSelected)
+                        colors.textColor(true).value
+                    else
+                        MaterialTheme.colorScheme.primary
+                )
+        )
     }
 }
 
@@ -188,6 +406,22 @@ private fun BorderSides.getByPosition(index: Int, selectedIndex: Int): BorderSid
     }
 }
 
+private fun BorderSides.getBySubPosition(index: Int, selectedIndex: Int, lastIndex: Int): BorderSides {
+    return when {
+        selectedIndex == NO_INDEX && index == 0 -> copy(
+            top = BorderSide.Top(1.dp),
+            bottom = BorderSide.Bottom(1.dp)
+        )
+
+        selectedIndex == NO_INDEX && index == lastIndex -> copy(bottom = null)
+
+        else -> getByPosition(
+            index = index,
+            selectedIndex = selectedIndex
+        )
+    }
+}
+
 @Preview
 @Composable
 fun AppNavigationDrawerPreview() {
@@ -195,9 +429,37 @@ fun AppNavigationDrawerPreview() {
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Open)
         val coroutineScope = rememberCoroutineScope()
 
+        val items = listOf(
+            NavigationDrawerItemModel.Group(
+                items = listOf(
+                    NavigationDrawerItemModel.Single(
+                        route = MainFlowRoute.Devices.CPUs,
+                        title = "CPUs"
+                    ),
+                    NavigationDrawerItemModel.Single(
+                        route = MainFlowRoute.Devices.GPUs,
+                        title = "GPUs"
+                    )
+                ),
+                title = "Devices"
+            ),
+            NavigationDrawerItemModel.Single(
+                route = MainFlowRoute.Cryptos,
+                title = "Cryptos"
+            ),
+            NavigationDrawerItemModel.Single(
+                route = MainFlowRoute.Wallets,
+                title = "Wallets"
+            ),
+            NavigationDrawerItemModel.Single(
+                route = MainFlowRoute.Pools,
+                title = "Pools"
+            )
+        )
+
         MainNavigationDrawer(
             drawerState = drawerState,
-            drawerItems = NavigationDrawerItem.entries,
+            drawerItems = items,
             onNavigationDrawerItemClick = {},
             content = {
                 IconButton(

@@ -40,6 +40,7 @@ dependencies {
     implementation(project(":injector"))
 
     api(libs.retrofit.core)
+    api(libs.signalr)
     api(libs.kotlinx.coroutines.android)
     testApi(libs.kotlinx.coroutines.test)
     testApi(libs.turbine)
@@ -48,8 +49,8 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.serialization.protobuf)
     implementation(libs.retrofit.kotlin.serialization)
-    implementation(libs.signalr)
     implementation(libs.androidx.dataStore)
+    implementation(libs.jwtdecode)
 
     testImplementation(libs.bundles.test)
     androidTestImplementation(libs.bundles.android.test)

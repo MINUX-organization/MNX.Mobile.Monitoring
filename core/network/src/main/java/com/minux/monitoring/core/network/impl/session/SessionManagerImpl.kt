@@ -2,27 +2,26 @@ package com.minux.monitoring.core.network.impl.session
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.IOException
+import com.auth0.android.jwt.JWT
 import com.minux.monitoring.core.network.api.session.SessionManager
 import com.minux.monitoring.core.network.api.session.TokensDto
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.long
+import retrofit2.HttpException
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
-import kotlin.io.encoding.Base64
-import kotlin.io.encoding.ExperimentalEncodingApi
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class SessionManagerImpl(
@@ -30,80 +29,95 @@ internal class SessionManagerImpl(
     private val tokensDataStore: DataStore<TokensDto>
 ) : SessionManager {
 
-    private val _tokens: Flow<TokensDto> by lazy {
+    private val _tokens: StateFlow<TokensDto> by lazy {
         tokensDataStore.data
             .distinctUntilChanged()
             .catch { e ->
                 if (e is IOException) emit(TokensDto()) else throw e
             }
-            .flowOn(Dispatchers.IO)
+            .stateIn(
+                scope = CoroutineScope(Dispatchers.IO),
+                started = SharingStarted.WhileSubscribed(),
+                initialValue = TokensDto()
+            )
     }
 
     private val _updateTokenMutex = Mutex()
 
-    override suspend fun setTokens(tokens: TokensDto) {
-        tokensDataStore.updateData { tokens }
+    override suspend fun updateCredentials(credentials: TokensDto) {
+        tokensDataStore.updateData { credentials }
     }
 
-    override fun isRefreshTokenExpired(): Flow<Boolean> = _tokens.mapLatest {
-        val refreshExpiration = it.refreshExpiration ?: return@mapLatest true
+    override suspend fun invalidateCredentials() {
+        tokensDataStore.updateData {
+            val invalidationResult = tokenApiService.invalidateRefreshToken(
+                token = RefreshTokenDto(refreshToken = it.refreshToken)
+            ).first()
 
+            if (invalidationResult.isSuccess)
+                TokensDto()
+            else
+                it
+        }
+    }
+
+    override fun observeExpirationStatus(): Flow<Boolean> = _tokens.mapLatest {
+        val refreshExpiration = it.refreshExpiration ?: return@mapLatest true
         val refreshExpirationTime = getRefreshTokenExpiration(dateTime = refreshExpiration)
+
         return@mapLatest System.currentTimeMillis() >= refreshExpirationTime
     }
 
-    fun getAccessToken(): Flow<String> = _tokens.mapLatest {
-        if (isAccessTokenExpired(accessToken = it.accessToken)) {
-            _updateTokenMutex.withLock {
-                if (!isAccessTokenExpired(accessToken = it.accessToken)) return@withLock
-
-                updateAccessToken(refreshToken = it.refreshToken)
-            }
+    fun getAccessToken(): Flow<String> = _tokens.mapLatest { tokens ->
+        if (tokens.accessToken.isNullOrEmpty()) return@mapLatest ""
+        
+        if (!isAccessTokenExpired(accessToken = tokens.accessToken)) {
+            return@mapLatest tokens.accessToken
         }
 
-        return@mapLatest it.accessToken ?: throw TokensNotSetException()
+        _updateTokenMutex.withLock {
+            val currentTokens = _tokens.value
+
+            if (currentTokens.accessToken != null &&
+                !isAccessTokenExpired(accessToken = currentTokens.accessToken)) return@withLock
+
+            updateAccessToken(tokens = tokens)
+        }
+
+        return@mapLatest tokens.accessToken
     }
 
-    private suspend fun updateAccessToken(refreshToken: String?) {
-        val token = refreshToken ?: throw TokensNotSetException()
+    private suspend fun updateAccessToken(tokens: TokensDto) {
+        val token = tokens.refreshToken ?: throw TokensNotSetException()
 
         val newTokens = tokenApiService.refreshTokens(
-            token = RefreshTokensDto(refreshToken = token)
+            token = RefreshTokenDto(refreshToken = token)
         ).first()
 
         newTokens.onSuccess {
-            setTokens(tokens = it)
+            if (it.accessToken != tokens.accessToken) {
+                updateCredentials(credentials = it)
+            }
+        }.onFailure { error ->
+            if (error is HttpException && (error.code() == 401 || error.code() == 400)) {
+                invalidateCredentials()
+            }
         }
     }
 
-    private fun isAccessTokenExpired(accessToken: String?): Boolean {
-        val token = accessToken ?: throw TokensNotSetException()
-
-        val accessExpirationTime = getAccessTokenExpiration(jwtToken = token)
-        return System.currentTimeMillis() >= accessExpirationTime
-    }
-
-    @OptIn(ExperimentalEncodingApi::class)
-    private fun getAccessTokenExpiration(jwtToken: String): Long {
-        val parts = jwtToken.split(".")
-        if (parts.size < 2) throw IllegalArgumentException("Invalid JWT token")
-
-        val payload = String(bytes = Base64.decode(parts[1]))
-
-        return try {
-            val jsonObject = Json.parseToJsonElement(payload).jsonObject
-            (jsonObject["exp"] as? JsonPrimitive)?.long
-                ?: throw IllegalArgumentException("Missing 'exp' field in JWT payload")
-        } catch (e: Exception) {
-            throw IllegalArgumentException("Invalid JWT payload", e)
-        }
+    private fun isAccessTokenExpired(accessToken: String): Boolean {
+        val jwt = JWT(accessToken)
+        return jwt.isExpired(60)
     }
 
     private fun getRefreshTokenExpiration(dateTime: String): Long {
-        val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+        val normalizedDateTime = dateTime.replace("+00:00", "Z")
+
+        val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS'Z'", Locale.getDefault())
         formatter.timeZone = TimeZone.getTimeZone("UTC")
 
-        val date = formatter.parse(dateTime)
+        val date = formatter.parse(normalizedDateTime)
+
         return date?.time ?: throw IllegalArgumentException("Invalid date format")
     }
 }

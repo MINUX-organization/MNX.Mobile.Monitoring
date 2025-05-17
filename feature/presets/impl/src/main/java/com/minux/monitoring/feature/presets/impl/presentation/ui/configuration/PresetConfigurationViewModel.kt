@@ -186,7 +186,7 @@ internal class PresetConfigurationViewModel @Inject constructor(
                 )
 
                 result.onSuccess {
-                    selectedDeviceChanged(selectedDevice = it.first())
+                    selectedDeviceChanged(selectedDevice = it.firstOrNull() ?: "")
                 }.onFailure {
                     uiState = uiState.copy(
                         currentPreset = uiState.currentPreset.copy(parametersIsLoading = false)
@@ -211,6 +211,11 @@ internal class PresetConfigurationViewModel @Inject constructor(
     // For preset creating
     private fun fetchDeviceRestrictions(deviceName: String) {
         val preset = uiState.currentPreset
+
+        if (deviceName.isEmpty()) {
+            uiState = uiState.copy(currentPreset = preset.copy(parametersIsLoading = false))
+            return
+        }
 
         deviceRepository.getGpuRestrictionsByName(
             gpuRestrictionsGetByName = GpuRestrictionsGetByNameDto(gpuName = deviceName)

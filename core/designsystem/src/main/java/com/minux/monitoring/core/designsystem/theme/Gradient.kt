@@ -23,6 +23,15 @@ val TurquoiseHorizontalGradient = Brush.horizontalGradient(
     )
 )
 
+val TurquoiseVerticalGradient = Brush.verticalGradient(
+    colorStops = arrayOf(
+        0.3f to Color.Transparent,
+        0.5f to Color(0x053C9EA5),
+        0.8f to Color(0x143C9EA5),
+        1f to Color(0x273C9EA5)
+    )
+)
+
 val OrangeVerticalGradient = Brush.verticalGradient(
     colorStops = arrayOf(
         0.3f to Color.Transparent,

@@ -11,6 +11,8 @@ interface PresetsFeatureMediator {
     @Composable
     fun AddPresetConfigurationScreen(
         entry: NavBackStackEntry,
+        deviceId: String,
+        deviceName: String,
         onNavigateUp: () -> Unit,
         onShowSnackBar: (String) -> Unit
     )

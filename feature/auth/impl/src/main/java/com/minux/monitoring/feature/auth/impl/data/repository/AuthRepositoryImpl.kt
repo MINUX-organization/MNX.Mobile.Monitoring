@@ -12,13 +12,13 @@ internal class AuthRepositoryImpl(
 ) : AuthRepository {
     override fun registerUser(authInfo: AuthInfoDto): Flow<Result<Unit>> {
         return authApiService.registerUser(authInfo = authInfo).map { result ->
-            result.map { sessionManager.setTokens(tokens = it) }
+            result.map { sessionManager.updateCredentials(credentials = it) }
         }
     }
 
     override fun authUser(authInfo: AuthInfoDto): Flow<Result<Unit>> {
         return authApiService.authUser(authInfo = authInfo).map { result ->
-            result.map { sessionManager.setTokens(tokens = it) }
+            result.map { sessionManager.updateCredentials(credentials = it) }
         }
     }
 }

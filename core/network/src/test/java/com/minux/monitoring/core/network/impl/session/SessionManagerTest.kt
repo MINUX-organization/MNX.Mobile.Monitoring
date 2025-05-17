@@ -45,29 +45,29 @@ internal class SessionManagerTest {
     }
 
     @Test
-    fun `setTokens updates the tokens in the DataStore`() = runTest {
+    fun `updateCredentials updates the session credentials in the DataStore`() = runTest {
         val tokens = TokensDto(accessToken = "access", refreshToken = "refresh")
         coEvery { tokensDataStore.updateData(any()) } returns tokens
 
-        sessionManager.setTokens(tokens)
+        sessionManager.updateCredentials(tokens)
 
         coVerify { tokensDataStore.updateData(any()) }
     }
 
     @Test
-    fun `isRefreshTokenExpired, if the refresh token has expired, returns true`() = runTest {
+    fun `observeExpirationStatus, if the session has expired, returns true`() = runTest {
         val expiredDate = "2020-01-01T00:00:00.000Z"
         val tokens = TokensDto(refreshExpiration = expiredDate)
         every { tokensDataStore.data } returns flowOf(tokens)
 
-        sessionManager.isRefreshTokenExpired().test {
+        sessionManager.observeExpirationStatus().test {
             assertThat(awaitItem()).isTrue()
             awaitComplete()
         }
     }
 
     @Test
-    fun `isRefreshTokenExpired, if the refresh token hasn't expired, returns false`() = runTest {
+    fun `observeExpirationStatus, if the session hasn't expired, returns false`() = runTest {
         val tokens = SimpleDateFormat(
             "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
             Locale.getDefault()
@@ -78,7 +78,7 @@ internal class SessionManagerTest {
         }
         every { tokensDataStore.data } returns flowOf(tokens)
 
-        sessionManager.isRefreshTokenExpired().test {
+        sessionManager.observeExpirationStatus().test {
             assertThat(awaitItem()).isFalse()
             awaitComplete()
         }
@@ -131,11 +131,15 @@ internal class SessionManagerTest {
     }
 
     @Test
-    fun `getAccessToken, if tokens aren't set, throw TokensNotSetException`() = runTest {
+    fun `getAccessToken, if tokens aren't set, returns empty string`() = runTest {
         every { tokensDataStore.data } returns flowOf(TokensDto())
 
         sessionManager.getAccessToken().test {
-            assertThat(awaitError()).isInstanceOf(TokensNotSetException::class.java)
+            assertThat(awaitItem()).isEqualTo("")
+            awaitComplete()
         }
+
+        verify(inverse = true) { tokenApiService.refreshTokens(any()) }
+        coVerify(inverse = true) { tokensDataStore.updateData(any()) }
     }
 }

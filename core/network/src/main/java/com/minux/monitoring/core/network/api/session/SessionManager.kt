@@ -3,7 +3,9 @@ package com.minux.monitoring.core.network.api.session
 import kotlinx.coroutines.flow.Flow
 
 interface SessionManager {
-    suspend fun setTokens(tokens: TokensDto)
+    suspend fun updateCredentials(credentials: TokensDto)
 
-    fun isRefreshTokenExpired(): Flow<Boolean>
+    suspend fun invalidateCredentials()
+
+    fun observeExpirationStatus(): Flow<Boolean>
 }
