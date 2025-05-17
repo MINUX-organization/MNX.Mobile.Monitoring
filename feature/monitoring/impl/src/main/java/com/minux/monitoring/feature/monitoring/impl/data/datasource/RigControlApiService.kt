@@ -6,15 +6,15 @@ import retrofit2.http.Path
 
 internal interface RigControlApiService {
 
-    @POST("/rigs/{rigId}/power_off")
+    @POST("rigs/{rigId}/power_off")
     fun powerOffRig(@Path("rigId") id: String): Flow<Result<Unit>>
 
-    @POST("/rigs/{rigId}/reboot")
+    @POST("rigs/{rigId}/reboot")
     fun rebootRig(@Path("rigId") id: String): Flow<Result<Unit>>
 
-    @POST("/rigs/{rigId}/mining/start")
+    @POST("rigs/{rigId}/mining/start")
     fun startMiningOnRig(@Path("rigId") id: String): Flow<Result<Unit>>
 
-    @POST("/rigs/{rigId}/mining/stop")
+    @POST("rigs/{rigId}/mining/stop")
     fun stopMiningOnRig(@Path("rigId") id: String): Flow<Result<Unit>>
 }

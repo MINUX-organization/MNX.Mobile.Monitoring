@@ -6,6 +6,6 @@ import retrofit2.http.GET
 
 internal interface AlgorithmApiService {
 
-    @GET("/algorithms/available")
+    @GET("algorithms/available")
     fun getAvailableAlgorithms(): Flow<Result<List<AlgorithmDto>>>
 }

@@ -6,6 +6,6 @@ import retrofit2.http.GET
 
 internal interface CpuApiService {
 
-    @GET("/devices/cpus")
+    @GET("devices/cpus")
     fun getAllCpus(): Flow<Result<List<CpuDto>>>
 }

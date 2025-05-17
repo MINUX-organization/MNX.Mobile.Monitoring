@@ -1,5 +1,6 @@
 package com.minux.monitoring.feature.cryptos.impl.di
 
+import com.minux.monitoring.core.network.api.BackendApi
 import com.minux.monitoring.core.network.api.HttpClient
 import com.minux.monitoring.feature.cryptos.api.CryptosFeatureMediator
 import com.minux.monitoring.feature.cryptos.impl.common.data.datasource.AlgorithmApiService
@@ -28,7 +29,7 @@ internal class CryptosModule {
     @Provides
     @Singleton
     fun provideCryptocurrencyRepository(httpClient: HttpClient): CryptocurrencyRepository {
-        return with(httpClient.getApiClient()) {
+        return with(httpClient.getApiClient(BackendApi.Monitoring)) {
             CryptocurrencyRepositoryImpl(
                 algorithmApiService = create(AlgorithmApiService::class.java),
                 cryptocurrencyApiService = create(CryptocurrencyApiService::class.java)
@@ -39,7 +40,7 @@ internal class CryptosModule {
     @Provides
     @Singleton
     fun provideWalletRepository(httpClient: HttpClient): WalletRepository {
-        return with(httpClient.getApiClient()) {
+        return with(httpClient.getApiClient(BackendApi.Monitoring)) {
             WalletRepositoryImpl(walletApiService = create(WalletApiService::class.java))
         }
     }
@@ -47,7 +48,7 @@ internal class CryptosModule {
     @Provides
     @Singleton
     fun providePoolRepository(httpClient: HttpClient): PoolRepository {
-        return with(httpClient.getApiClient()) {
+        return with(httpClient.getApiClient(BackendApi.Monitoring)) {
             PoolRepositoryImpl(poolApiService = create(PoolApiService::class.java))
         }
     }

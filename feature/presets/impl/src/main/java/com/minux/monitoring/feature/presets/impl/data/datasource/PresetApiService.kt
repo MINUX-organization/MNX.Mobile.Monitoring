@@ -17,40 +17,40 @@ import retrofit2.http.Query
 
 internal interface PresetApiService {
 
-    @GET("/presets/gpu_groups")
+    @GET("presets/gpu_groups")
     fun getAllPresetsGroupedByGpus(): Flow<Result<List<PresetGroupDto>>>
 
-    @GET("/presets")
+    @GET("presets")
     fun getAllPresets(@Query("gpuName") gpuName: String): Flow<Result<List<PresetDto>>>
 
-    @GET("/presets/{presetId}")
+    @GET("presets/{presetId}")
     fun getPreset(@Path("presetId") id: String): Flow<Result<PresetDto>>
 
-    @GET("/presets/{presetId}/devices/supported")
+    @GET("presets/{presetId}/devices/supported")
     fun getPresetSupportedDevices(
         @Path("presetId") id: String
     ): Flow<Result<List<DeviceGroupDto<DeviceGroupDto<DeviceDto>>>>>
 
-    @GET("/presets/{presetId}/devices/supported")
+    @GET("presets/{presetId}/devices/supported")
     fun getPresetAppliedDevices(
         @Path("presetId") id: String
     ): Flow<Result<List<DeviceGroupDto<DeviceGroupDto<DeviceDto>>>>>
 
-    @POST("/presets/{presetId}/apply")
+    @POST("presets/{presetId}/apply")
     fun applyDevicesForPreset(
         @Path("presetId") id: String,
         @Body devices: List<String>
     ): Flow<Result<List<String>>>
 
-    @POST("/presets")
+    @POST("presets")
     fun addPreset(@Body input: PresetInputDto): Flow<Result<PresetDto>>
 
-    @PATCH("/presets/{id}")
+    @PATCH("presets/{id}")
     fun changePreset(
         @Path("id") id: String,
         @Body changingInput: PresetChangeInputDto
     ): Flow<Result<PresetDto>>
 
-    @DELETE("/presets/{id}")
+    @DELETE("presets/{id}")
     fun removePreset(@Path("id") id: String): Flow<Result<Unit>>
 }

@@ -16,7 +16,9 @@ internal class FlowResultCallAdapter<T>(private val responseType: Type) : CallAd
     override fun responseType() = responseType
 
     override fun adapt(call: Call<T>) = callbackFlow {
-        call.enqueue(object : Callback<T> {
+        val currentCall = call.clone()
+
+        currentCall.enqueue(object : Callback<T> {
 
             @Suppress("UNCHECKED_CAST")
             override fun onResponse(call: Call<T>, response: Response<T>) {
@@ -39,7 +41,7 @@ internal class FlowResultCallAdapter<T>(private val responseType: Type) : CallAd
         })
 
         awaitClose {
-            call.cancel()
+            currentCall.cancel()
         }
     }.flowOn(Dispatchers.IO)
 }

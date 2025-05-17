@@ -3,6 +3,7 @@ package com.minux.monitoring.core.network.impl.di
 import android.app.Application
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
+import com.minux.monitoring.core.network.api.BackendApi
 import com.minux.monitoring.core.network.api.HttpClient
 import com.minux.monitoring.core.network.api.session.SessionManager
 import com.minux.monitoring.core.network.api.session.TokensDto
@@ -24,7 +25,7 @@ internal class NetworkSessionModule {
         httpClient: HttpClient,
         tokensDataStore: DataStore<TokensDto>
     ): SessionManager {
-        return with(httpClient.getApiClient()) {
+        return with(httpClient.getApiClient(BackendApi.Security)) {
             SessionManagerImpl(
                 tokenApiService = create(TokenApiService::class.java),
                 tokensDataStore = tokensDataStore

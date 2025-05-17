@@ -11,14 +11,14 @@ import retrofit2.http.Path
 
 internal interface CryptocurrencyApiService {
 
-    @GET("/cryptocurrencies")
+    @GET("cryptocurrencies")
     fun getAllCryptocurrencies(): Flow<Result<List<CryptocurrencyDto>>>
 
-    @POST("/cryptocurrencies")
+    @POST("cryptocurrencies")
     fun addCryptocurrency(
         @Body cryptocurrencyInputDto: CryptocurrencyInputDto
     ): Flow<Result<CryptocurrencyDto>>
 
-    @DELETE("/cryptocurrencies/{id}")
+    @DELETE("cryptocurrencies/{id}")
     fun removeCryptocurrency(@Path("id") id: String): Flow<Result<Unit>>
 }

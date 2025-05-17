@@ -3,5 +3,5 @@ package com.minux.monitoring.core.network.api
 import retrofit2.Retrofit
 
 interface HttpClient {
-    fun getApiClient(): Retrofit
+    fun getApiClient(api: BackendApi): Retrofit
 }

@@ -1,6 +1,7 @@
 package com.minux.monitoring.core.network.impl
 
 import com.minux.monitoring.core.network.BuildConfig
+import com.minux.monitoring.core.network.api.BackendApi
 import com.minux.monitoring.core.network.api.HttpClient
 import com.minux.monitoring.core.network.impl.retrofit.FlowResultCallAdapterFactory
 import kotlinx.serialization.json.Json
@@ -11,9 +12,9 @@ import retrofit2.converter.kotlinx.serialization.asConverterFactory
 
 internal class HttpClientImpl(private val okHttpClient: OkHttpClient) : HttpClient {
 
-    override fun getApiClient(): Retrofit {
+    override fun getApiClient(api: BackendApi): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(BuildConfig.API_BASE_URL)
+            .baseUrl(BuildConfig.BACKEND_URL + api.value)
             .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
             .addCallAdapterFactory(FlowResultCallAdapterFactory.create())
             .client(okHttpClient)

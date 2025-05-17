@@ -10,10 +10,10 @@ import retrofit2.http.POST
 internal interface AuthApiService {
 
     @WithoutAuth
-    @POST("/auth/registration")
+    @POST("auth/user/registration")
     fun registerUser(@Body authInfo: AuthInfoDto): Flow<Result<TokensDto>>
 
     @WithoutAuth
-    @POST("/auth/login/user")
+    @POST("auth/user/login")
     fun authUser(@Body authInfo: AuthInfoDto): Flow<Result<TokensDto>>
 }
