@@ -14,7 +14,7 @@ internal class AppViewModel @Inject constructor(
     sessionManager: SessionManager
 ) : BaseViewModel<AppUiState, Unit, Unit>(initialState = AppUiState()) {
 
-    private val isTokenExpired = sessionManager.isRefreshTokenExpired()
+    private val isSessionExpired = sessionManager.observeExpirationStatus()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000L),
@@ -22,7 +22,7 @@ internal class AppViewModel @Inject constructor(
         )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val appUiState: StateFlow<AppUiState> = isTokenExpired.mapLatest { isExpired ->
+    val appUiState: StateFlow<AppUiState> = isSessionExpired.mapLatest { isExpired ->
         AppUiState(isAuthorized = isExpired?.not())
     }.stateIn(
         scope = viewModelScope,
