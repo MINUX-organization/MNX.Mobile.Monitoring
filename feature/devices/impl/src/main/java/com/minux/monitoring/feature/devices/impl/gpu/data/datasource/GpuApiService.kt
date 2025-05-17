@@ -6,9 +6,9 @@ import retrofit2.http.GET
 
 internal interface GpuApiService {
 
-    @GET("/devices/gpus")
+    @GET("devices/gpus")
     fun getAllGpus(): Flow<Result<List<GpuDto>>>
 
-    @GET("/devices/gpus/unique_names")
+    @GET("devices/gpus/unique_names")
     fun getGpuNames(): Flow<Result<List<String>>>
 }

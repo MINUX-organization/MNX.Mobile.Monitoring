@@ -1,5 +1,6 @@
 package com.minux.monitoring.feature.monitoring.impl.di
 
+import com.minux.monitoring.core.network.api.BackendApi
 import com.minux.monitoring.core.network.api.HttpClient
 import com.minux.monitoring.feature.monitoring.api.MonitoringFeatureMediator
 import com.minux.monitoring.feature.monitoring.impl.data.RigRepository
@@ -21,7 +22,7 @@ internal class MonitoringModule {
     @Provides
     @Singleton
     fun provideRigRepository(httpClient: HttpClient): RigRepository {
-        return with(httpClient.getApiClient()) {
+        return with(httpClient.getApiClient(BackendApi.Monitoring)) {
             RigRepositoryImpl(rigControlApiService = create(RigControlApiService::class.java))
         }
     }

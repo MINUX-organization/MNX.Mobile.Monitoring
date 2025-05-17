@@ -12,15 +12,15 @@ import retrofit2.http.Path
 
 internal interface PoolApiService {
 
-    @GET("/pools")
+    @GET("pools")
     fun getAllPools(): Flow<Result<List<PoolDto>>>
 
-    @POST("/pools")
+    @POST("pools")
     fun addPool(@Body input: PoolInputDto): Flow<Result<PoolDto>>
 
-    @PUT("/pools/{id}")
+    @PUT("pools/{id}")
     fun changePool(@Path("id") id: String, @Body input: PoolInputDto): Flow<Result<PoolDto>>
 
-    @DELETE("/pools/{id}")
+    @DELETE("pools/{id}")
     fun removePool(@Path("id") id: String): Flow<Result<Unit>>
 }

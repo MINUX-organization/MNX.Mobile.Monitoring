@@ -1,5 +1,6 @@
 package com.minux.monitoring.feature.auth.impl.di
 
+import com.minux.monitoring.core.network.api.BackendApi
 import com.minux.monitoring.core.network.api.HttpClient
 import com.minux.monitoring.core.network.api.session.SessionManager
 import com.minux.monitoring.feature.auth.api.AuthFeatureMediator
@@ -27,7 +28,7 @@ internal class AuthModule {
         httpClient: HttpClient,
         sessionManager: SessionManager
     ): AuthRepository {
-        return with(httpClient.getApiClient()) {
+        return with(httpClient.getApiClient(BackendApi.Security)) {
             AuthRepositoryImpl(
                 authApiService = create(AuthApiService::class.java),
                 sessionManager = sessionManager

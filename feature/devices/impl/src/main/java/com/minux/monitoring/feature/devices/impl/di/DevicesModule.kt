@@ -1,5 +1,6 @@
 package com.minux.monitoring.feature.devices.impl.di
 
+import com.minux.monitoring.core.network.api.BackendApi
 import com.minux.monitoring.core.network.api.HttpClient
 import com.minux.monitoring.core.network.api.WsClient
 import com.minux.monitoring.core.network.api.hub.BackendHub
@@ -36,7 +37,7 @@ internal class DevicesModule {
     @Provides
     @Singleton
     fun provideCpuRepository(httpClient: HttpClient): CpuRepository {
-        return with(httpClient.getApiClient()) {
+        return with(httpClient.getApiClient(BackendApi.Monitoring)) {
             CpuRepositoryImpl(cpuApiService = create(CpuApiService::class.java))
         }
     }
@@ -44,7 +45,7 @@ internal class DevicesModule {
     @Provides
     @Singleton
     fun provideGpuRepository(httpClient: HttpClient): GpuRepository {
-        return with(httpClient.getApiClient()) {
+        return with(httpClient.getApiClient(BackendApi.Monitoring)) {
             GpuRepositoryImpl(gpuApiService = create(GpuApiService::class.java))
         }
     }

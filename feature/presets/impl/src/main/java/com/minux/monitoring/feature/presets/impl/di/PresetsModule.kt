@@ -1,5 +1,6 @@
 package com.minux.monitoring.feature.presets.impl.di
 
+import com.minux.monitoring.core.network.api.BackendApi
 import com.minux.monitoring.core.network.api.HttpClient
 import com.minux.monitoring.feature.presets.api.PresetsFeatureMediator
 import com.minux.monitoring.feature.presets.impl.data.datasource.DeviceApiService
@@ -24,7 +25,7 @@ internal class PresetsModule {
     @Provides
     @Singleton
     fun providePresetRepository(httpClient: HttpClient): PresetRepository {
-        return with(httpClient.getApiClient()) {
+        return with(httpClient.getApiClient(BackendApi.Monitoring)) {
             PresetRepositoryImpl(presetApiService = create(PresetApiService::class.java))
         }
     }
@@ -32,7 +33,7 @@ internal class PresetsModule {
     @Provides
     @Singleton
     fun provideDeviceRepository(httpClient: HttpClient): DeviceRepository {
-        return with(httpClient.getApiClient()) {
+        return with(httpClient.getApiClient(BackendApi.Monitoring)) {
             DeviceRepositoryImpl(deviceApiService = create(DeviceApiService::class.java))
         }
     }

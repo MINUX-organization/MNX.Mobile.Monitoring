@@ -12,15 +12,15 @@ import retrofit2.http.Path
 
 internal interface WalletApiService {
 
-    @GET("/wallets")
+    @GET("wallets")
     fun getAllWallets(): Flow<Result<List<WalletDto>>>
 
-    @POST("/wallets")
+    @POST("wallets")
     fun addWallet(@Body input: WalletInputDto): Flow<Result<WalletDto>>
 
-    @PUT("/wallets/{id}")
+    @PUT("wallets/{id}")
     fun changeWallet(@Path("id") id: String, @Body input: WalletInputDto): Flow<Result<WalletDto>>
 
-    @DELETE("/wallets/{id}")
+    @DELETE("wallets/{id}")
     fun removeWallet(@Path("id") id: String): Flow<Result<Unit>>
 }
