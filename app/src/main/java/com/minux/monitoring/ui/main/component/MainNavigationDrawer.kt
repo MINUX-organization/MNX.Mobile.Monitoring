@@ -1,12 +1,16 @@
 package com.minux.monitoring.ui.main.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -26,11 +30,13 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.minux.monitoring.core.designsystem.component.MNXButton
 import com.minux.monitoring.core.designsystem.component.MNXDrawerHeader
 import com.minux.monitoring.core.designsystem.component.MNXDrawerSheet
 import com.minux.monitoring.core.designsystem.component.MNXNavigationDrawerGroupItem
@@ -43,27 +49,35 @@ import com.minux.monitoring.core.designsystem.theme.MNXTheme
 import com.minux.monitoring.core.designsystem.theme.MNXTypography
 import com.minux.monitoring.core.designsystem.theme.OrangeVerticalGradient
 import com.minux.monitoring.core.designsystem.theme.TurquoiseVerticalGradient
+import com.minux.monitoring.ui.main.model.ProfileOverviewModel
 import com.minux.monitoring.ui.main.navigation.MainFlowRoute
 import kotlinx.coroutines.launch
 
 @Composable
 internal fun MainNavigationDrawer(
     drawerState: DrawerState,
+    profileOverviewModel: ProfileOverviewModel,
     drawerItems: List<NavigationDrawerItemModel>,
+    onProfileSettingsClick: () -> Unit,
     onNavigationDrawerItemClick: (MainFlowRoute) -> Unit,
+    onLogOutClick: () -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
     ModalNavigationDrawer(
-        modifier = modifier,
-        drawerState = drawerState,
         drawerContent = {
             NavigationDrawerContent(
                 drawerState = drawerState,
+                profileOverviewModel = profileOverviewModel,
                 items = drawerItems,
-                onNavigationDrawerItemClick = onNavigationDrawerItemClick
+                onProfileSettingsClick = onProfileSettingsClick,
+                onNavigationDrawerItemClick = onNavigationDrawerItemClick,
+                onLogOutClick = onLogOutClick,
+                modifier = Modifier.width(280.dp)
             )
         },
+        modifier = modifier,
+        drawerState = drawerState,
         content = content
     )
 }
@@ -71,11 +85,17 @@ internal fun MainNavigationDrawer(
 @Composable
 private fun NavigationDrawerContent(
     drawerState: DrawerState,
+    profileOverviewModel: ProfileOverviewModel,
     items: List<NavigationDrawerItemModel>,
-    onNavigationDrawerItemClick: (MainFlowRoute) -> Unit
+    onProfileSettingsClick: () -> Unit,
+    onNavigationDrawerItemClick: (MainFlowRoute) -> Unit,
+    onLogOutClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    MNXDrawerSheet(modifier = Modifier.width(280.dp)) {
+    MNXDrawerSheet(modifier = modifier) {
         NavigationDrawerHeader(
+            profileOverviewModel = profileOverviewModel,
+            onProfileSettingsClick = onProfileSettingsClick,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(180.dp)
@@ -88,37 +108,70 @@ private fun NavigationDrawerContent(
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .selectiveBorder(
                     color = MaterialTheme.colorScheme.primary,
                     sides = BorderSides(end = BorderSide.End(1.dp))
+                ),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            MNXButton(
+                onClick = onLogOutClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                color = MaterialTheme.colorScheme.secondary
+            ) {
+                Text(
+                    text = "Log out",
+                    style = MNXTypography.bodyLarge
                 )
-        )
+            }
+        }
     }
 }
 
 @Composable
-private fun NavigationDrawerHeader(modifier: Modifier = Modifier) {
+private fun NavigationDrawerHeader(
+    profileOverviewModel: ProfileOverviewModel,
+    onProfileSettingsClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     MNXDrawerHeader(
         modifier = modifier,
-        verticalArrangement = Arrangement.Bottom,
-        contentPadding = PaddingValues(
-            start = 8.dp,
-            bottom = 10.dp
-        )
+        verticalArrangement = Arrangement.Bottom
     ) {
-        Text(
-            text = "Minux User #1",
-            color = MaterialTheme.colorScheme.onPrimary,
-            style = MNXTypography.titleMedium
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onProfileSettingsClick)
+                .padding(horizontal = 8.dp)
+                .padding(top = 4.dp, bottom = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text(
+                    text = profileOverviewModel.nickname,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    style = MNXTypography.titleMedium
+                )
 
-        Text(
-            text = "minux.studio@minux.com",
-            style = MNXTypography.titleSmall
-        )
+                Text(
+                    text = "Profile and settings",
+                    style = MNXTypography.bodyMedium
+                )
+            }
+
+            Icon(
+                painter = painterResource(id = MNXIcons.Next),
+                contentDescription = null,
+                modifier = Modifier.size(16.dp),
+                tint = MaterialTheme.colorScheme.onPrimary
+            )
+        }
     }
 }
 
@@ -444,6 +497,10 @@ fun AppNavigationDrawerPreview() {
                 title = "Devices"
             ),
             NavigationDrawerItemModel.Single(
+                route = MainFlowRoute.Presets,
+                title = "Presets"
+            ),
+            NavigationDrawerItemModel.Single(
                 route = MainFlowRoute.Cryptos,
                 title = "Cryptos"
             ),
@@ -459,8 +516,11 @@ fun AppNavigationDrawerPreview() {
 
         MainNavigationDrawer(
             drawerState = drawerState,
+            profileOverviewModel = ProfileOverviewModel(nickname = "mnx"),
             drawerItems = items,
+            onProfileSettingsClick = {},
             onNavigationDrawerItemClick = {},
+            onLogOutClick = {},
             content = {
                 IconButton(
                     onClick = {

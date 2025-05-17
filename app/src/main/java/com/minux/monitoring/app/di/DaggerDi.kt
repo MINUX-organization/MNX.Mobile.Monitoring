@@ -45,6 +45,8 @@ internal object DaggerDi {
                 object : AppDependencies {
                     override val activityLifecycleCallbacks: Application.ActivityLifecycleCallbacks
                         get() = injectorComposeApi.activityLifecycleCallbacks
+                    override val binderBaseApi: BinderBaseApi
+                        get() = injectorComposeApi.binderBaseApi
                     override val sessionManager: SessionManager
                         get() = networkApi.sessionManager
                     override val navigationApi: NavigationApi

@@ -2,7 +2,6 @@ package com.minux.monitoring.core.designsystem.component
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -33,12 +32,7 @@ fun MNXTopAppBar(
             Icon(
                 painter = painterResource(id = titleIconDrawableId),
                 contentDescription = "Minux",
-                modifier = Modifier
-                    .width(250.dp)
-                    .padding(
-                        start = 4.dp,
-                        top = 2.5.dp
-                    ),
+                modifier = Modifier.padding(start = 24.dp, end = 48.dp),
                 tint = MaterialTheme.colorScheme.primary,
             )
         },
@@ -48,14 +42,17 @@ fun MNXTopAppBar(
                 Icon(
                     painter = painterResource(id = navigationIconDrawableId),
                     contentDescription = "Menu",
-                    modifier = Modifier.scale(
-                        scaleX = -DefaultScaleX,
-                        scaleY = DefaultScaleY
-                    ),
+                    modifier = Modifier
+                        .scale(
+                            scaleX = -DefaultScaleX,
+                            scaleY = DefaultScaleY
+                        )
+                        .padding(bottom = 3.dp),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
         },
+        expandedHeight = 36.dp,
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
             containerColor = MaterialTheme.colorScheme.background
         )

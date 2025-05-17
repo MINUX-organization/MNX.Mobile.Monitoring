@@ -18,6 +18,7 @@ object MNXIcons {
     @DrawableRes val MinuxError = drawable.ic_minux_error
     @DrawableRes val MinuxHeader = drawable.ic_minux_header
     @DrawableRes val MinuxOutline = drawable.ic_minux_outline
+    @DrawableRes val Next = drawable.ic_next
     @DrawableRes val Save = drawable.ic_save
     @DrawableRes val Search = drawable.ic_search
     @DrawableRes val Settings = drawable.ic_settings
