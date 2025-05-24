@@ -2,30 +2,39 @@ package com.minux.monitoring.ui.main
 
 import androidx.lifecycle.viewModelScope
 import com.minux.monitoring.core.base.BaseViewModel
-import com.minux.monitoring.core.network.api.session.SessionManager
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.minux.monitoring.feature.profile.api.ProfileInfoProvider
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject
 
 internal class MainViewModel @Inject constructor(
-    private val sessionManager: SessionManager
-) : BaseViewModel<MainUiState, Unit, MainEvent>(initialState = MainUiState()) {
+    private val profileInfoProvider: ProfileInfoProvider
+) : BaseViewModel<MainUiState, MainAction, MainEvent>(initialState = MainUiState()) {
 
     override fun onEvent(uiEvent: MainEvent) {
         when (uiEvent) {
-            MainEvent.FetchProfile -> fetchProfile()
+            MainEvent.FetchProfileOverview -> fetchProfileOverview()
 
-            MainEvent.LogOut -> logOut()
+            MainEvent.ProfileSettings -> uiAction = MainAction.OpenProfileSettingsScreen
         }
     }
 
-    private fun fetchProfile() {
-
-    }
-
-    private fun logOut() {
-        viewModelScope.launch(Dispatchers.IO) {
-            sessionManager.invalidateCredentials()
-        }
+    private fun fetchProfileOverview() {
+        profileInfoProvider.getNickName()
+            .onStart {
+                uiState = uiState.copy(
+                    profileOverview = uiState.profileOverview.copy(nicknameIsLoading = true)
+                )
+            }
+            .onEach { result ->
+                uiState = uiState.copy(
+                    profileOverview = uiState.profileOverview.copy(
+                        nicknameIsLoading = false,
+                        nickname = result.getOrNull()
+                    )
+                )
+            }
+            .launchIn(viewModelScope)
     }
 }

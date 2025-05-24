@@ -1,7 +1,7 @@
 package com.minux.monitoring.ui.main
 
 internal sealed interface MainEvent {
-    data object FetchProfile : MainEvent
+    data object FetchProfileOverview : MainEvent
 
-    data object LogOut : MainEvent
+    data object ProfileSettings : MainEvent
 }

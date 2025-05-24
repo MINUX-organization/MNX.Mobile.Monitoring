@@ -2,10 +2,12 @@ package com.minux.monitoring.ui.main.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -36,7 +38,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.minux.monitoring.core.designsystem.component.MNXButton
 import com.minux.monitoring.core.designsystem.component.MNXDrawerHeader
 import com.minux.monitoring.core.designsystem.component.MNXDrawerSheet
 import com.minux.monitoring.core.designsystem.component.MNXNavigationDrawerGroupItem
@@ -45,6 +46,7 @@ import com.minux.monitoring.core.designsystem.icon.MNXIcons
 import com.minux.monitoring.core.designsystem.modifier.BorderSide
 import com.minux.monitoring.core.designsystem.modifier.BorderSides
 import com.minux.monitoring.core.designsystem.modifier.selectiveBorder
+import com.minux.monitoring.core.designsystem.modifier.shimmerEffect
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
 import com.minux.monitoring.core.designsystem.theme.MNXTypography
 import com.minux.monitoring.core.designsystem.theme.OrangeVerticalGradient
@@ -60,7 +62,6 @@ internal fun MainNavigationDrawer(
     drawerItems: List<NavigationDrawerItemModel>,
     onProfileSettingsClick: () -> Unit,
     onNavigationDrawerItemClick: (MainFlowRoute) -> Unit,
-    onLogOutClick: () -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
@@ -72,7 +73,6 @@ internal fun MainNavigationDrawer(
                 items = drawerItems,
                 onProfileSettingsClick = onProfileSettingsClick,
                 onNavigationDrawerItemClick = onNavigationDrawerItemClick,
-                onLogOutClick = onLogOutClick,
                 modifier = Modifier.width(280.dp)
             )
         },
@@ -89,7 +89,6 @@ private fun NavigationDrawerContent(
     items: List<NavigationDrawerItemModel>,
     onProfileSettingsClick: () -> Unit,
     onNavigationDrawerItemClick: (MainFlowRoute) -> Unit,
-    onLogOutClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     MNXDrawerSheet(modifier = modifier) {
@@ -114,22 +113,8 @@ private fun NavigationDrawerContent(
                 .selectiveBorder(
                     color = MaterialTheme.colorScheme.primary,
                     sides = BorderSides(end = BorderSide.End(1.dp))
-                ),
-            contentAlignment = Alignment.BottomCenter
-        ) {
-            MNXButton(
-                onClick = onLogOutClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
-                color = MaterialTheme.colorScheme.secondary
-            ) {
-                Text(
-                    text = "Log out",
-                    style = MNXTypography.bodyLarge
                 )
-            }
-        }
+        )
     }
 }
 
@@ -146,18 +131,32 @@ private fun NavigationDrawerHeader(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(onClick = onProfileSettingsClick)
+                .clickable(
+                    onClick = onProfileSettingsClick,
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                )
                 .padding(horizontal = 8.dp)
                 .padding(top = 4.dp, bottom = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                Text(
-                    text = profileOverviewModel.nickname,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    style = MNXTypography.titleMedium
-                )
+                if (profileOverviewModel.nicknameIsLoading) {
+                    Box(
+                        modifier = Modifier
+                            .size(width = 64.dp, height = 16.dp)
+                            .shimmerEffect()
+                    )
+                } else {
+                    Text(
+                        text = profileOverviewModel.nickname ?: "N/A",
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        style = MNXTypography.titleMedium
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(2.dp))
 
                 Text(
                     text = "Profile and settings",
@@ -516,11 +515,13 @@ fun AppNavigationDrawerPreview() {
 
         MainNavigationDrawer(
             drawerState = drawerState,
-            profileOverviewModel = ProfileOverviewModel(nickname = "mnx"),
+            profileOverviewModel = ProfileOverviewModel(
+                nicknameIsLoading = false,
+                nickname = "mnx"
+            ),
             drawerItems = items,
             onProfileSettingsClick = {},
             onNavigationDrawerItemClick = {},
-            onLogOutClick = {},
             content = {
                 IconButton(
                     onClick = {

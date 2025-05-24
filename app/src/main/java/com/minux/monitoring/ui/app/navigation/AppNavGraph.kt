@@ -101,11 +101,24 @@ internal fun AppNavGraph(flowRoute: AppFlowRoute) {
 
                     MainRoute(
                         viewModel = mainViewModel,
+                        onNavigateToProfileSettingsScreen = {
+                            navController.navigate(AppFlowRoute.Profile)
+                        },
                         onShowSnackBar = showSnackBar,
                         navigationApi = component.navigationApi,
                         navController = mainNavController
                     )
                 }
+            }
+
+            composable<AppFlowRoute.Profile> { entry ->
+                component.navigationApi
+                    .profileFeatureMediator
+                    .AddProfileScreen(
+                        entry = entry,
+                        onNavigateUp = navController::navigateUp,
+                        onShowSnackBar = showSnackBar
+                    )
             }
         }
     }

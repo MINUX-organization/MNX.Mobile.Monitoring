@@ -8,4 +8,7 @@ internal sealed interface AppFlowRoute {
 
     @Serializable
     data object Main : AppFlowRoute
+
+    @Serializable
+    data object Profile : AppFlowRoute
 }

@@ -47,6 +47,9 @@ dependencies {
     implementation(project(":feature:presets:api"))
     implementation(project(":feature:presets:impl"))
 
+    implementation(project(":feature:profile:api"))
+    implementation(project(":feature:profile:impl"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.navigation.compose)
