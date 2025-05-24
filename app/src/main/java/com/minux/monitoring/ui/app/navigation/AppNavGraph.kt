@@ -1,6 +1,7 @@
 package com.minux.monitoring.ui.app.navigation
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -19,11 +20,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.minux.monitoring.app.di.AppComponentHolder
-import com.minux.monitoring.ui.main.MainScreen
+import com.minux.monitoring.injector.compose.binder.BindApiToEntryLifecycle
+import com.minux.monitoring.ui.main.MainRoute
+import com.minux.monitoring.ui.main.MainViewModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -69,7 +73,8 @@ internal fun AppNavGraph(flowRoute: AppFlowRoute) {
                     }
                 )
             }
-        }
+        },
+        contentWindowInsets = WindowInsets(0.dp)
     ) { scaffoldPadding ->
         NavHost(
             navController = navController,
@@ -86,11 +91,34 @@ internal fun AppNavGraph(flowRoute: AppFlowRoute) {
                     )
             }
 
-            composable<AppFlowRoute.Main> {
-                MainScreen(
-                    navigationApi = component.navigationApi,
-                    onShowSnackBar = showSnackBar
-                )
+            composable<AppFlowRoute.Main> { entry ->
+                BindApiToEntryLifecycle(
+                    holder = AppComponentHolder,
+                    navEntry = entry
+                ) {
+                    val mainViewModel = viewModel<MainViewModel>(factory = component.viewModelFactory)
+                    val mainNavController = rememberNavController()
+
+                    MainRoute(
+                        viewModel = mainViewModel,
+                        onNavigateToProfileSettingsScreen = {
+                            navController.navigate(AppFlowRoute.Profile)
+                        },
+                        onShowSnackBar = showSnackBar,
+                        navigationApi = component.navigationApi,
+                        navController = mainNavController
+                    )
+                }
+            }
+
+            composable<AppFlowRoute.Profile> { entry ->
+                component.navigationApi
+                    .profileFeatureMediator
+                    .AddProfileScreen(
+                        entry = entry,
+                        onNavigateUp = navController::navigateUp,
+                        onShowSnackBar = showSnackBar
+                    )
             }
         }
     }

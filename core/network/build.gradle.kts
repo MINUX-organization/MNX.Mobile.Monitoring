@@ -42,6 +42,7 @@ dependencies {
     api(libs.retrofit.core)
     api(libs.signalr)
     api(libs.kotlinx.coroutines.android)
+    api(libs.kotlinx.datetime)
     testApi(libs.kotlinx.coroutines.test)
     testApi(libs.turbine)
 

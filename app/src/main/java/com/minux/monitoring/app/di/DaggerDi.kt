@@ -7,6 +7,8 @@ import com.minux.monitoring.core.network.api.di.NetworkApi
 import com.minux.monitoring.core.network.api.session.SessionManager
 import com.minux.monitoring.core.network.impl.di.NetworkComponentHolder
 import com.minux.monitoring.core.network.impl.di.NetworkDependencies
+import com.minux.monitoring.feature.auth.api.PasswordValidator
+import com.minux.monitoring.feature.auth.api.di.AuthFeatureApi
 import com.minux.monitoring.feature.auth.impl.di.AuthComponentHolder
 import com.minux.monitoring.feature.auth.impl.di.AuthDependencies
 import com.minux.monitoring.feature.cryptos.impl.di.CryptosComponentHolder
@@ -16,9 +18,14 @@ import com.minux.monitoring.feature.devices.impl.di.DevicesDependencies
 import com.minux.monitoring.feature.presets.api.PresetsFeatureMediator
 import com.minux.monitoring.feature.presets.impl.di.PresetsComponentHolder
 import com.minux.monitoring.feature.presets.impl.di.PresetsDependencies
+import com.minux.monitoring.feature.profile.api.ProfileInfoProvider
+import com.minux.monitoring.feature.profile.api.di.ProfileFeatureApi
+import com.minux.monitoring.feature.profile.impl.di.ProfileComponentHolder
+import com.minux.monitoring.feature.profile.impl.di.ProfileDependencies
 import com.minux.monitoring.injector.BaseDependencies
 import com.minux.monitoring.injector.BaseDependencyHolder
 import com.minux.monitoring.injector.DependencyHolder
+import com.minux.monitoring.injector.DependencyHolderWithFourApi
 import com.minux.monitoring.injector.DependencyHolderWithThreeApi
 import com.minux.monitoring.injector.DependencyHolderWithTwoApi
 import com.minux.monitoring.injector.compose.api.InjectorComposeApi
@@ -34,19 +41,24 @@ internal object DaggerDi {
     fun initDependencyProviders(application: Application) {
         AppComponentHolder.dependencyProvider = {
             class AppDependencyHolder(
-                override val block: (BaseDependencyHolder<AppDependencies>, InjectorComposeApi, NetworkApi, NavigationApi) -> AppDependencies
-            ) : DependencyHolderWithThreeApi<AppDependencies, InjectorComposeApi, NetworkApi, NavigationApi>(
+                override val block: (BaseDependencyHolder<AppDependencies>, InjectorComposeApi, NetworkApi, ProfileFeatureApi, NavigationApi) -> AppDependencies
+            ) : DependencyHolderWithFourApi<AppDependencies, InjectorComposeApi, NetworkApi, ProfileFeatureApi, NavigationApi>(
                 firstApi = InjectorComposeComponentHolder.fetchApi(),
                 secondApi = NetworkComponentHolder.fetchApi(),
-                thirdApi = NavigationComponentHolder.fetchApi()
+                thirdApi = ProfileComponentHolder.fetchApi(),
+                fourthApi = NavigationComponentHolder.fetchApi()
             )
 
-            AppDependencyHolder { dependencyHolder, injectorComposeApi, networkApi, navigationApi ->
+            AppDependencyHolder { dependencyHolder, injectorComposeApi, networkApi, profileFeatureApi, navigationApi ->
                 object : AppDependencies {
                     override val activityLifecycleCallbacks: Application.ActivityLifecycleCallbacks
                         get() = injectorComposeApi.activityLifecycleCallbacks
+                    override val binderBaseApi: BinderBaseApi
+                        get() = injectorComposeApi.binderBaseApi
                     override val sessionManager: SessionManager
                         get() = networkApi.sessionManager
+                    override val profileInfoProvider: ProfileInfoProvider
+                        get() = profileFeatureApi.profileInfoProvider
                     override val navigationApi: NavigationApi
                         get() = navigationApi
                     override val dependencyHolder: BaseDependencyHolder<out BaseDependencies>
@@ -112,6 +124,31 @@ internal object DaggerDi {
                         get() = networkApi.httpClient
                     override val sessionManager: SessionManager
                         get() = networkApi.sessionManager
+                    override val dependencyHolder: BaseDependencyHolder<out BaseDependencies>
+                        get() = dependencyHolder
+                }
+            }.dependencies
+        }
+
+        ProfileComponentHolder.dependencyProvider = {
+            class ProfileDependencyHolder(
+                override val block: (BaseDependencyHolder<ProfileDependencies>, InjectorComposeApi, NetworkApi, AuthFeatureApi) -> ProfileDependencies
+            ) : DependencyHolderWithThreeApi<ProfileDependencies, InjectorComposeApi, NetworkApi, AuthFeatureApi>(
+                firstApi = InjectorComposeComponentHolder.fetchApi(),
+                secondApi = NetworkComponentHolder.fetchApi(),
+                thirdApi = AuthComponentHolder.fetchApi()
+            )
+
+            ProfileDependencyHolder { dependencyHolder, injectorComposeApi, networkApi, authFeatureApi ->
+                object : ProfileDependencies {
+                    override val binderBaseApi: BinderBaseApi
+                        get() = injectorComposeApi.binderBaseApi
+                    override val httpClient: HttpClient
+                        get() = networkApi.httpClient
+                    override val sessionManager: SessionManager
+                        get() = networkApi.sessionManager
+                    override val passwordValidator: PasswordValidator
+                        get() = authFeatureApi.passwordValidator
                     override val dependencyHolder: BaseDependencyHolder<out BaseDependencies>
                         get() = dependencyHolder
                 }

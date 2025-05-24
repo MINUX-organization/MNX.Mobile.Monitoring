@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 interface SessionManager {
     suspend fun updateCredentials(credentials: TokensDto)
 
-    suspend fun invalidateCredentials()
+    suspend fun invalidateCredentials(): Result<Unit>
 
     fun observeExpirationStatus(): Flow<Boolean>
 }

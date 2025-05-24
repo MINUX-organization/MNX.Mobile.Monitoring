@@ -31,9 +31,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.minux.monitoring.core.designsystem.component.MNXButton
 import com.minux.monitoring.core.designsystem.icon.MNXIcons
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
-import com.minux.monitoring.feature.auth.impl.presentation.navigation.AuthFlowRoute
 import com.minux.monitoring.feature.auth.impl.presentation.mapper.toMessage
 import com.minux.monitoring.feature.auth.impl.presentation.model.RegisterInfoModel
+import com.minux.monitoring.feature.auth.impl.presentation.navigation.AuthFlowRoute
 import com.minux.monitoring.feature.auth.impl.presentation.ui.common.AuthTextButton
 import com.minux.monitoring.feature.auth.impl.presentation.ui.common.AuthTextField
 import com.minux.monitoring.feature.auth.impl.presentation.ui.common.trianglesPaint
@@ -54,6 +54,7 @@ internal fun RegisterRoute(
         modifier = Modifier
             .fillMaxSize()
             .trianglesPaint()
+            .padding(vertical = 16.dp)
     )
 
     when (action) {
@@ -82,10 +83,10 @@ private fun RegisterScreen(
     ) {
         Image(
             painter = painterResource(id = MNXIcons.Logo),
-            contentDescription = "Logo"
+            contentDescription = "Logo",
         )
 
-        Spacer(modifier = Modifier.height(48.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
         RegisterInputFields(
             model = registerUiState.registerInfo,
@@ -95,14 +96,16 @@ private fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        MNXButton(onClick = { onEvent(RegisterEvent.Register) }) {
+        MNXButton(
+            onClick = { onEvent(RegisterEvent.Register) }
+        ) {
             Text(
                 text = "Register",
                 fontSize = 20.sp
             )
         }
 
-        Spacer(modifier = Modifier.height(48.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         RegisterAdditions(onLoginAccountClick = { onEvent(RegisterEvent.LoginAccount) })
     }

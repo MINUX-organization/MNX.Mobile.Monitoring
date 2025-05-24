@@ -18,10 +18,11 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.Instant
+import kotlinx.datetime.minus
 import retrofit2.HttpException
-import java.text.SimpleDateFormat
-import java.util.Locale
-import java.util.TimeZone
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class SessionManagerImpl(
@@ -48,24 +49,27 @@ internal class SessionManagerImpl(
         tokensDataStore.updateData { credentials }
     }
 
-    override suspend fun invalidateCredentials() {
-        tokensDataStore.updateData {
-            val invalidationResult = tokenApiService.invalidateRefreshToken(
+    override suspend fun invalidateCredentials(): Result<Unit> {
+        val credentials = tokensDataStore.updateData {
+            val invalidateRefreshTokenResult = tokenApiService.invalidateRefreshToken(
                 token = RefreshTokenDto(refreshToken = it.refreshToken)
             ).first()
 
-            if (invalidationResult.isSuccess)
+            return@updateData if (invalidateRefreshTokenResult.isSuccess)
                 TokensDto()
             else
                 it
         }
+
+        return if (credentials.accessToken.isNullOrEmpty() && credentials.refreshToken.isNullOrEmpty())
+            Result.success(Unit)
+        else
+            Result.failure(Throwable())
     }
 
     override fun observeExpirationStatus(): Flow<Boolean> = _tokens.mapLatest {
         val refreshExpiration = it.refreshExpiration ?: return@mapLatest true
-        val refreshExpirationTime = getRefreshTokenExpiration(dateTime = refreshExpiration)
-
-        return@mapLatest System.currentTimeMillis() >= refreshExpirationTime
+        return@mapLatest isRefreshTokenExpired(dateTime = refreshExpiration)
     }
 
     fun getAccessToken(): Flow<String> = _tokens.mapLatest { tokens ->
@@ -107,17 +111,11 @@ internal class SessionManagerImpl(
 
     private fun isAccessTokenExpired(accessToken: String): Boolean {
         val jwt = JWT(accessToken)
-        return jwt.isExpired(60)
+        return jwt.isExpired(2 * 60)
     }
 
-    private fun getRefreshTokenExpiration(dateTime: String): Long {
-        val normalizedDateTime = dateTime.replace("+00:00", "Z")
-
-        val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS'Z'", Locale.getDefault())
-        formatter.timeZone = TimeZone.getTimeZone("UTC")
-
-        val date = formatter.parse(normalizedDateTime)
-
-        return date?.time ?: throw IllegalArgumentException("Invalid date format")
+    private fun isRefreshTokenExpired(dateTime: String): Boolean {
+        val expiration = Instant.parse(dateTime)
+        return Clock.System.now() >= expiration.minus(5, DateTimeUnit.MINUTE)
     }
 }

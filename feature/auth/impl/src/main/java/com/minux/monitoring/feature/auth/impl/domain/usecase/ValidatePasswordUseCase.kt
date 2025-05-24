@@ -1,7 +1,7 @@
 package com.minux.monitoring.feature.auth.impl.domain.usecase
 
-import com.minux.monitoring.feature.auth.impl.domain.model.PasswordValidationError
-import com.minux.monitoring.feature.auth.impl.domain.model.PasswordValidationResult
+import com.minux.monitoring.feature.auth.api.model.PasswordValidationError
+import com.minux.monitoring.feature.auth.api.model.PasswordValidationResult
 
 internal class ValidatePasswordUseCase {
 
