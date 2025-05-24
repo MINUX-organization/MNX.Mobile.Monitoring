@@ -1,7 +1,7 @@
-package com.minux.monitoring.feature.auth.impl.presentation.mapper
+package com.minux.monitoring.feature.profile.impl.presentation.mapper
 
 import com.minux.monitoring.feature.auth.api.model.PasswordValidationResult
-import com.minux.monitoring.feature.auth.impl.presentation.model.PasswordValidationResultModel
+import com.minux.monitoring.feature.profile.impl.presentation.model.PasswordValidationResultModel
 
 internal fun PasswordValidationResult.toPasswordValidationResultModel(): PasswordValidationResultModel {
 

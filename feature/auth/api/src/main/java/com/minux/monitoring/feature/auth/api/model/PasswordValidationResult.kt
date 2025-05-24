@@ -1,6 +1,6 @@
-package com.minux.monitoring.feature.auth.impl.domain.model
+package com.minux.monitoring.feature.auth.api.model
 
-internal sealed interface PasswordValidationResult {
+sealed interface PasswordValidationResult {
     data object Valid : PasswordValidationResult
 
     class Invalid(val errors: List<PasswordValidationError>) : PasswordValidationResult

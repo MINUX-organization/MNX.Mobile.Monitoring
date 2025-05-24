@@ -84,14 +84,15 @@ fun MNXTextButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    shape: Shape = RoundedCornerShape(6.dp),
     contentPadding: PaddingValues = PaddingValues(horizontal = 4.dp),
     content: @Composable RowScope.() -> Unit
 ) {
     TextButton(
         onClick = onClick,
-        modifier = modifier.defaultMinSize(minWidth = 20.dp),
+        modifier = modifier.defaultMinSize(minWidth = 8.dp),
         enabled = enabled,
-        shape = RoundedCornerShape(6.dp),
+        shape = shape,
         colors = ButtonDefaults.textButtonColors(
             contentColor = MaterialTheme.colorScheme.onBackground
         ),

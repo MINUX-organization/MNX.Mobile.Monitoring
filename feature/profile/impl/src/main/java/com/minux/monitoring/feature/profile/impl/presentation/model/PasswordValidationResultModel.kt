@@ -1,4 +1,4 @@
-package com.minux.monitoring.feature.auth.impl.presentation.model
+package com.minux.monitoring.feature.profile.impl.presentation.model
 
 import com.minux.monitoring.feature.auth.api.model.PasswordValidationError
 

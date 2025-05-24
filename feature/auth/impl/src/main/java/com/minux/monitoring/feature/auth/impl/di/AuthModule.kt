@@ -4,11 +4,13 @@ import com.minux.monitoring.core.network.api.BackendApi
 import com.minux.monitoring.core.network.api.HttpClient
 import com.minux.monitoring.core.network.api.session.SessionManager
 import com.minux.monitoring.feature.auth.api.AuthFeatureMediator
+import com.minux.monitoring.feature.auth.api.PasswordValidator
 import com.minux.monitoring.feature.auth.impl.data.datasource.AuthApiService
 import com.minux.monitoring.feature.auth.impl.data.repository.AuthRepository
 import com.minux.monitoring.feature.auth.impl.data.repository.AuthRepositoryImpl
 import com.minux.monitoring.feature.auth.impl.domain.usecase.ValidatePasswordConfirmUseCase
 import com.minux.monitoring.feature.auth.impl.domain.usecase.ValidatePasswordUseCase
+import com.minux.monitoring.feature.auth.impl.domain.validator.PasswordValidatorImpl
 import com.minux.monitoring.feature.auth.impl.presentation.navigation.AuthFeatureMediatorImpl
 import dagger.Module
 import dagger.Provides
@@ -34,6 +36,18 @@ internal class AuthModule {
                 sessionManager = sessionManager
             )
         }
+    }
+
+    @Provides
+    @Singleton
+    fun providePasswordValidator(
+        validatePasswordUseCase: ValidatePasswordUseCase,
+        validatePasswordConfirmUseCase: ValidatePasswordConfirmUseCase
+    ): PasswordValidator {
+        return PasswordValidatorImpl(
+            validatePasswordUseCase = validatePasswordUseCase,
+            validatePasswordConfirmUseCase = validatePasswordConfirmUseCase
+        )
     }
 
     @Provides
