@@ -21,7 +21,8 @@ import com.minux.monitoring.feature.cryptos.impl.pools.presentation.ui.model.Poo
 @Composable
 internal fun PoolInputFields(
     model: PoolInputModel,
-    coins: List<CryptocurrencyItemModel>,
+    coinsIsLoading: Boolean,
+    coins: List<CryptocurrencyItemModel>?,
     onEvent: (PoolsEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -30,24 +31,24 @@ internal fun PoolInputFields(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         DomainAddressField(
-            value = model.domain,
+            value = model.domain ?: "",
             onValueChange = { onEvent(PoolsEvent.DomainAddressChanged(domain = it)) },
-            isValid = !model.isValidationShowed || model.isDomainAddressValid,
+            isValid = !model.isDomainAddressValidationShowed || model.isDomainAddressValid,
             modifier = Modifier.fillMaxWidth()
         )
 
         PortField(
-            value = model.port,
+            value = model.port ?: "",
             onValueChange = { onEvent(PoolsEvent.PortChanged(port = it)) },
-            isValid = !model.isValidationShowed || model.isPortValid,
+            isValid = !model.isPortValidationShowed || model.isPortValid,
             modifier = Modifier.fillMaxWidth()
         )
 
         CoinsDropDownMenu(
+            menuItemsIsLoading = coinsIsLoading,
             menuItems = coins,
-            selectedMenuItem = model.cryptocurrency,
+            selectedMenuItem = model.selectedCryptocurrency,
             onSelectedMenuItemChange = { onEvent(PoolsEvent.CoinChanged(coin = it)) },
-            isValid = model.isCoinValid,
             modifier = Modifier.fillMaxWidth()
         )
     }
@@ -94,14 +95,14 @@ private fun PortField(
         modifier = modifier,
         label = {
             Text(
-                text = "Port (0-65535)",
+                text = "Port",
                 modifier = Modifier.padding(start = 2.dp, bottom = 4.dp)
             )
         },
         placeholder = { Text(text = "Enter port") },
         supportingText = {
             Text(
-                text = "Invalid port number",
+                text = "Must be between 0-65535",
                 modifier = Modifier.padding(start = 2.dp)
             )
         },
@@ -116,6 +117,7 @@ private fun PoolInputFieldsPreview(modifier: Modifier = Modifier) {
     MNXTheme {
         PoolInputFields(
             model = PoolInputModel(),
+            coinsIsLoading = true,
             coins = emptyList(),
             onEvent = {}
         )

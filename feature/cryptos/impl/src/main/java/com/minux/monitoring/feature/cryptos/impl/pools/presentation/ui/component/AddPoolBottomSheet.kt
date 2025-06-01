@@ -23,7 +23,7 @@ import com.minux.monitoring.feature.cryptos.impl.pools.presentation.ui.model.Poo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun ChangePoolBottomSheet(
+internal fun AddPoolBottomSheet(
     showSheet: Boolean,
     onShowSheetChange: (Boolean) -> Unit,
     poolsUiState: PoolsUiState,
@@ -40,7 +40,7 @@ internal fun ChangePoolBottomSheet(
     ) {
         Column(modifier = Modifier.padding(horizontal = 12.dp)) {
             Text(
-                text = "Edit pool",
+                text = "Add pool",
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 style = MNXTypography.titleLarge
             )
@@ -57,7 +57,7 @@ internal fun ChangePoolBottomSheet(
             Spacer(modifier = Modifier.height(8.dp))
 
             MNXButton(
-                onClick = { onEvent(PoolsEvent.ConfirmChangePool) },
+                onClick = { onEvent(PoolsEvent.ConfirmAddPool) },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = poolsUiState.poolInput.run { isDomainAddressValid && isPortValid && isCoinValid }
             ) {
@@ -74,12 +74,12 @@ internal fun ChangePoolBottomSheet(
 
 @Preview
 @Composable
-private fun ChangePoolBottomSheetPreview(
+private fun AddPoolBottomSheetPreview(
     @PreviewParameter(PoolsUiStatePreviewParameterProvider::class)
     poolsUiState: PoolsUiState
 ) {
     MNXTheme {
-        ChangePoolBottomSheet(
+        AddPoolBottomSheet(
             showSheet = true,
             onShowSheetChange = {},
             poolsUiState = poolsUiState,

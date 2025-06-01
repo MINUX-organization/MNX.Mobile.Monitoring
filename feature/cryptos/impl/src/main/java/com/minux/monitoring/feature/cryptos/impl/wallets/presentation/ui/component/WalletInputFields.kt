@@ -19,7 +19,8 @@ import com.minux.monitoring.feature.cryptos.impl.wallets.presentation.ui.model.W
 @Composable
 internal fun WalletInputFields(
     model: WalletInputModel,
-    coins: List<CryptocurrencyItemModel>,
+    coinsIsLoading: Boolean,
+    coins: List<CryptocurrencyItemModel>?,
     onEvent: (WalletsEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -28,24 +29,24 @@ internal fun WalletInputFields(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         NameField(
-            value = model.name,
+            value = model.name ?: "",
             onValueChange = { onEvent(WalletsEvent.NameChanged(name = it)) },
-            isValid = !model.isValidationShowed || model.isNameValid,
+            isValid = !model.isNameValidationShowed || model.isNameValid,
             modifier = Modifier.fillMaxWidth()
         )
 
         CoinsDropDownMenu(
+            menuItemsIsLoading = coinsIsLoading,
             menuItems = coins,
-            selectedMenuItem = model.cryptocurrency,
+            selectedMenuItem = model.selectedCryptocurrency,
             onSelectedMenuItemChange = { onEvent(WalletsEvent.CoinChanged(coin = it)) },
-            isValid = model.isCoinValid,
             modifier = Modifier.fillMaxWidth()
         )
 
         AddressField(
-            value = model.address,
+            value = model.address ?: "",
             onValueChange = { onEvent(WalletsEvent.AddressChanged(address = it)) },
-            isValid = !model.isValidationShowed || model.isAddressValid,
+            isValid = !model.isAddressValidationShowed || model.isAddressValid,
             modifier = Modifier.fillMaxWidth()
         )
     }
@@ -113,6 +114,7 @@ private fun WalletInputFieldsPreview(modifier: Modifier = Modifier) {
     MNXTheme {
         WalletInputFields(
             model = WalletInputModel(),
+            coinsIsLoading = true,
             coins = emptyList(),
             onEvent = {}
         )

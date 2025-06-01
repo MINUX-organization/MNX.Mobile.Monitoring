@@ -5,8 +5,9 @@ import com.minux.monitoring.feature.cryptos.impl.pools.presentation.model.PoolIn
 
 internal fun PoolInputModel.toPoolInputDto(): PoolInputDto {
     return PoolInputDto(
+        tls = tls,
         domain = domain,
-        port = port.toInt(),
-        cryptocurrencyId = cryptocurrency!!.id
+        port = port!!.toInt(),
+        cryptocurrencyId = selectedCryptocurrency!!.id
     )
 }

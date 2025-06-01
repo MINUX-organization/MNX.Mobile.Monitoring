@@ -1,6 +1,6 @@
 package com.minux.monitoring.feature.cryptos.impl.pools.data.datasource
 
-import com.minux.monitoring.feature.cryptos.impl.pools.data.model.PoolDto
+import com.minux.monitoring.feature.cryptos.api.model.PoolDto
 import com.minux.monitoring.feature.cryptos.impl.pools.data.model.PoolInputDto
 import kotlinx.coroutines.flow.Flow
 import retrofit2.http.Body

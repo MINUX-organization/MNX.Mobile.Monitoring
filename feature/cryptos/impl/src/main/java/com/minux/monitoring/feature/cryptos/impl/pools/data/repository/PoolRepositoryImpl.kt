@@ -1,8 +1,8 @@
-package com.minux.monitoring.feature.cryptos.impl.pools.data
+package com.minux.monitoring.feature.cryptos.impl.pools.data.repository
 
 import com.minux.monitoring.feature.cryptos.impl.pools.data.datasource.PoolApiService
 import com.minux.monitoring.feature.cryptos.impl.pools.data.model.PoolChangeDto
-import com.minux.monitoring.feature.cryptos.impl.pools.data.model.PoolDto
+import com.minux.monitoring.feature.cryptos.api.model.PoolDto
 import com.minux.monitoring.feature.cryptos.impl.pools.data.model.PoolInputDto
 import com.minux.monitoring.feature.cryptos.impl.pools.data.model.PoolRemoveDto
 import kotlinx.coroutines.flow.Flow

@@ -1,4 +1,4 @@
-package com.minux.monitoring.feature.cryptos.impl.pools.presentation.ui.component
+package com.minux.monitoring.feature.cryptos.impl.wallets.presentation.ui.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -18,16 +18,16 @@ import com.minux.monitoring.core.designsystem.component.MNXBottomSheet
 import com.minux.monitoring.core.designsystem.component.MNXButton
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
 import com.minux.monitoring.core.designsystem.theme.MNXTypography
-import com.minux.monitoring.feature.cryptos.impl.pools.presentation.ui.model.PoolsEvent
-import com.minux.monitoring.feature.cryptos.impl.pools.presentation.ui.model.PoolsUiState
+import com.minux.monitoring.feature.cryptos.impl.wallets.presentation.ui.model.WalletsEvent
+import com.minux.monitoring.feature.cryptos.impl.wallets.presentation.ui.model.WalletsUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun ChangePoolBottomSheet(
+internal fun AddWalletBottomSheet(
     showSheet: Boolean,
     onShowSheetChange: (Boolean) -> Unit,
-    poolsUiState: PoolsUiState,
-    onEvent: (PoolsEvent) -> Unit,
+    walletsUiState: WalletsUiState,
+    onEvent: (WalletsEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -40,26 +40,26 @@ internal fun ChangePoolBottomSheet(
     ) {
         Column(modifier = Modifier.padding(horizontal = 12.dp)) {
             Text(
-                text = "Edit pool",
+                text = "Add wallet",
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 style = MNXTypography.titleLarge
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            PoolInputFields(
-                model = poolsUiState.poolInput,
-                coinsIsLoading = poolsUiState.coinsIsLoading,
-                coins = poolsUiState.coins,
+            WalletInputFields(
+                model = walletsUiState.walletInput,
+                coinsIsLoading = walletsUiState.coinsIsLoading,
+                coins = walletsUiState.coins,
                 onEvent = onEvent
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             MNXButton(
-                onClick = { onEvent(PoolsEvent.ConfirmChangePool) },
+                onClick = { onEvent(WalletsEvent.ConfirmAddWallet) },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = poolsUiState.poolInput.run { isDomainAddressValid && isPortValid && isCoinValid }
+                enabled = walletsUiState.walletInput.run { isNameValid && isAddressValid && isCoinValid }
             ) {
                 Text(
                     text = "Confirm",
@@ -74,15 +74,15 @@ internal fun ChangePoolBottomSheet(
 
 @Preview
 @Composable
-private fun ChangePoolBottomSheetPreview(
-    @PreviewParameter(PoolsUiStatePreviewParameterProvider::class)
-    poolsUiState: PoolsUiState
+private fun AddWalletBottomSheetPreview(
+    @PreviewParameter(WalletsUiStatePreviewParameterProvider::class)
+    walletsUiState: WalletsUiState
 ) {
     MNXTheme {
-        ChangePoolBottomSheet(
+        AddWalletBottomSheet(
             showSheet = true,
             onShowSheetChange = {},
-            poolsUiState = poolsUiState,
+            walletsUiState = walletsUiState,
             onEvent = {}
         )
     }

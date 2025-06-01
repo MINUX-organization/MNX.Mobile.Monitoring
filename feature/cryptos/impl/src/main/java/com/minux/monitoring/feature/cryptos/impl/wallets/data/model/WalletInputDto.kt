@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 internal class WalletInputDto(
-    val name: String,
-    val address: String,
+    val name: String?,
+    val address: String?,
     val cryptocurrencyId: String
 )

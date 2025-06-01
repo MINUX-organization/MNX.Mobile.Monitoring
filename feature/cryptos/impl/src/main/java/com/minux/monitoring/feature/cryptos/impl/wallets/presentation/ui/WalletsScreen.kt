@@ -1,17 +1,23 @@
 package com.minux.monitoring.feature.cryptos.impl.wallets.presentation.ui
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -20,18 +26,18 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.minux.monitoring.core.designsystem.component.MNXBorderedButton
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
 import com.minux.monitoring.core.designsystem.theme.MNXTypography
-import com.minux.monitoring.core.ui.SearchAndSortBar
-import com.minux.monitoring.feature.cryptos.impl.common.presentation.model.CryptocurrencyItemModel
-import com.minux.monitoring.feature.cryptos.impl.common.presentation.ui.CryptoAssetCardWithButton
+import com.minux.monitoring.core.ui.SearchTextField
 import com.minux.monitoring.feature.cryptos.impl.common.presentation.ui.CryptoAssetGrid
-import com.minux.monitoring.feature.cryptos.impl.wallets.presentation.model.WalletInputModel
+import com.minux.monitoring.feature.cryptos.impl.common.presentation.ui.CryptoAssetGridError
+import com.minux.monitoring.feature.cryptos.impl.wallets.presentation.model.WalletItemModel
+import com.minux.monitoring.feature.cryptos.impl.wallets.presentation.ui.component.AddWalletBottomSheet
 import com.minux.monitoring.feature.cryptos.impl.wallets.presentation.ui.component.ChangeWalletBottomSheet
-import com.minux.monitoring.feature.cryptos.impl.wallets.presentation.ui.component.WalletInputFields
 import com.minux.monitoring.feature.cryptos.impl.wallets.presentation.ui.component.WalletsUiStatePreviewParameterProvider
 import com.minux.monitoring.feature.cryptos.impl.wallets.presentation.ui.component.walletsGridItems
 import com.minux.monitoring.feature.cryptos.impl.wallets.presentation.ui.model.WalletsAction
 import com.minux.monitoring.feature.cryptos.impl.wallets.presentation.ui.model.WalletsEvent
 import com.minux.monitoring.feature.cryptos.impl.wallets.presentation.ui.model.WalletsUiState
+import kotlinx.coroutines.delay
 
 @Composable
 internal fun WalletsRoute(
@@ -40,6 +46,7 @@ internal fun WalletsRoute(
 ) {
     val state by viewModel.walletsState.collectAsStateWithLifecycle()
     val action by viewModel.uiActions().collectAsStateWithLifecycle(initialValue = null)
+    val isAddWalletBottomSheetShow = rememberSaveable { mutableStateOf(false) }
     val isChangeWalletBottomSheetShow = rememberSaveable { mutableStateOf(false) }
 
     WalletsScreen(
@@ -50,19 +57,35 @@ internal fun WalletsRoute(
             .padding(8.dp)
     )
 
+    AddWalletBottomSheet(
+        showSheet = isAddWalletBottomSheetShow.value,
+        onShowSheetChange = { isAddWalletBottomSheetShow.value = it },
+        walletsUiState = state,
+        onEvent = viewModel::onEvent,
+        modifier = Modifier.safeDrawingPadding()
+    )
+
     ChangeWalletBottomSheet(
         showSheet = isChangeWalletBottomSheetShow.value,
         onShowSheetChange = { isChangeWalletBottomSheetShow.value = it },
         walletsUiState = state,
-        onEvent = viewModel::onEvent
+        onEvent = viewModel::onEvent,
+        modifier = Modifier.safeDrawingPadding()
     )
 
     when (action) {
+        WalletsAction.OpenAddWalletBottomSheet -> isAddWalletBottomSheetShow.value = true
+
+        WalletsAction.CloseAddWalletBottomSheet -> {
+            isAddWalletBottomSheetShow.value = false
+            onShowSnackBar("Add wallet successful")
+        }
+
         WalletsAction.OpenChangeWalletBottomSheet -> isChangeWalletBottomSheetShow.value = true
 
         WalletsAction.CloseChangeWalletBottomSheet -> {
             isChangeWalletBottomSheetShow.value = false
-            onShowSnackBar("Change wallet successful!")
+            onShowSnackBar("Change wallet successful")
         }
 
         is WalletsAction.ShowAddWalletFailedSnackBar -> {
@@ -73,6 +96,10 @@ internal fun WalletsRoute(
         is WalletsAction.ShowChangeWalletFailedSnackBar -> {
             val errorInfo = (action as WalletsAction.ShowChangeWalletFailedSnackBar).message
             onShowSnackBar("Change wallet failed. $errorInfo")
+        }
+
+        WalletsAction.ShowRemoveWalletSuccessSnackBar -> {
+            onShowSnackBar("Remove wallet successful")
         }
 
         is WalletsAction.ShowRemoveWalletFailedSnackBar -> {
@@ -86,99 +113,84 @@ internal fun WalletsRoute(
     if (action != null) viewModel.clearAction()
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun WalletsScreen(
     walletsUiState: WalletsUiState,
     onEvent: (WalletsEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    LaunchedEffect(Unit) {
+        onEvent(WalletsEvent.FetchWallets)
+    }
+
     Column(modifier = modifier) {
         Text(
             text = "Wallets",
             style = MNXTypography.headlineMedium
         )
 
-        WalletActionCard(
-            walletInput = walletsUiState.walletInput,
-            coins = walletsUiState.coins,
-            onEvent = onEvent,
-            modifier = Modifier.padding(top = 12.dp)
+        Spacer(modifier = Modifier.height(8.dp))
+
+        SearchTextField(
+            query = walletsUiState.searchQuery,
+            onQueryChange = { onEvent(WalletsEvent.SearchQueryChanged(searchQuery = it)) },
+            enabled = !walletsUiState.walletsIsLoading && !walletsUiState.wallets.isNullOrEmpty(),
+            placeholder = { Text(text = "Search") }
         )
 
-        if (walletsUiState.wallets.isNotEmpty()) {
-            WalletsFilters(modifier = Modifier.padding(top = 48.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-            CryptoAssetGrid(
+        val isRefreshing = remember { mutableStateOf(false) }
+
+        LaunchedEffect(isRefreshing.value) {
+            if (isRefreshing.value) {
+                onEvent(WalletsEvent.FetchWallets)
+                delay(200)
+                isRefreshing.value = false
+            }
+        }
+
+        PullToRefreshBox(
+            isRefreshing = isRefreshing.value,
+            onRefresh = { isRefreshing.value = true },
+            modifier = Modifier.weight(1f)
+        ) {
+            CryptoAssetGrid<WalletItemModel>(
                 headers = listOf("Name", "Coin", "Address", ""),
-                cryptoAssetItems = walletsUiState.wallets,
-                modifier = Modifier.padding(top = 8.dp)
+                itemsIsLoading = walletsUiState.walletsIsLoading,
+                itemsPlaceholder = {
+                    CryptoAssetGridError(
+                        text = "Failed to load wallets",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .weight(1f)
+                    )
+                },
+                items = walletsUiState.filteredWallets,
+                modifier = Modifier.fillMaxSize()
             ) { item, itemPadding ->
                 walletsGridItems(
                     item = item,
                     itemPadding = itemPadding,
-                    onSelectWallet = onEvent,
-                    onRemoveWallet = onEvent
+                    onChangeWalletClick = { onEvent(WalletsEvent.ChangeWallet(wallet = it)) },
+                    onRemoveWalletClick = { onEvent(WalletsEvent.RemoveWallet(id = it)) }
                 )
             }
         }
-    }
-}
 
-@Composable
-private fun WalletActionCard(
-    walletInput: WalletInputModel,
-    coins: List<CryptocurrencyItemModel>,
-    onEvent: (WalletsEvent) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    CryptoAssetCardWithButton(
-        title = {
+        Spacer(modifier = Modifier.height(8.dp))
+
+        MNXBorderedButton(
+            onClick = { onEvent(WalletsEvent.AddWallet) },
+            modifier = Modifier.align(Alignment.End)
+        ) {
             Text(
-                text = "Add new wallet",
-                style = MNXTypography.titleMedium
+                text = "Add wallet",
+                style = MNXTypography.titleSmall
             )
-        },
-        button = {
-            MNXBorderedButton(
-                onClick = { onEvent(WalletsEvent.AddWallet) },
-                modifier = Modifier.width(100.dp)
-            ) {
-                Text(
-                    text = "Add",
-                    style = MNXTypography.bodyLarge
-                )
-            }
-        },
-        modifier = modifier
-    ) {
-        WalletInputFields(
-            model = walletInput,
-            coins = coins,
-            onEvent = onEvent
-        )
+        }
     }
-}
-
-@Composable
-private fun WalletsFilters(modifier: Modifier = Modifier) {
-    val filterOptions = listOf("All", "Option 1", "Option 2")
-
-    val selectedSortOption = remember {
-        mutableStateOf(filterOptions.first())
-    }
-
-    val searchText = remember {
-        mutableStateOf("")
-    }
-
-    SearchAndSortBar(
-        sortOptions = filterOptions,
-        selectedSortOption = "Sort by ${selectedSortOption.value}",
-        onSelectedSortOptionChange = { selectedSortOption.value = it },
-        searchQuery = searchText.value,
-        onSearchQueryChange = { searchText.value = it },
-        modifier = modifier
-    )
 }
 
 @Preview

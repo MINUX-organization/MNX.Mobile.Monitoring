@@ -7,6 +7,6 @@ internal fun WalletInputModel.toWalletInputDto(): WalletInputDto {
     return WalletInputDto(
         name = name,
         address = address,
-        cryptocurrencyId = cryptocurrency!!.id
+        cryptocurrencyId = selectedCryptocurrency!!.id
     )
 }

@@ -1,6 +1,9 @@
-package com.minux.monitoring.feature.cryptos.impl.wallets.presentation.model
+package com.minux.monitoring.feature.cryptos.api.model
 
-internal class WalletItemModel(
+import kotlinx.serialization.Serializable
+
+@Serializable
+class WalletDto(
     val id: String,
     val name: String?,
     val address: String?,

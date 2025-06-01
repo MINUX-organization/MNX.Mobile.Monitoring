@@ -1,44 +1,43 @@
 package com.minux.monitoring.feature.cryptos.impl.cryptos.presentation.ui.component
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.LazyGridScope
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.minux.monitoring.core.designsystem.icon.MNXIcons
 import com.minux.monitoring.feature.cryptos.impl.common.presentation.model.CryptocurrencyItemModel
-import com.minux.monitoring.feature.cryptos.impl.cryptos.presentation.ui.model.CryptosEvent
 
 internal fun LazyGridScope.cryptosGridItems(
     item: CryptocurrencyItemModel,
     itemPadding: PaddingValues,
-    onRemoveCryptocurrency: (CryptosEvent.RemoveCryptocurrency) -> Unit
+    onRemoveCryptocurrencyClick: (String) -> Unit
 ) {
     item {
         Text(
-            text = item.shortName,
+            text = item.shortName ?: "N/A",
             modifier = Modifier.padding(paddingValues = itemPadding)
         )
     }
 
     item {
         Text(
-            text = item.fullName,
+            text = item.fullName ?: "N/A",
             modifier = Modifier.padding(paddingValues = itemPadding)
         )
     }
 
     item {
         Text(
-            text = item.algorithm.name,
+            text = item.algorithm?.name ?: "N/A",
             modifier = Modifier.padding(paddingValues = itemPadding)
         )
     }
@@ -46,8 +45,7 @@ internal fun LazyGridScope.cryptosGridItems(
     item {
         CryptosControlsGridItem(
             item = item,
-            onRemoveCryptocurrency = onRemoveCryptocurrency,
-            modifier = Modifier.padding(paddingValues = itemPadding)
+            onRemoveCryptocurrencyClick = onRemoveCryptocurrencyClick
         )
     }
 }
@@ -55,21 +53,19 @@ internal fun LazyGridScope.cryptosGridItems(
 @Composable
 private fun CryptosControlsGridItem(
     item: CryptocurrencyItemModel,
-    onRemoveCryptocurrency: (CryptosEvent.RemoveCryptocurrency) -> Unit,
+    onRemoveCryptocurrencyClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier,
         contentAlignment = Alignment.CenterEnd
     ) {
-        Icon(
-            modifier = Modifier
-                .size(width = 23.dp, height = 25.dp)
-                .clickable {
-                    onRemoveCryptocurrency(CryptosEvent.RemoveCryptocurrency(id = item.id))
-                },
-            imageVector = Icons.Default.Delete,
-            contentDescription = "Delete item"
-        )
+        IconButton(onClick = { onRemoveCryptocurrencyClick(item.id) }) {
+            Icon(
+                painter = painterResource(id = MNXIcons.Trash),
+                contentDescription = "Remove pool",
+                modifier = Modifier.size(16.dp)
+            )
+        }
     }
 }

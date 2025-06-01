@@ -1,17 +1,23 @@
 package com.minux.monitoring.feature.cryptos.impl.pools.presentation.ui
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -20,18 +26,18 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.minux.monitoring.core.designsystem.component.MNXBorderedButton
 import com.minux.monitoring.core.designsystem.theme.MNXTheme
 import com.minux.monitoring.core.designsystem.theme.MNXTypography
-import com.minux.monitoring.core.ui.SearchAndSortBar
-import com.minux.monitoring.feature.cryptos.impl.common.presentation.model.CryptocurrencyItemModel
-import com.minux.monitoring.feature.cryptos.impl.common.presentation.ui.CryptoAssetCardWithButton
+import com.minux.monitoring.core.ui.SearchTextField
 import com.minux.monitoring.feature.cryptos.impl.common.presentation.ui.CryptoAssetGrid
-import com.minux.monitoring.feature.cryptos.impl.pools.presentation.model.PoolInputModel
+import com.minux.monitoring.feature.cryptos.impl.common.presentation.ui.CryptoAssetGridError
+import com.minux.monitoring.feature.cryptos.impl.pools.presentation.model.PoolItemModel
+import com.minux.monitoring.feature.cryptos.impl.pools.presentation.ui.component.AddPoolBottomSheet
 import com.minux.monitoring.feature.cryptos.impl.pools.presentation.ui.component.ChangePoolBottomSheet
-import com.minux.monitoring.feature.cryptos.impl.pools.presentation.ui.component.PoolInputFields
 import com.minux.monitoring.feature.cryptos.impl.pools.presentation.ui.component.PoolsUiStatePreviewParameterProvider
 import com.minux.monitoring.feature.cryptos.impl.pools.presentation.ui.component.poolsGridItems
 import com.minux.monitoring.feature.cryptos.impl.pools.presentation.ui.model.PoolsAction
 import com.minux.monitoring.feature.cryptos.impl.pools.presentation.ui.model.PoolsEvent
 import com.minux.monitoring.feature.cryptos.impl.pools.presentation.ui.model.PoolsUiState
+import kotlinx.coroutines.delay
 
 @Composable
 internal fun PoolsRoute(
@@ -40,6 +46,7 @@ internal fun PoolsRoute(
 ) {
     val state by viewModel.poolsUiState.collectAsStateWithLifecycle()
     val action by viewModel.uiActions().collectAsStateWithLifecycle(initialValue = null)
+    val isAddPoolBottomSheetShow = rememberSaveable { mutableStateOf(false) }
     val isChangePoolBottomSheetShow = rememberSaveable { mutableStateOf(false) }
 
     PoolsScreen(
@@ -50,19 +57,35 @@ internal fun PoolsRoute(
             .padding(8.dp)
     )
 
+    AddPoolBottomSheet(
+        showSheet = isAddPoolBottomSheetShow.value,
+        onShowSheetChange = { isAddPoolBottomSheetShow.value = it },
+        poolsUiState = state,
+        onEvent = viewModel::onEvent,
+        modifier = Modifier.safeDrawingPadding()
+    )
+
     ChangePoolBottomSheet(
         showSheet = isChangePoolBottomSheetShow.value,
         onShowSheetChange = { isChangePoolBottomSheetShow.value = it },
         poolsUiState = state,
-        onEvent = viewModel::onEvent
+        onEvent = viewModel::onEvent,
+        modifier = Modifier.safeDrawingPadding()
     )
 
     when (action) {
+        PoolsAction.OpenAddPoolBottomSheet -> isAddPoolBottomSheetShow.value = true
+
+        PoolsAction.CloseAddPoolBottomSheet -> {
+            isAddPoolBottomSheetShow.value = false
+            onShowSnackBar("Add pool successful")
+        }
+
         PoolsAction.OpenChangePoolBottomSheet -> isChangePoolBottomSheetShow.value = true
 
         PoolsAction.CloseChangePoolBottomSheet -> {
             isChangePoolBottomSheetShow.value = false
-            onShowSnackBar("Change pool successful!")
+            onShowSnackBar("Change pool successful")
         }
 
         is PoolsAction.ShowAddPoolFailedSnackBar -> {
@@ -73,6 +96,10 @@ internal fun PoolsRoute(
         is PoolsAction.ShowChangePoolFailedSnackBar -> {
             val errorInfo = (action as PoolsAction.ShowChangePoolFailedSnackBar).message
             onShowSnackBar("Change pool failed. $errorInfo")
+        }
+
+        PoolsAction.ShowRemovePoolSuccessSnackBar -> {
+            onShowSnackBar("Remove pool successful")
         }
 
         is PoolsAction.ShowRemovePoolFailedSnackBar -> {
@@ -86,99 +113,84 @@ internal fun PoolsRoute(
     if (action != null) viewModel.clearAction()
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PoolsScreen(
     poolsUiState: PoolsUiState,
     onEvent: (PoolsEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    LaunchedEffect(Unit) {
+        onEvent(PoolsEvent.FetchPools)
+    }
+
     Column(modifier = modifier) {
         Text(
             text = "Pools",
             style = MNXTypography.headlineMedium
         )
 
-        PoolActionCard(
-            poolInput = poolsUiState.poolInput,
-            coins = poolsUiState.coins,
-            onEvent = onEvent,
-            modifier = Modifier.padding(top = 12.dp)
+        Spacer(modifier = Modifier.height(8.dp))
+
+        SearchTextField(
+            query = poolsUiState.searchQuery,
+            onQueryChange = { onEvent(PoolsEvent.SearchQueryChanged(searchQuery = it)) },
+            enabled = !poolsUiState.poolsIsLoading && !poolsUiState.pools.isNullOrEmpty(),
+            placeholder = { Text(text = "Search") }
         )
 
-        if (poolsUiState.pools.isNotEmpty()) {
-            PoolsFilters(modifier = Modifier.padding(top = 48.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-            CryptoAssetGrid(
-                headers = listOf("Coin", "Domain", "Port", ""),
-                cryptoAssetItems = poolsUiState.pools,
-                modifier = Modifier.padding(top = 8.dp)
+        val isRefreshing = remember { mutableStateOf(false) }
+
+        LaunchedEffect(isRefreshing.value) {
+            if (isRefreshing.value) {
+                onEvent(PoolsEvent.FetchPools)
+                delay(200)
+                isRefreshing.value = false
+            }
+        }
+
+        PullToRefreshBox(
+            isRefreshing = isRefreshing.value,
+            onRefresh = { isRefreshing.value = true },
+            modifier = Modifier.weight(1f)
+        ) {
+            CryptoAssetGrid<PoolItemModel>(
+                headers = listOf("Domain", "Port", "Coin", ""),
+                itemsIsLoading = poolsUiState.poolsIsLoading,
+                itemsPlaceholder = {
+                    CryptoAssetGridError(
+                        text = "Failed to load pools",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .weight(1f)
+                    )
+                },
+                items = poolsUiState.filteredPools,
+                modifier = Modifier.fillMaxSize()
             ) { item, itemPadding ->
                 poolsGridItems(
                     item = item,
                     itemPadding = itemPadding,
-                    onSelectPool = onEvent,
-                    onRemovePool = onEvent
+                    onChangePoolClick = { onEvent(PoolsEvent.ChangePool(pool = it)) },
+                    onRemovePoolClick = { onEvent(PoolsEvent.RemovePool(id = it)) }
                 )
             }
         }
-    }
-}
 
-@Composable
-private fun PoolActionCard(
-    poolInput: PoolInputModel,
-    coins: List<CryptocurrencyItemModel>,
-    onEvent: (PoolsEvent) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    CryptoAssetCardWithButton(
-        title = {
+        Spacer(modifier = Modifier.height(8.dp))
+
+        MNXBorderedButton(
+            onClick = { onEvent(PoolsEvent.AddPool) },
+            modifier = Modifier.align(Alignment.End)
+        ) {
             Text(
-                text = "Add new pool",
-                style = MNXTypography.titleMedium
+                text = "Add pool",
+                style = MNXTypography.titleSmall
             )
-        },
-        button = {
-            MNXBorderedButton(
-                onClick = { onEvent(PoolsEvent.AddPool) },
-                modifier = Modifier.width(100.dp)
-            ) {
-                Text(
-                    text = "Add",
-                    style = MNXTypography.bodyLarge
-                )
-            }
-        },
-        modifier = modifier
-    ) {
-        PoolInputFields(
-            model = poolInput,
-            coins = coins,
-            onEvent = onEvent
-        )
+        }
     }
-}
-
-@Composable
-private fun PoolsFilters(modifier: Modifier = Modifier) {
-    val filterOptions = listOf("All", "Option 1", "Option 2")
-
-    val selectedSortOption = remember {
-        mutableStateOf(filterOptions.first())
-    }
-
-    val searchText = remember {
-        mutableStateOf("")
-    }
-
-    SearchAndSortBar(
-        sortOptions = filterOptions,
-        selectedSortOption = "Sort by ${selectedSortOption.value}",
-        onSelectedSortOptionChange = { selectedSortOption.value = it },
-        searchQuery = searchText.value,
-        onSearchQueryChange = { searchText.value = it },
-        modifier = modifier
-    )
 }
 
 @Preview

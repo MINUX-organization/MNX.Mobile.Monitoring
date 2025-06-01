@@ -1,6 +1,6 @@
 package com.minux.monitoring.feature.cryptos.impl.wallets.data.datasource
 
-import com.minux.monitoring.feature.cryptos.impl.wallets.data.model.WalletDto
+import com.minux.monitoring.feature.cryptos.api.model.WalletDto
 import com.minux.monitoring.feature.cryptos.impl.wallets.data.model.WalletInputDto
 import kotlinx.coroutines.flow.Flow
 import retrofit2.http.Body

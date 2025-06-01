@@ -1,7 +1,7 @@
-package com.minux.monitoring.feature.cryptos.impl.wallets.data
+package com.minux.monitoring.feature.cryptos.impl.wallets.data.repository
 
 import com.minux.monitoring.feature.cryptos.impl.wallets.data.model.WalletChangeDto
-import com.minux.monitoring.feature.cryptos.impl.wallets.data.model.WalletDto
+import com.minux.monitoring.feature.cryptos.api.model.WalletDto
 import com.minux.monitoring.feature.cryptos.impl.wallets.data.model.WalletInputDto
 import com.minux.monitoring.feature.cryptos.impl.wallets.data.model.WalletRemoveDto
 import kotlinx.coroutines.flow.Flow

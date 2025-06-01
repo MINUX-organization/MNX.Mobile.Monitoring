@@ -8,6 +8,6 @@ internal fun CryptocurrencyDto.toCryptocurrencyItemModel(): CryptocurrencyItemMo
         id = id,
         shortName = shortName,
         fullName = fullName,
-        algorithm = algorithm.toAlgorithmItemModel()
+        algorithm = algorithm?.toAlgorithmItemModel()
     )
 }
