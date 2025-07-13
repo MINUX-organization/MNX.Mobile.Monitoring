@@ -62,7 +62,7 @@ internal fun PresetsFlowNavGraph(onShowSnackBar: (String) -> Unit) {
         }
 
         composable<PresetsFlowRoute.PresetConfiguration>(
-            typeMap = mapOf(typeOf<ConfigurationMode>() to CustomNavType.ConfigurationModeType)
+            typeMap = mapOf(typeOf<ConfigurationMode>() to PresetsCustomNavType.ConfigurationModeType)
         ) { entry ->
             BindApiToEntryLifecycle(
                 holder = PresetsComponentHolder,

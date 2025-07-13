@@ -25,12 +25,13 @@ internal class NetworkSessionModule {
         httpClient: HttpClient,
         tokensDataStore: DataStore<TokensDto>
     ): SessionManager {
-        return with(httpClient.getApiClient(BackendApi.Security)) {
-            SessionManagerImpl(
-                tokenApiService = create(TokenApiService::class.java),
-                tokensDataStore = tokensDataStore
-            )
-        }
+        val tokenApiService = httpClient.getApiClient(BackendApi.Security)
+            .create(TokenApiService::class.java)
+
+        return SessionManagerImpl(
+            tokenApiService = tokenApiService,
+            tokensDataStore = tokensDataStore
+        )
     }
 
     @Provides

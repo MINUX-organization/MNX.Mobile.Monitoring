@@ -78,7 +78,6 @@ private fun PresetApplyScreen(
 
     Column(modifier = modifier) {
         PresetApplyHeader(
-            header = "Apply preset",
             onBackClick = { onEvent(PresetApplyEvent.Back) },
             modifier = Modifier.fillMaxWidth()
         )
@@ -126,7 +125,6 @@ private fun PresetApplyScreen(
 
 @Composable
 private fun PresetApplyHeader(
-    header: String,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -138,7 +136,7 @@ private fun PresetApplyHeader(
         BackButton(onClick = onBackClick)
 
         Text(
-            text = header,
+            text = "Apply preset",
             color = MaterialTheme.colorScheme.onBackground,
             style = MNXTypography.headlineMedium
         )
@@ -147,7 +145,7 @@ private fun PresetApplyHeader(
 
 @Preview
 @Composable
-private fun ApplyPresetScreenPreview(
+private fun PresetApplyScreenPreview(
     @PreviewParameter(PresetApplyUiStatePreviewParameterProvider::class)
     presetApplyUiState: PresetApplyUiState
 ) {

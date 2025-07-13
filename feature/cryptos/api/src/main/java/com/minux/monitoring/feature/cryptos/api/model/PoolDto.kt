@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 class PoolDto(
     val id: String,
+    val userId: String? = null,
     val tls: Boolean,
     val domain: String?,
     val port: Int,

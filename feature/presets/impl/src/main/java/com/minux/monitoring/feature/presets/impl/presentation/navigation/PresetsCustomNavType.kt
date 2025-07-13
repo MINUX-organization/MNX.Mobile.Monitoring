@@ -6,7 +6,7 @@ import androidx.navigation.NavType
 import com.minux.monitoring.feature.presets.impl.presentation.model.ConfigurationMode
 import kotlinx.serialization.json.Json
 
-internal object CustomNavType {
+internal object PresetsCustomNavType {
     val ConfigurationModeType = object : NavType<ConfigurationMode>(isNullableAllowed = false) {
         override fun get(bundle: Bundle, key: String): ConfigurationMode? {
             return Json.decodeFromString(bundle.getString(key) ?: return null)

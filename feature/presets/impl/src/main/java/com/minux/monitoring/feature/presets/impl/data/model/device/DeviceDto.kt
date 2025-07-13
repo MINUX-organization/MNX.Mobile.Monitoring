@@ -1,6 +1,9 @@
 package com.minux.monitoring.feature.presets.impl.data.model.device
 
-class DeviceDto(
+import kotlinx.serialization.Serializable
+
+@Serializable
+internal class DeviceDto(
     val id: String,
     val pciBus: String?,
     val type: String?,

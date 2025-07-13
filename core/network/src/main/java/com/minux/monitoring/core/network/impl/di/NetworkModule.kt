@@ -6,6 +6,7 @@ import com.minux.monitoring.core.network.api.session.SessionManager
 import com.minux.monitoring.core.network.impl.HttpClientImpl
 import com.minux.monitoring.core.network.impl.WsClientImpl
 import com.minux.monitoring.core.network.impl.retrofit.AuthInterceptor
+import com.minux.monitoring.core.network.impl.session.SessionManagerImpl
 import dagger.Lazy
 import dagger.Module
 import dagger.Provides
@@ -19,7 +20,7 @@ internal class NetworkModule {
     @Provides
     @Singleton
     fun provideWsClient(sessionManager: SessionManager): WsClient =
-        WsClientImpl(sessionManager = sessionManager)
+        WsClientImpl(sessionManager = sessionManager as SessionManagerImpl)
 
     @Provides
     @Singleton

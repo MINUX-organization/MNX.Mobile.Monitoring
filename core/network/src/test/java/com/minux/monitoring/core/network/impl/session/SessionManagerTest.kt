@@ -15,12 +15,11 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.TimeZone
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.ExperimentalTime
 
 internal class SessionManagerTest {
 
@@ -54,10 +53,11 @@ internal class SessionManagerTest {
         coVerify { tokensDataStore.updateData(any()) }
     }
 
+    @OptIn(ExperimentalTime::class)
     @Test
     fun `observeExpirationStatus, if the session has expired, returns true`() = runTest {
-        val expiredDate = "2020-01-01T00:00:00.000Z"
-        val tokens = TokensDto(refreshExpiration = expiredDate)
+        val pastInstant = Clock.System.now() - 1000.minutes
+        val tokens = TokensDto(refreshExpiration = pastInstant.toString())
         every { tokensDataStore.data } returns flowOf(tokens)
 
         sessionManager.observeExpirationStatus().test {
@@ -66,16 +66,12 @@ internal class SessionManagerTest {
         }
     }
 
+    @OptIn(ExperimentalTime::class)
     @Test
     fun `observeExpirationStatus, if the session hasn't expired, returns false`() = runTest {
-        val tokens = SimpleDateFormat(
-            "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-            Locale.getDefault()
-        ).run {
-            timeZone = TimeZone.getTimeZone("UTC")
-            val futureDate = format(Date(System.currentTimeMillis() + 1000000))
-            TokensDto(refreshExpiration = futureDate)
-        }
+        val futureInstant = Clock.System.now() + 1000.minutes
+        val tokens = TokensDto(refreshExpiration = futureInstant.toString())
+
         every { tokensDataStore.data } returns flowOf(tokens)
 
         sessionManager.observeExpirationStatus().test {
@@ -98,10 +94,7 @@ internal class SessionManagerTest {
         every { tokenApiService.refreshTokens(any()) } returns flowOf(Result.success(tokens))
         coEvery { tokensDataStore.updateData(any()) } returns tokens
 
-        sessionManager.getAccessToken().test {
-            assertThat(awaitItem()).isEqualTo(tokens.accessToken)
-            awaitComplete()
-        }
+        assertThat(sessionManager.getAccessToken()).isEqualTo(tokens.accessToken)
 
         verify(inverse = true) { tokenApiService.refreshTokens(any()) }
         coVerify(inverse = true) { tokensDataStore.updateData(any()) }
@@ -121,10 +114,7 @@ internal class SessionManagerTest {
         every { tokenApiService.refreshTokens(any()) } returns flowOf(Result.success(tokens))
         coEvery { tokensDataStore.updateData(any()) } returns tokens
 
-        sessionManager.getAccessToken().test {
-            assertThat(awaitItem()).isEqualTo(tokens.accessToken)
-            awaitComplete()
-        }
+        assertThat(sessionManager.getAccessToken()).isEqualTo(tokens.accessToken)
 
         verify { tokenApiService.refreshTokens(any()) }
         coVerify { tokensDataStore.updateData(any()) }
@@ -134,10 +124,7 @@ internal class SessionManagerTest {
     fun `getAccessToken, if tokens aren't set, returns empty string`() = runTest {
         every { tokensDataStore.data } returns flowOf(TokensDto())
 
-        sessionManager.getAccessToken().test {
-            assertThat(awaitItem()).isEqualTo("")
-            awaitComplete()
-        }
+        assertThat(sessionManager.getAccessToken()).isEqualTo("")
 
         verify(inverse = true) { tokenApiService.refreshTokens(any()) }
         coVerify(inverse = true) { tokensDataStore.updateData(any()) }
