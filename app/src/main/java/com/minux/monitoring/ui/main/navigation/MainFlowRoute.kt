@@ -6,6 +6,9 @@ internal sealed interface MainFlowRoute {
     @Serializable
     data object Monitoring : MainFlowRoute
 
+    @Serializable
+    data object Rigs : MainFlowRoute
+
     sealed interface Devices : MainFlowRoute {
         @Serializable
         data object CPUs : Devices
@@ -14,15 +17,22 @@ internal sealed interface MainFlowRoute {
         data object GPUs : Devices
     }
 
-    @Serializable
-    data object Cryptos : MainFlowRoute
+    sealed interface Mining : MainFlowRoute {
+        @Serializable
+        data object Cryptos : Mining
 
-    @Serializable
-    data object Wallets : MainFlowRoute
+        @Serializable
+        data object Wallets : Mining
 
-    @Serializable
-    data object Pools : MainFlowRoute
+        @Serializable
+        data object Pools : Mining
+    }
 
-    @Serializable
-    data object Presets : MainFlowRoute
+    sealed interface Configure : MainFlowRoute {
+        @Serializable
+        data object Presets : MainFlowRoute
+
+        @Serializable
+        data object FlightSheets : MainFlowRoute
+    }
 }

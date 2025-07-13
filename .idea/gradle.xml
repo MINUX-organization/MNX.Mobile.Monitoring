@@ -40,6 +40,9 @@
             <option value="$PROJECT_DIR$/feature/devices" />
             <option value="$PROJECT_DIR$/feature/devices/api" />
             <option value="$PROJECT_DIR$/feature/devices/impl" />
+            <option value="$PROJECT_DIR$/feature/flightsheets" />
+            <option value="$PROJECT_DIR$/feature/flightsheets/api" />
+            <option value="$PROJECT_DIR$/feature/flightsheets/impl" />
             <option value="$PROJECT_DIR$/feature/monitoring" />
             <option value="$PROJECT_DIR$/feature/monitoring/api" />
             <option value="$PROJECT_DIR$/feature/monitoring/impl" />

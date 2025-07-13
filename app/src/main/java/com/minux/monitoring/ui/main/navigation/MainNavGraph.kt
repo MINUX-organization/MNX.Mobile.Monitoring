@@ -21,7 +21,7 @@ internal fun MainNavGraph(
         navController = navController,
         startDestination = MainFlowRoute.Devices.CPUs
     ) {
-        composable<MainFlowRoute.Monitoring> {
+        composable<MainFlowRoute.Rigs> {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -40,24 +40,29 @@ internal fun MainNavGraph(
                 .AddGpuFlowScreen(entry = entry, onShowSnackBar = onShowSnackBar)
         }
 
-        composable<MainFlowRoute.Cryptos> { entry ->
+        composable<MainFlowRoute.Mining.Cryptos> { entry ->
             navigationApi.cryptosFeatureMediator
                 .AddCryptosScreen(entry = entry, onShowSnackBar = onShowSnackBar)
         }
 
-        composable<MainFlowRoute.Wallets> { entry ->
+        composable<MainFlowRoute.Mining.Wallets> { entry ->
             navigationApi.cryptosFeatureMediator
                 .AddWalletsScreen(entry = entry, onShowSnackBar = onShowSnackBar)
         }
 
-        composable<MainFlowRoute.Pools> { entry ->
+        composable<MainFlowRoute.Mining.Pools> { entry ->
             navigationApi.cryptosFeatureMediator
                 .AddPoolsScreen(entry = entry, onShowSnackBar = onShowSnackBar)
         }
 
-        composable<MainFlowRoute.Presets> { entry ->
+        composable<MainFlowRoute.Configure.Presets> { entry ->
             navigationApi.presetsFeatureMediator
                 .AddPresetsFlowScreen(entry = entry, onShowSnackBar = onShowSnackBar)
+        }
+
+        composable<MainFlowRoute.Configure.FlightSheets> { entry ->
+            navigationApi.flightSheetsFeatureMediator
+                .AddFlightSheetsFlowScreen(entry = entry, onShowSnackBar = onShowSnackBar)
         }
     }
 }
