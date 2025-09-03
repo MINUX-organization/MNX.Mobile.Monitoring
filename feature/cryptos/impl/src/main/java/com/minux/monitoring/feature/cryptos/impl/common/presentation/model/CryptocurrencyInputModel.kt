@@ -1,11 +1,13 @@
 package com.minux.monitoring.feature.cryptos.impl.common.presentation.model
 
 internal data class CryptocurrencyInputModel(
-    val shortName: String = "",
-    val fullName: String = "",
-    val algorithm: AlgorithmItemModel? = null,
-    val isValidationShowed: Boolean = false,
+    val id: String = "",
+    val shortName: String? = null,
+    val fullName: String? = null,
+    val selectedAlgorithm: AlgorithmItemModel? = null,
+    val isShortNameValidationShowed: Boolean = false,
     val isShortNameValid: Boolean = false,
+    val isFullNameValidationShowed: Boolean = false,
     val isFullNameValid: Boolean = false,
     val isAlgorithmValid: Boolean = false
 )

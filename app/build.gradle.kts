@@ -47,6 +47,9 @@ dependencies {
     implementation(project(":feature:presets:api"))
     implementation(project(":feature:presets:impl"))
 
+    implementation(project(":feature:flightsheets:api"))
+    implementation(project(":feature:flightsheets:impl"))
+
     implementation(project(":feature:profile:api"))
     implementation(project(":feature:profile:impl"))
 

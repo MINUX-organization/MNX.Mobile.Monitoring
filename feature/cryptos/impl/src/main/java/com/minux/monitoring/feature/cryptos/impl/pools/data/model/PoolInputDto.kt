@@ -4,7 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 internal class PoolInputDto(
-    val domain: String,
+    val tls: Boolean,
+    val domain: String?,
     val port: Int,
     val cryptocurrencyId: String
 )

@@ -1,15 +1,22 @@
 package com.minux.monitoring.feature.cryptos.impl.cryptos.presentation.ui.component
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.minux.monitoring.core.designsystem.component.MNXDropDownMenu
 import com.minux.monitoring.core.designsystem.component.MNXTextField
+import com.minux.monitoring.core.designsystem.modifier.shimmerEffect
 import com.minux.monitoring.feature.cryptos.impl.common.presentation.model.AlgorithmItemModel
 import com.minux.monitoring.feature.cryptos.impl.common.presentation.model.CryptocurrencyInputModel
 import com.minux.monitoring.feature.cryptos.impl.cryptos.presentation.ui.model.CryptosEvent
@@ -17,7 +24,8 @@ import com.minux.monitoring.feature.cryptos.impl.cryptos.presentation.ui.model.C
 @Composable
 internal fun CoinInputFields(
     model: CryptocurrencyInputModel,
-    algorithms: List<AlgorithmItemModel>,
+    algorithmsIsLoading: Boolean,
+    algorithms: List<AlgorithmItemModel>?,
     onEvent: (CryptosEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -26,24 +34,24 @@ internal fun CoinInputFields(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         ShortNameField(
-            value = model.shortName,
+            value = model.shortName ?: "",
             onValueChange = { onEvent(CryptosEvent.ShortNameChanged(shortName = it)) },
-            isValid = !model.isValidationShowed || model.isShortNameValid,
+            isValid = !model.isShortNameValidationShowed || model.isShortNameValid,
             modifier = Modifier.fillMaxWidth()
         )
 
         FullNameField(
-            value = model.fullName,
+            value = model.fullName ?: "",
             onValueChange = { onEvent(CryptosEvent.FullNameChanged(fullName = it)) },
-            isValid = !model.isValidationShowed || model.isFullNameValid,
+            isValid = !model.isFullNameValidationShowed || model.isFullNameValid,
             modifier = Modifier.fillMaxWidth()
         )
 
         AlgorithmsDropDownMenu(
+            menuItemsIsLoading = algorithmsIsLoading,
             menuItems = algorithms,
-            selectedMenuItem = model.algorithm,
+            selectedMenuItem = model.selectedAlgorithm,
             onSelectedMenuItemChange = { onEvent(CryptosEvent.AlgorithmChanged(algorithm = it)) },
-            isValid = model.isAlgorithmValid,
             modifier = Modifier.fillMaxWidth()
         )
     }
@@ -107,41 +115,48 @@ private fun FullNameField(
 
 @Composable
 private fun AlgorithmsDropDownMenu(
-    menuItems: List<AlgorithmItemModel>,
+    menuItemsIsLoading: Boolean,
+    menuItems: List<AlgorithmItemModel>?,
     selectedMenuItem: AlgorithmItemModel?,
-    onSelectedMenuItemChange: (AlgorithmItemModel) -> Unit,
-    isValid: Boolean,
+    onSelectedMenuItemChange: (AlgorithmItemModel?) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val algorithmsLabel = @Composable {
+    Column(modifier = modifier) {
         Text(
-            text = "Algorithm",
-            modifier = Modifier.padding(start = 2.dp, bottom = 4.dp)
+            text = "Algorithms",
+            modifier = Modifier.padding(start = 2.dp, bottom = 4.dp),
+            color = MaterialTheme.colorScheme.onPrimary,
+            style = LocalTextStyle.current
         )
-    }
 
-    if (isValid) {
-        MNXDropDownMenu(
-            menuItems = menuItems,
-            selectedMenuItem = selectedMenuItem ?: menuItems.first(),
-            onSelectedMenuItemChange = onSelectedMenuItemChange,
-            modifier = modifier,
-            label = algorithmsLabel
-        )
-    } else {
-        MNXTextField(
-            value = "N/A",
-            onValueChange = {},
-            modifier = modifier,
-            readOnly = true,
-            label = algorithmsLabel,
-            supportingText = {
-                Text(
-                    text = "Error to load algorithms",
-                    modifier = Modifier.padding(start = 2.dp)
-                )
-            },
-            isError = true
-        )
+        when {
+            menuItemsIsLoading -> Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(36.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .shimmerEffect()
+            )
+
+            menuItems.isNullOrEmpty() -> MNXTextField(
+                value = if (menuItems == null) "N/A" else "No algorithms found",
+                onValueChange = {},
+                modifier = modifier,
+                readOnly = true,
+                supportingText = {
+                    Text(
+                        text = "Error to load algorithms",
+                        modifier = Modifier.padding(start = 2.dp)
+                    )
+                },
+                isError = menuItems == null
+            )
+
+            else -> MNXDropDownMenu(
+                menuItems = menuItems,
+                selectedMenuItem = selectedMenuItem,
+                onSelectedMenuItemChange = onSelectedMenuItemChange
+            )
+        }
     }
 }

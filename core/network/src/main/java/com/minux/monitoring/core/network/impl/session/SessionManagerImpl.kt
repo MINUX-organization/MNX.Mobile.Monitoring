@@ -18,11 +18,12 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.Instant
 import kotlinx.datetime.minus
 import retrofit2.HttpException
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class SessionManagerImpl(
@@ -38,7 +39,7 @@ internal class SessionManagerImpl(
             }
             .stateIn(
                 scope = CoroutineScope(Dispatchers.IO),
-                started = SharingStarted.WhileSubscribed(),
+                started = SharingStarted.Eagerly,
                 initialValue = TokensDto()
             )
     }
@@ -51,7 +52,7 @@ internal class SessionManagerImpl(
 
     override suspend fun invalidateCredentials(): Result<Unit> {
         val credentials = tokensDataStore.updateData {
-            val invalidateRefreshTokenResult = tokenApiService.invalidateRefreshToken(
+            val invalidateRefreshTokenResult =  tokenApiService.invalidateRefreshToken(
                 token = RefreshTokenDto(refreshToken = it.refreshToken)
             ).first()
 
@@ -72,11 +73,13 @@ internal class SessionManagerImpl(
         return@mapLatest isRefreshTokenExpired(dateTime = refreshExpiration)
     }
 
-    fun getAccessToken(): Flow<String> = _tokens.mapLatest { tokens ->
-        if (tokens.accessToken.isNullOrEmpty()) return@mapLatest ""
-        
+    suspend fun getAccessToken(): String {
+        val tokens = _tokens.value
+
+        if (tokens.accessToken.isNullOrEmpty()) return ""
+
         if (!isAccessTokenExpired(accessToken = tokens.accessToken)) {
-            return@mapLatest tokens.accessToken
+            return tokens.accessToken
         }
 
         _updateTokenMutex.withLock {
@@ -88,7 +91,7 @@ internal class SessionManagerImpl(
             updateAccessToken(tokens = tokens)
         }
 
-        return@mapLatest tokens.accessToken
+        return tokens.accessToken
     }
 
     private suspend fun updateAccessToken(tokens: TokensDto) {
@@ -114,6 +117,7 @@ internal class SessionManagerImpl(
         return jwt.isExpired(2 * 60)
     }
 
+    @OptIn(ExperimentalTime::class)
     private fun isRefreshTokenExpired(dateTime: String): Boolean {
         val expiration = Instant.parse(dateTime)
         return Clock.System.now() >= expiration.minus(5, DateTimeUnit.MINUTE)

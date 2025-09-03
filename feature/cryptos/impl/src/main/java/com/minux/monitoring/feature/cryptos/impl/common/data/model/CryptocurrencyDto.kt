@@ -5,7 +5,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 internal class CryptocurrencyDto(
     val id: String,
-    val shortName: String,
-    val fullName: String,
-    val algorithm: AlgorithmDto
+    val userId: String? = null,
+    val shortName: String?,
+    val fullName: String?,
+    val algorithm: AlgorithmDto?
 )

@@ -3,6 +3,7 @@ package com.minux.monitoring.feature.presets.impl.data.model.device
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@Serializable
 internal sealed interface DeviceOverclockingDto {
 
     @Serializable

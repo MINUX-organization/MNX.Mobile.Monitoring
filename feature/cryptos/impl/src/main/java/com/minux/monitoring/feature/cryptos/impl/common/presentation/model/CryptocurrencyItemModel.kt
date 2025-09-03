@@ -5,9 +5,9 @@ import androidx.compose.runtime.Immutable
 @Immutable
 internal class CryptocurrencyItemModel(
     val id: String,
-    val shortName: String,
-    val fullName: String,
-    val algorithm: AlgorithmItemModel
+    val shortName: String?,
+    val fullName: String?,
+    val algorithm: AlgorithmItemModel?
 ) {
-    override fun toString(): String = shortName
+    override fun toString(): String = fullName ?: ""
 }

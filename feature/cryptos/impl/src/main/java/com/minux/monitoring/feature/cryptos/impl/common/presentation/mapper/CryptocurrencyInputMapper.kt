@@ -7,6 +7,6 @@ internal fun CryptocurrencyInputModel.toCryptocurrencyInputDto(): Cryptocurrency
     return CryptocurrencyInputDto(
         shortName = shortName,
         fullName = fullName,
-        algorithmId = algorithm!!.id
+        algorithmId = selectedAlgorithm!!.id
     )
 }

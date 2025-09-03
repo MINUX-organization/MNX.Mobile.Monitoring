@@ -6,29 +6,21 @@ import com.microsoft.signalr.TransportEnum
 import com.minux.monitoring.core.network.BuildConfig
 import com.minux.monitoring.core.network.api.WsClient
 import com.minux.monitoring.core.network.api.hub.BackendHub
-import com.minux.monitoring.core.network.api.session.SessionManager
 import com.minux.monitoring.core.network.impl.session.SessionManagerImpl
 import io.reactivex.rxjava3.core.Single
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
-internal class WsClientImpl(sessionManager: SessionManager) : WsClient {
-
-    private var _accessToken = ""
-
-    init {
-        CoroutineScope(Dispatchers.IO).launch {
-            (sessionManager as SessionManagerImpl)
-                .getAccessToken()
-                .collect { _accessToken = it }
-        }
-    }
+internal class WsClientImpl(private val sessionManager: SessionManagerImpl) : WsClient {
 
     override fun createConnection(hub: BackendHub): HubConnection {
-        return HubConnectionBuilder.create(BuildConfig.BACKEND_URL + hub.value)
-            .withAccessTokenProvider( Single.defer { Single.just(_accessToken) })
-            .withTransport(TransportEnum.WEBSOCKETS)
-            .build()
+        return runBlocking(Dispatchers.IO) {
+            val accessToken = sessionManager.getAccessToken()
+
+            HubConnectionBuilder.create(BuildConfig.BACKEND_URL + hub.value)
+                .withAccessTokenProvider( Single.defer { Single.just(accessToken) })
+                .withTransport(TransportEnum.WEBSOCKETS)
+                .build()
+        }
     }
 }

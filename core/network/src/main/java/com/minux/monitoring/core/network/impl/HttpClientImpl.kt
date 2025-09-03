@@ -12,10 +12,12 @@ import retrofit2.converter.kotlinx.serialization.asConverterFactory
 
 internal class HttpClientImpl(private val okHttpClient: OkHttpClient) : HttpClient {
 
+    private val json = Json { classDiscriminator = "\$type" }
+
     override fun getApiClient(api: BackendApi): Retrofit {
         return Retrofit.Builder()
             .baseUrl(BuildConfig.BACKEND_URL + api.value)
-            .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .addCallAdapterFactory(FlowResultCallAdapterFactory.create())
             .client(okHttpClient)
             .build()

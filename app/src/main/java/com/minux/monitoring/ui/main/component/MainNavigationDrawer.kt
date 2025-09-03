@@ -482,6 +482,10 @@ fun AppNavigationDrawerPreview() {
         val coroutineScope = rememberCoroutineScope()
 
         val items = listOf(
+            NavigationDrawerItemModel.Single(
+                route = MainFlowRoute.Rigs,
+                title = "Rigs"
+            ),
             NavigationDrawerItemModel.Group(
                 items = listOf(
                     NavigationDrawerItemModel.Single(
@@ -495,21 +499,35 @@ fun AppNavigationDrawerPreview() {
                 ),
                 title = "Devices"
             ),
-            NavigationDrawerItemModel.Single(
-                route = MainFlowRoute.Presets,
-                title = "Presets"
+            NavigationDrawerItemModel.Group(
+                items = listOf(
+                    NavigationDrawerItemModel.Single(
+                        route = MainFlowRoute.Mining.Cryptos,
+                        title = "Cryptocurrencies"
+                    ),
+                    NavigationDrawerItemModel.Single(
+                        route = MainFlowRoute.Mining.Wallets,
+                        title = "Wallets"
+                    ),
+                    NavigationDrawerItemModel.Single(
+                        route = MainFlowRoute.Mining.Pools,
+                        title = "Pools"
+                    )
+                ),
+                title = "Mining"
             ),
-            NavigationDrawerItemModel.Single(
-                route = MainFlowRoute.Cryptos,
-                title = "Cryptos"
-            ),
-            NavigationDrawerItemModel.Single(
-                route = MainFlowRoute.Wallets,
-                title = "Wallets"
-            ),
-            NavigationDrawerItemModel.Single(
-                route = MainFlowRoute.Pools,
-                title = "Pools"
+            NavigationDrawerItemModel.Group(
+                items = listOf(
+                    NavigationDrawerItemModel.Single(
+                        route = MainFlowRoute.Configure.Presets,
+                        title = "Presets"
+                    ),
+                    NavigationDrawerItemModel.Single(
+                        route = MainFlowRoute.Configure.FlightSheets,
+                        title = "Flight Sheets"
+                    )
+                ),
+                title = "Configure"
             )
         )
 

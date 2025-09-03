@@ -5,7 +5,11 @@ import com.minux.monitoring.feature.cryptos.impl.common.presentation.model.Crypt
 import com.minux.monitoring.feature.cryptos.impl.common.presentation.model.CryptocurrencyItemModel
 
 internal data class CryptosUiState(
-    val cryptoAlgorithms: List<AlgorithmItemModel> = emptyList(),
-    val cryptos: List<CryptocurrencyItemModel> = emptyList(),
+    val cryptoAlgorithmsIsLoading: Boolean = true,
+    val cryptoAlgorithms: List<AlgorithmItemModel>? = null,
+    val cryptosIsLoading: Boolean = true,
+    val cryptos: List<CryptocurrencyItemModel>? = null,
+    val filteredCryptos: List<CryptocurrencyItemModel>? = null,
+    val searchQuery: String = "",
     val cryptocurrencyInput: CryptocurrencyInputModel = CryptocurrencyInputModel()
 )

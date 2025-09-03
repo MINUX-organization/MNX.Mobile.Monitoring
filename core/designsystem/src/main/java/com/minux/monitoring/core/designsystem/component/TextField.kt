@@ -64,12 +64,11 @@ fun MNXTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     singleLine: Boolean = true,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     shape: Shape = RoundedCornerShape(4.dp),
     colors: TextFieldColors = MNXTextFieldDefaults.colors(),
     contentPadding: PaddingValues = PaddingValues(8.dp)
 ) {
-    val interactionSource = remember { MutableInteractionSource() }
-
     val textColor = textStyle.color
         .takeOrElse {
             val focused = interactionSource.collectIsFocusedAsState().value

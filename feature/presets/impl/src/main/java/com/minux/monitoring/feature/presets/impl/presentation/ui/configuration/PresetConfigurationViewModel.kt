@@ -251,7 +251,7 @@ internal class PresetConfigurationViewModel @Inject constructor(
                     )
                 }
             }
-        }
+        }.launchIn(viewModelScope)
     }
 
     // For device overclocking
@@ -281,7 +281,7 @@ internal class PresetConfigurationViewModel @Inject constructor(
                     )
                 }
             }
-        }
+        }.launchIn(viewModelScope)
     }
 
     private fun changeGpuPresetParameter(

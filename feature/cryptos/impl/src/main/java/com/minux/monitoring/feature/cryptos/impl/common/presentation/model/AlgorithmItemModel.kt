@@ -5,7 +5,7 @@ import androidx.compose.runtime.Immutable
 @Immutable
 internal class AlgorithmItemModel(
     val id: String,
-    val name: String
+    val name: String?
 ) {
-    override fun toString(): String = name
+    override fun toString(): String = name ?: "N/A"
 }

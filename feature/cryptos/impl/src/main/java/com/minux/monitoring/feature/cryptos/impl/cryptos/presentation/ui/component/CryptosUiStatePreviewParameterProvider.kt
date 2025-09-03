@@ -20,8 +20,14 @@ internal class CryptosUiStatePreviewParameterProvider : PreviewParameterProvider
 
     override val values: Sequence<CryptosUiState> = sequenceOf(
         CryptosUiState(
-            cryptoAlgorithms = listOf(cryptos.first().algorithm),
-            cryptos = cryptos
+            cryptoAlgorithms = listOf(
+                AlgorithmItemModel(
+                    id = "Alg id",
+                    name = "Kawpow"
+                )
+            ),
+            cryptosIsLoading = false,
+            filteredCryptos = cryptos
         )
     )
 }

@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.minux.monitoring.android.feature.api)
     alias(libs.plugins.minux.monitoring.android.library.compose)
-    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -20,8 +19,4 @@ android {
             )
         }
     }
-}
-
-dependencies {
-    implementation(libs.kotlinx.serialization.json)
 }

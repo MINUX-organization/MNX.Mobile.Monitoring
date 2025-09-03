@@ -78,7 +78,10 @@ internal class PresetsViewModel @Inject constructor(
             }
 
             val filteredGroups = uiState.presetGroups?.map { presetGroup ->
-                val filteredPresets = presetGroup.presets.filter { it.info.presetName == query }
+                val filteredPresets = presetGroup.presets.filter {
+                    it.info.presetName.contains(query, ignoreCase = true)
+                }
+
                 presetGroup.copy(presets = filteredPresets)
             }
 

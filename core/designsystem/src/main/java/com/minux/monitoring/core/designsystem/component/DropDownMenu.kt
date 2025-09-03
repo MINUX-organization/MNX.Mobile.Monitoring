@@ -2,6 +2,8 @@ package com.minux.monitoring.core.designsystem.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
@@ -41,6 +44,7 @@ fun <T> MNXDropDownMenu(
     enabled: Boolean = true,
     label: @Composable (() -> Unit)? = null,
     shape: Shape = RoundedCornerShape(4.dp),
+    suffix: @Composable (RowScope.(item: T) -> Unit)? = null,
     iconPadding: Dp = 10.dp,
     contentPadding: PaddingValues = PaddingValues(
         start = 10.dp,
@@ -66,13 +70,17 @@ fun <T> MNXDropDownMenu(
             label = label,
             shape = shape,
             suffix = {
-                Icon(
-                    painter = painterResource(id = MNXIcons.DropDown),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .flipScale(state = isExpanded.value)
-                        .padding(start = iconPadding)
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    suffix?.invoke(this, selectedMenuItem)
+
+                    Icon(
+                        painter = painterResource(id = MNXIcons.DropDown),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .flipScale(state = isExpanded.value)
+                            .padding(start = iconPadding)
+                    )
+                }
             },
             contentPadding = contentPadding
         )
@@ -94,6 +102,11 @@ fun <T> MNXDropDownMenu(
                     onClick = {
                         onSelectedMenuItemChange(menuItems[index])
                         isExpanded.value = false
+                    },
+                    trailingIcon = {
+                        suffix?.let {
+                            Row { it(item) }
+                        }
                     },
                     contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
                 )

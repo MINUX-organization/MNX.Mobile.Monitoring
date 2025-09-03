@@ -31,7 +31,7 @@ internal interface PresetApiService {
         @Path("presetId") id: String
     ): Flow<Result<List<DeviceGroupDto<DeviceGroupDto<DeviceDto>>>>>
 
-    @GET("presets/{presetId}/devices/supported")
+    @GET("presets/{presetId}/devices")
     fun getPresetAppliedDevices(
         @Path("presetId") id: String
     ): Flow<Result<List<DeviceGroupDto<DeviceGroupDto<DeviceDto>>>>>

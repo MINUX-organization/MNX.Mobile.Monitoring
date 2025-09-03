@@ -14,8 +14,9 @@ import com.minux.monitoring.feature.presets.impl.presentation.ui.apply.model.Pre
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import javax.inject.Inject
 
-internal class PresetApplyViewModel(
+internal class PresetApplyViewModel @Inject constructor(
     private val presetRepository: PresetRepository
 ) : BaseViewModel<PresetApplyUiState, PresetApplyAction, PresetApplyEvent>(
     initialState = PresetApplyUiState()
@@ -58,7 +59,7 @@ internal class PresetApplyViewModel(
                 },
                 presetRigDevicesApplied = appliedIds
             )
-        }
+        }.launchIn(viewModelScope)
     }
 
     private fun checkAllDevicesOnRigChanged(rigIndex: Int, checked: Boolean) {

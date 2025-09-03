@@ -3,17 +3,19 @@ package com.minux.monitoring.feature.cryptos.impl.di
 import com.minux.monitoring.core.network.api.BackendApi
 import com.minux.monitoring.core.network.api.HttpClient
 import com.minux.monitoring.feature.cryptos.api.CryptosFeatureMediator
+import com.minux.monitoring.feature.cryptos.api.CryptosProvider
 import com.minux.monitoring.feature.cryptos.impl.common.data.datasource.AlgorithmApiService
 import com.minux.monitoring.feature.cryptos.impl.common.data.datasource.CryptocurrencyApiService
 import com.minux.monitoring.feature.cryptos.impl.pools.data.datasource.PoolApiService
 import com.minux.monitoring.feature.cryptos.impl.wallets.data.datasource.WalletApiService
 import com.minux.monitoring.feature.cryptos.impl.common.data.CryptocurrencyRepository
 import com.minux.monitoring.feature.cryptos.impl.common.data.CryptocurrencyRepositoryImpl
-import com.minux.monitoring.feature.cryptos.impl.pools.data.PoolRepository
-import com.minux.monitoring.feature.cryptos.impl.pools.data.PoolRepositoryImpl
-import com.minux.monitoring.feature.cryptos.impl.wallets.data.WalletRepository
-import com.minux.monitoring.feature.cryptos.impl.wallets.data.WalletRepositoryImpl
+import com.minux.monitoring.feature.cryptos.impl.pools.data.repository.PoolRepository
+import com.minux.monitoring.feature.cryptos.impl.pools.data.repository.PoolRepositoryImpl
+import com.minux.monitoring.feature.cryptos.impl.wallets.data.repository.WalletRepository
+import com.minux.monitoring.feature.cryptos.impl.wallets.data.repository.WalletRepositoryImpl
 import com.minux.monitoring.feature.cryptos.impl.CryptosFeatureMediatorImpl
+import com.minux.monitoring.feature.cryptos.impl.CryptosProviderImpl
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -25,6 +27,18 @@ internal class CryptosModule {
     @Singleton
     fun provideCryptosFeatureMediator(): CryptosFeatureMediator =
         CryptosFeatureMediatorImpl()
+
+    @Provides
+    @Singleton
+    fun provideCryptosProvider(
+        poolRepository: PoolRepository,
+        walletRepository: WalletRepository
+    ): CryptosProvider {
+        return CryptosProviderImpl(
+            poolRepository = poolRepository,
+            walletRepository = walletRepository
+        )
+    }
 
     @Provides
     @Singleton

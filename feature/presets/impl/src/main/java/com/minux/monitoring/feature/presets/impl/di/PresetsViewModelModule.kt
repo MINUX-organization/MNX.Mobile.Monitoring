@@ -1,6 +1,7 @@
 package com.minux.monitoring.feature.presets.impl.di
 
 import androidx.lifecycle.ViewModel
+import com.minux.monitoring.feature.presets.impl.presentation.ui.apply.PresetApplyViewModel
 import com.minux.monitoring.feature.presets.impl.presentation.ui.configuration.PresetConfigurationViewModel
 import com.minux.monitoring.feature.presets.impl.presentation.ui.presets.PresetsViewModel
 import com.minux.monitoring.injector.viewmodel.ViewModelFactoryModule
@@ -23,4 +24,9 @@ internal interface PresetsViewModelModule {
     fun bindPresetConfigurationViewModel(
         presetConfigurationViewModel: PresetConfigurationViewModel
     ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(PresetApplyViewModel::class)
+    fun bindPresetApplyViewModel(presetApplyViewModel: PresetApplyViewModel): ViewModel
 }

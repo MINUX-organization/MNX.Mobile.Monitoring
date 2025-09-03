@@ -69,7 +69,7 @@ class DeviceTextIndicatorItemModel(
 ) : DeviceIndicatorItem
 
 class DeviceIconIndicatorItemModel(
-    @DrawableRes val iconDrawableId: Int,
+    @param:DrawableRes val iconDrawableId: Int,
     override val value: AnnotatedString
 ) : DeviceIndicatorItem
 

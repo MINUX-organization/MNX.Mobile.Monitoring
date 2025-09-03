@@ -11,10 +11,14 @@ import com.minux.monitoring.feature.auth.api.PasswordValidator
 import com.minux.monitoring.feature.auth.api.di.AuthFeatureApi
 import com.minux.monitoring.feature.auth.impl.di.AuthComponentHolder
 import com.minux.monitoring.feature.auth.impl.di.AuthDependencies
+import com.minux.monitoring.feature.cryptos.api.CryptosProvider
+import com.minux.monitoring.feature.cryptos.api.di.CryptosFeatureApi
 import com.minux.monitoring.feature.cryptos.impl.di.CryptosComponentHolder
 import com.minux.monitoring.feature.cryptos.impl.di.CryptosDependencies
 import com.minux.monitoring.feature.devices.impl.di.DevicesComponentHolder
 import com.minux.monitoring.feature.devices.impl.di.DevicesDependencies
+import com.minux.monitoring.feature.flightsheets.impl.di.FlightSheetsComponentHolder
+import com.minux.monitoring.feature.flightsheets.impl.di.FlightSheetsDependencies
 import com.minux.monitoring.feature.presets.api.PresetsFeatureMediator
 import com.minux.monitoring.feature.presets.impl.di.PresetsComponentHolder
 import com.minux.monitoring.feature.presets.impl.di.PresetsDependencies
@@ -216,6 +220,30 @@ internal object DaggerDi {
                         get() = networkApi.httpClient
                     override val dependencyHolder: BaseDependencyHolder<out BaseDependencies>
                         get() = dependencyHolder
+                }
+            }.dependencies
+        }
+
+        FlightSheetsComponentHolder.dependencyProvider = {
+            class FlightSheetsDependencyHolder(
+                override val block: (BaseDependencyHolder<FlightSheetsDependencies>, InjectorComposeApi, NetworkApi, CryptosFeatureApi) -> FlightSheetsDependencies
+            ) : DependencyHolderWithThreeApi<FlightSheetsDependencies, InjectorComposeApi, NetworkApi, CryptosFeatureApi>(
+                firstApi = InjectorComposeComponentHolder.fetchApi(),
+                secondApi = NetworkComponentHolder.fetchApi(),
+                thirdApi = CryptosComponentHolder.fetchApi()
+            )
+
+            FlightSheetsDependencyHolder { dependencyHolder, injectorComposeApi, networkApi, cryptosFeatureApi ->
+                object : FlightSheetsDependencies {
+                    override val binderBaseApi: BinderBaseApi
+                        get() = injectorComposeApi.binderBaseApi
+                    override val httpClient: HttpClient
+                        get() = networkApi.httpClient
+                    override val cryptosProvider: CryptosProvider
+                        get() = cryptosFeatureApi.cryptosProvider
+                    override val dependencyHolder: BaseDependencyHolder<out BaseDependencies>
+                        get() = dependencyHolder
+
                 }
             }.dependencies
         }

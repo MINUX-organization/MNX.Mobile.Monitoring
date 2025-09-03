@@ -5,17 +5,17 @@ import com.minux.monitoring.core.base.BaseViewModel
 import com.minux.monitoring.feature.cryptos.impl.common.data.CryptocurrencyRepository
 import com.minux.monitoring.feature.cryptos.impl.common.presentation.mapper.toCryptocurrencyItemModel
 import com.minux.monitoring.feature.cryptos.impl.common.presentation.model.CryptocurrencyItemModel
-import com.minux.monitoring.feature.cryptos.impl.wallets.data.WalletRepository
+import com.minux.monitoring.feature.cryptos.impl.wallets.data.repository.WalletRepository
 import com.minux.monitoring.feature.cryptos.impl.wallets.data.model.WalletChangeDto
 import com.minux.monitoring.feature.cryptos.impl.wallets.data.model.WalletRemoveDto
 import com.minux.monitoring.feature.cryptos.impl.wallets.presentation.mapper.toWalletInputDto
 import com.minux.monitoring.feature.cryptos.impl.wallets.presentation.mapper.toWalletItemModel
-import com.minux.monitoring.feature.cryptos.impl.wallets.presentation.model.SelectedWalletModel
 import com.minux.monitoring.feature.cryptos.impl.wallets.presentation.model.WalletInputModel
 import com.minux.monitoring.feature.cryptos.impl.wallets.presentation.model.WalletItemModel
 import com.minux.monitoring.feature.cryptos.impl.wallets.presentation.ui.model.WalletsAction
 import com.minux.monitoring.feature.cryptos.impl.wallets.presentation.ui.model.WalletsEvent
 import com.minux.monitoring.feature.cryptos.impl.wallets.presentation.ui.model.WalletsUiState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +23,9 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -34,36 +36,21 @@ internal class WalletsViewModel @Inject constructor(
 
     private val allCoins = cryptocurrencyRepository.getAllCryptocurrencies()
         .mapLatest { coins ->
-            coins.getOrDefault(emptyList()).map { it.toCryptocurrencyItemModel() }
+            coins.getOrNull()?.map { it.toCryptocurrencyItemModel() }
         }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000L),
-            initialValue = emptyList()
-        )
-
-    private val allWallets = walletRepository.getAllWallets()
-        .mapLatest { wallets ->
-            wallets.getOrDefault(emptyList()).map { it.toWalletItemModel() }
-        }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000L),
-            initialValue = emptyList()
+            initialValue = null
         )
 
     val walletsState: StateFlow<WalletsUiState> = combine(
         uiStates(),
-        allCoins,
-        allWallets
-    ) { state, coins, wallets ->
+        allCoins
+    ) { state, coins ->
         state.copy(
-            coins = coins,
-            wallets = wallets,
-            walletInput = state.walletInput.copy(
-                cryptocurrency = coins.firstOrNull(),
-                isCoinValid = coins.isNotEmpty()
-            )
+            coinsIsLoading = false,
+            coins = coins
         )
     }.stateIn(
         scope = viewModelScope,
@@ -73,128 +60,156 @@ internal class WalletsViewModel @Inject constructor(
 
     override fun onEvent(uiEvent: WalletsEvent) {
         when (uiEvent) {
+            WalletsEvent.FetchWallets -> fetchWallets()
+
+            is WalletsEvent.SearchQueryChanged -> searchQueryChanged(query = uiEvent.searchQuery)
+
+            WalletsEvent.AddWallet -> addWallet()
+
+            is WalletsEvent.ChangeWallet -> changeWallet(wallet = uiEvent.wallet)
+
             is WalletsEvent.NameChanged -> nameChanged(name = uiEvent.name)
 
             is WalletsEvent.AddressChanged -> addressChanged(address = uiEvent.address)
 
             is WalletsEvent.CoinChanged -> coinChanged(coin = uiEvent.coin)
 
-            WalletsEvent.AddWallet -> addWallet()
+            WalletsEvent.ConfirmAddWallet -> confirmAddWallet()
 
-            is WalletsEvent.SelectWallet -> selectWallet(wallet = uiEvent.wallet)
-
-            WalletsEvent.ChangeWallet -> changeWallet()
+            WalletsEvent.ConfirmChangeWallet -> confirmChangeWallet()
 
             is WalletsEvent.RemoveWallet -> removeWallet(walletId = uiEvent.id)
         }
     }
 
-    private fun nameChanged(name: String) {
-        val walletInput = uiState.selectedWallet?.walletInput ?: uiState.walletInput
+    private fun fetchWallets() {
+        walletRepository.getAllWallets()
+            .onStart { uiState = uiState.copy(walletsIsLoading = true) }
+            .onEach { result ->
+                val wallets = result.getOrNull()?.map { it.toWalletItemModel() }
 
-        uiState = uiState.copy(
-            walletInput = walletInput.copy(
-                name = name,
-                isNameValid = name.isNotEmpty()
-            )
-        )
+                uiState = uiState.copy(
+                    walletsIsLoading = false,
+                    wallets = wallets,
+                    filteredWallets = wallets
+                )
+
+                searchQueryChanged(query = uiState.searchQuery)
+            }
+            .launchIn(viewModelScope)
     }
 
-    private fun addressChanged(address: String) {
-        val walletInput = uiState.selectedWallet?.walletInput ?: uiState.walletInput
+    private fun searchQueryChanged(query: String) {
+        viewModelScope.launch(Dispatchers.Default) {
+            if (query.isEmpty()) {
+                if (uiState.wallets != uiState.filteredWallets)
+                    uiState = uiState.copy(
+                        searchQuery = query,
+                        filteredWallets = uiState.wallets
+                    )
 
-        uiState = uiState.copy(
-            walletInput = walletInput.copy(
-                address = address,
-                isAddressValid = address.isNotEmpty()
+                return@launch
+            }
+
+            val filteredWallets = uiState.wallets?.filter { wallet ->
+                wallet.name?.contains(query, ignoreCase = true) == true ||
+                        wallet.address?.contains(query, ignoreCase = true) == true ||
+                        wallet.cryptocurrency?.contains(query, ignoreCase = true) == true
+            }
+
+            uiState = uiState.copy(
+                searchQuery = query,
+                filteredWallets = filteredWallets
             )
-        )
-    }
-
-    private fun coinChanged(coin: CryptocurrencyItemModel?) {
-        val walletInput = uiState.selectedWallet?.walletInput ?: uiState.walletInput
-
-        uiState = uiState.copy(
-            walletInput = walletInput.copy(cryptocurrency = coin)
-        )
+        }
     }
 
     private fun addWallet() {
-        val walletInput = uiState.walletInput
-
-        if (!walletInput.isValidationShowed) {
-            uiState = uiState.copy(
-                walletInput = walletInput.copy(isValidationShowed = true)
+        uiState = uiState.copy(
+            walletInput = WalletInputModel(
+                selectedCryptocurrency = allCoins.value?.firstOrNull(),
+                isCoinValid = !allCoins.value.isNullOrEmpty()
             )
-        }
+        )
 
-        if (walletInput.run { !isNameValid || !isAddressValid || !isCoinValid }) {
-            uiAction = WalletsAction.ShowAddWalletFailedSnackBar()
-            return
-        }
-
-        walletRepository.addWallet(walletInput = walletInput.toWalletInputDto()).onEach { result ->
-            result.onSuccess { wallet ->
-                val wallets = uiState.wallets
-                    .toMutableList()
-                    .apply { add(wallet.toWalletItemModel()) }
-
-                uiState = uiState.copy(wallets = wallets)
-            }.onFailure {
-                uiAction = WalletsAction.ShowAddWalletFailedSnackBar(it.message)
-            }
-        }.launchIn(viewModelScope)
+        uiAction = WalletsAction.OpenAddWalletBottomSheet
     }
 
-    private fun selectWallet(wallet: WalletItemModel) {
-        val selectedCoin = uiState.coins.find { wallet.cryptocurrency == it.toString() }
-
+    private fun changeWallet(wallet: WalletItemModel) {
         uiState = uiState.copy(
-            selectedWallet = SelectedWalletModel(
-                walletId = wallet.id,
-                walletInput = WalletInputModel(
-                    name = wallet.name,
-                    address = wallet.address,
-                    cryptocurrency = selectedCoin,
-                    isCoinValid = selectedCoin != null
-                )
+            walletInput = uiState.walletInput.copy(
+                id = wallet.id,
+                name = wallet.name,
+                address = wallet.address,
+                selectedCryptocurrency = allCoins.value?.first { it.id == wallet.cryptocurrencyId },
+                isNameValid = true,
+                isAddressValid = true,
+                isCoinValid = !allCoins.value.isNullOrEmpty()
             )
         )
 
         uiAction = WalletsAction.OpenChangeWalletBottomSheet
     }
 
-    private fun changeWallet() {
-        val walletInput = uiState.selectedWallet!!.walletInput
-
-        if (!walletInput.isValidationShowed) {
-            uiState = uiState.copy(
-                selectedWallet = uiState.selectedWallet!!.copy(
-                    walletInput = walletInput.copy(isValidationShowed = true)
-                )
+    private fun nameChanged(name: String) {
+        uiState = uiState.copy(
+            walletInput = uiState.walletInput.copy(
+                name = name,
+                isNameValidationShowed = true,
+                isNameValid = name.isNotEmpty()
             )
-        }
+        )
+    }
 
-        if (walletInput.run { !isNameValid || !isAddressValid || !isCoinValid }) {
-            uiAction = WalletsAction.ShowChangeWalletFailedSnackBar()
-            return
-        }
+    private fun addressChanged(address: String) {
+        uiState = uiState.copy(
+            walletInput = uiState.walletInput.copy(
+                address = address,
+                isAddressValidationShowed = true,
+                isAddressValid = address.isNotEmpty()
+            )
+        )
+    }
 
+    private fun coinChanged(coin: CryptocurrencyItemModel?) {
+        uiState = uiState.copy(
+            walletInput = uiState.walletInput.copy(selectedCryptocurrency = coin)
+        )
+    }
+
+    private fun confirmAddWallet() {
+        walletRepository.addWallet(walletInput = uiState.walletInput.toWalletInputDto())
+            .onEach { result ->
+                result.onSuccess { wallet ->
+                    val wallets = uiState.wallets
+                        ?.toMutableList()
+                        ?.apply { add(wallet.toWalletItemModel()) }
+
+                    uiState = uiState.copy(wallets = wallets)
+                    searchQueryChanged(query = uiState.searchQuery)
+
+                    uiAction = WalletsAction.CloseAddWalletBottomSheet
+                }.onFailure {
+                    uiAction = WalletsAction.ShowAddWalletFailedSnackBar(it.message)
+                }
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun confirmChangeWallet() {
         walletRepository.changeWallet(
             walletChange = WalletChangeDto(
-                id = uiState.selectedWallet!!.walletId,
-                wallet = walletInput.toWalletInputDto()
+                id = uiState.walletInput.id,
+                wallet = uiState.walletInput.toWalletInputDto()
             )
         ).onEach { result ->
             result.onSuccess { wallet ->
                 val wallets = uiState.wallets
-                    .toMutableList()
-                    .map { if (it.id == wallet.id) wallet.toWalletItemModel() else it }
+                    ?.toMutableList()
+                    ?.map { if (it.id == wallet.id) wallet.toWalletItemModel() else it }
 
-                uiState = uiState.copy(
-                    wallets = wallets,
-                    selectedWallet = null
-                )
+                uiState = uiState.copy(wallets = wallets)
+                searchQueryChanged(query = uiState.searchQuery)
 
                 uiAction = WalletsAction.CloseChangeWalletBottomSheet
             }.onFailure {
@@ -208,13 +223,13 @@ internal class WalletsViewModel @Inject constructor(
             .onEach { result ->
                 result.onSuccess {
                     val wallets = uiState.wallets
-                        .toMutableList()
-                        .apply { removeAll { it.id == walletId } }
+                        ?.toMutableList()
+                        ?.apply { removeAll { it.id == walletId } }
 
-                    uiState = uiState.copy(
-                        wallets = wallets,
-                        selectedWallet = null
-                    )
+                    uiState = uiState.copy(wallets = wallets)
+                    searchQueryChanged(query = uiState.searchQuery)
+
+                    uiAction = WalletsAction.ShowRemoveWalletSuccessSnackBar
                 }.onFailure {
                     uiAction = WalletsAction.ShowRemoveWalletFailedSnackBar(it.message)
                 }

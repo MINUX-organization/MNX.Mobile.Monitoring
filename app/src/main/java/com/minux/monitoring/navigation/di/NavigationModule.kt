@@ -3,11 +3,13 @@ package com.minux.monitoring.navigation.di
 import com.minux.monitoring.feature.auth.api.AuthFeatureMediator
 import com.minux.monitoring.feature.cryptos.api.CryptosFeatureMediator
 import com.minux.monitoring.feature.devices.api.DevicesFeatureMediator
+import com.minux.monitoring.feature.flightsheets.api.FlightSheetsFeatureMediator
 import com.minux.monitoring.feature.presets.api.PresetsFeatureMediator
 import com.minux.monitoring.feature.profile.api.ProfileFeatureMediator
 import com.minux.monitoring.navigation.AuthFeatureMediatorProxy
 import com.minux.monitoring.navigation.CryptosFeatureMediatorProxy
 import com.minux.monitoring.navigation.DevicesFeatureMediatorProxy
+import com.minux.monitoring.navigation.FlightSheetsFeatureMediatorProxy
 import com.minux.monitoring.navigation.PresetsFeatureMediatorProxy
 import com.minux.monitoring.navigation.ProfileFeatureMediatorProxy
 import dagger.Binds
@@ -46,4 +48,10 @@ internal interface NavigationModule {
     fun bindPresetsFeatureMediator(
         presetsFeatureMediatorProxy: PresetsFeatureMediatorProxy
     ): PresetsFeatureMediator
+
+    @Binds
+    @Singleton
+    fun bindFlightSheetsFeatureMediator(
+        flightSheetsFeatureMediatorProxy: FlightSheetsFeatureMediatorProxy
+    ): FlightSheetsFeatureMediator
 }

@@ -5,5 +5,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 internal class AlgorithmDto(
     val id: String,
-    val name: String
+    val userId: String? = null,
+    val name: String?
 )
