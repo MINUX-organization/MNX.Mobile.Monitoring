@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.minux.monitoring.feature.flightsheets.api"
+    namespace = "com.minux.monitoring.feature.rigs.api"
 
     defaultConfig {
         consumerProguardFiles("consumer-rules.pro")

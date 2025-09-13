@@ -26,6 +26,8 @@ import com.minux.monitoring.feature.profile.api.ProfileInfoProvider
 import com.minux.monitoring.feature.profile.api.di.ProfileFeatureApi
 import com.minux.monitoring.feature.profile.impl.di.ProfileComponentHolder
 import com.minux.monitoring.feature.profile.impl.di.ProfileDependencies
+import com.minux.monitoring.feature.rigs.impl.di.RigsComponentHolder
+import com.minux.monitoring.feature.rigs.impl.di.RigsDependencies
 import com.minux.monitoring.injector.BaseDependencies
 import com.minux.monitoring.injector.BaseDependencyHolder
 import com.minux.monitoring.injector.DependencyHolder
@@ -153,6 +155,26 @@ internal object DaggerDi {
                         get() = networkApi.sessionManager
                     override val passwordValidator: PasswordValidator
                         get() = authFeatureApi.passwordValidator
+                    override val dependencyHolder: BaseDependencyHolder<out BaseDependencies>
+                        get() = dependencyHolder
+                }
+            }.dependencies
+        }
+
+        RigsComponentHolder.dependencyProvider = {
+            class RigsDependencyHolder(
+                override val block: (BaseDependencyHolder<RigsDependencies>, InjectorComposeApi, NetworkApi) -> RigsDependencies
+            ) : DependencyHolderWithTwoApi<RigsDependencies, InjectorComposeApi, NetworkApi>(
+                firstApi = InjectorComposeComponentHolder.fetchApi(),
+                secondApi = NetworkComponentHolder.fetchApi()
+            )
+
+            RigsDependencyHolder { dependencyHolder, injectorComposeApi, networkApi ->
+                object : RigsDependencies {
+                    override val binderBaseApi: BinderBaseApi
+                        get() = injectorComposeApi.binderBaseApi
+                    override val httpClient: HttpClient
+                        get() = networkApi.httpClient
                     override val dependencyHolder: BaseDependencyHolder<out BaseDependencies>
                         get() = dependencyHolder
                 }
