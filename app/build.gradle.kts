@@ -38,6 +38,12 @@ dependencies {
     implementation(project(":feature:auth:api"))
     implementation(project(":feature:auth:impl"))
 
+    implementation(project(":feature:profile:api"))
+    implementation(project(":feature:profile:impl"))
+
+    implementation(project(":feature:rigs:api"))
+    implementation(project(":feature:rigs:impl"))
+
     implementation(project(":feature:devices:api"))
     implementation(project(":feature:devices:impl"))
 
@@ -49,9 +55,6 @@ dependencies {
 
     implementation(project(":feature:flightsheets:api"))
     implementation(project(":feature:flightsheets:impl"))
-
-    implementation(project(":feature:profile:api"))
-    implementation(project(":feature:profile:impl"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)
