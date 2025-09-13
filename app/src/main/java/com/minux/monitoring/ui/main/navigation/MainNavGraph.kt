@@ -1,11 +1,6 @@
 package com.minux.monitoring.ui.main.navigation
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -19,15 +14,11 @@ internal fun MainNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = MainFlowRoute.Devices.CPUs
+        startDestination = MainFlowRoute.Rigs
     ) {
-        composable<MainFlowRoute.Rigs> {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = "Under construction...")
-            }
+        composable<MainFlowRoute.Rigs> { entry ->
+            navigationApi.rigsFeatureMediator
+                .AddRigsScreen(entry = entry, onShowSnackBar = onShowSnackBar)
         }
 
         composable<MainFlowRoute.Devices.CPUs> { entry ->

@@ -1,12 +1,13 @@
 plugins {
-    alias(libs.plugins.minux.monitoring.android.feature.api)
+    alias(libs.plugins.minux.monitoring.android.feature)
     alias(libs.plugins.minux.monitoring.android.library.compose)
 }
 
 android {
-    namespace = "com.minux.monitoring.feature.flightsheets.api"
+    namespace = "com.minux.monitoring.feature.rigs.impl"
 
     defaultConfig {
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
 
@@ -19,4 +20,9 @@ android {
             )
         }
     }
+}
+
+dependencies {
+    implementation(project(":feature:rigs:api"))
+    implementation(project(":core:network"))
 }
